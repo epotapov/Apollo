@@ -1,0 +1,13 @@
+title Searching for a Page
+
+entryspacing 1.0
+actor User
+participant Client
+
+Client->Server: send search request with the specified keyword
+Server->Database: request event/data with description/tag matching the keyword
+User->Client: opening up the search bar
+Client->Server: reload lists of events on the homepage
+Server->Client: reload lists of events on the homepage
+Database->Server: respond with requested event data or 0
+

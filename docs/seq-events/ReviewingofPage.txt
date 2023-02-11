@@ -1,0 +1,22 @@
+title Reviewing a Page
+
+entryspacing 1.0
+actor User
+participant Client
+User->Client: user loads individual page 
+
+// send login info client to server
+Client->Server:<align:center>post review with \n scores</align>
+
+// login info server and database
+Server->Database:<align:center> request user reviews of page <align:center>
+Server->Database:<align:center> post review score and review \n with calculated average <align:center>
+Database-->Server: <align:center>respond with requested\ndata or 0</align>
+
+
+// login success?
+Server-->Client:<align:center>if data not found \n display N/A score \n and reviews </align>
+
+// load homepage
+Client->Server: <align:center> send request for new reviews \n posted by other people </align>
+Server-->Client: <align:center>get all new reviews \n with scores </align>

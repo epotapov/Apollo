@@ -1,0 +1,21 @@
+title Responding To Thread
+
+entryspacing 1.0
+actor User
+participant Client
+User->Client: user loads individual page 
+
+// send login info client to server
+Client->Server:<align:center>post to thread</align>
+
+// login info server and database
+Server->Database:<align:center> request post user data \n of the thread <align:center>
+Database-->Server: <align:center>respond with requested\ndata or 0</align>
+
+
+// login success?
+Server-->Client: <align:center>if data not found \n display empty page </align>
+
+// load homepage
+Client->Server: send request for new posts \n posted by other people
+Server-->Client: <align:center>get all new posts </align>

@@ -1,0 +1,84 @@
+entryspacing 1.0
+actor User
+participant Client
+User->Client: user loads webpage 
+
+
+// Account creation
+User->Client:clicking on the app with new account
+Client->Server: load create account page
+Server->Client: load create account page
+Server->Client: check if the account information is correct
+Server->Client: respond with add success
+Server->Client: send account creation or account login notification
+Server->Client: show notification of the event
+Client->Server: send account update notification
+Server->Database:request to add account data
+Database->Server: respond with account added notification
+Server->Database: request to update account data
+Database->Server: respond with updated account success
+
+//Login
+// send login info client to server
+Client->Server:<align:center>send login request\nwith username and\npassword</align>
+
+// login info server and database
+Server->Database: request user data\nof the username
+Database-->Server: <align:center>respond with requested\ndata or 0</align>
+
+// check pass
+Server->Server: <align:center>check password</align>
+
+// login success?
+Server-->Client: <align:center>login credentials match?\nreturn success, else failure</align>
+
+// load homepage
+Client->Server: send request for homepage
+Server-->Client: <align:center>return home page</align>
+
+
+//searching for a page
+Client->Server: send search request with the specified keyword
+Server->Database: request event/data with description/tag matching the keyword
+User->Client: opening up the search bar
+Client->Server: reload lists of events on the homepage
+Server->Client: reload lists of events on the homepage
+Database->Server: respond with requested event data or 0
+
+//Responding to a thread
+// send login info client to server
+Client->Server:<align:center>post to thread</align>
+
+// login info server and database
+Server->Database:<align:center> request post user data \n of the thread <align:center>
+Database-->Server: <align:center>respond with requested\ndata or 0</align>
+
+
+// login success?
+Server-->Client: <align:center>if data not found \n display empty page </align>
+
+// load homepage
+Client->Server: send request for new posts \n posted by other people
+Server-->Client: <align:center>get all new posts </align>
+
+
+//Reviewing a Page
+// send login info client to server
+Client->Server:<align:center>post review with \n scores</align>
+
+// login info server and database
+Server->Database:<align:center> request user reviews of page <align:center>
+Server->Database:<align:center> post review score and review \n with calculated average <align:center>
+Database-->Server: <align:center>respond with requested\ndata or 0</align>
+
+
+// login success?
+Server-->Client:<align:center>if data not found \n display N/A score \n and reviews </align>
+
+// load homepage
+Client->Server: <align:center> send request for new reviews \n posted by other people </align>
+Server-->Client: <align:center>get all new reviews \n with scores </align>
+
+
+
+

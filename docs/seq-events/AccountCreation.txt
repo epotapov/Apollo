@@ -1,0 +1,16 @@
+title Account Creation
+
+actor User
+
+User->Client:clicking on the app with new account
+Client->Server: load create account page
+Server->Client: load create account page
+Server->Client: check if the account information is correct
+Server->Client: respond with add success
+Server->Client: send account creation or account login notification
+Server->Client: show notification of the event
+Client->Server: send account update notification
+Server->Database:request to add account data
+Database->Server: respond with account added notification
+Server->Database: request to update account data
+Database->Server: respond with updated account success
