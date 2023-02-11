@@ -1,0 +1,23 @@
+title LOGIN
+
+entryspacing 1.0
+actor User
+participant Client
+User->Client:<< user loads webpage >>
+
+// send login info client to server
+Client->Server:<align:center>send login request\nwith username and\npassword</align>
+
+// login info server and database
+Server->Database: request user data\nof the username
+Database-->Server: <align:center>respond with requested\ndata or 0</align>
+
+// check pass
+Server->Server: <align:center>check password</align>
+
+// login success?
+Server-->Client: <align:center>login credentials match?\nreturn success, else failure</align>
+
+// load homepage
+Client->Server: send request for homepage
+Server-->Client: <align:center>return home page</align>
