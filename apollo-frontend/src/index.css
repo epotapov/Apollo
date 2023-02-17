@@ -11,3 +11,43 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+h1 {
+  font-size: 3em;
+  margin: 20px;
+}
+
+.Container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+}
+
+.Search {
+  height: 630px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+}
+
+.SignIn {
+  position: fixed;
+  background-color: #464545;
+  font-size: 1.5rem;
+  cursor: pointer;
+  top: 5px;
+  right: 5px;
+  color: white;
+  width: 100px;
+  height: 40px;
+  border: 2px solid white;
+  border-radius: 20px;
+  color: white;
+}
