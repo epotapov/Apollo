@@ -7,29 +7,85 @@
  *
  */
 
-const { MongoClient } = require("mongodb");
-const Db = process.env.ATLAS_URI;
-const client = new MongoClient(Db, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+export async function connectToCluster(uri) {
+   let mongoClient;
+
+   try {
+       mongoClient = new MongoClient(uri);
+       console.log('Connecting to MongoDB Atlas cluster...');
+       await mongoClient.connect();
+       console.log('Successfully connected to MongoDB Atlas!');
+
+       return mongoClient;
+   } catch (error) {
+       console.error('Connection to MongoDB Atlas failed!', error);
+       process.exit();
+   }
+}
+
+
+
+
+
+
+// const { MongoClient } = require("mongodb");
+
+
+// async function main(callback) {
+//     /**
+//      * Connection URI. Update <username>, <password>, and <your-cluster-url> to reflect your cluster.
+//      * See https://docs.mongodb.com/ecosystem/drivers/node/ for more details
+//      */
+//     const uri = "mongodb+srv://admin:ZoLZqB0yqRBlHyio@apollo.htun4s6.mongodb.net/?retryWrites=true&w=majority";
  
-var _db;
+
+//     const client = new MongoClient(uri);
  
-module.exports = {
-  connectToServer: function (callback) {
-    client.connect(function (err, db) {
-      // Verify we got a good "db" object
-      if (db)
-      {
-        _db = db.db("employees");
-        console.log("Successfully connected to MongoDB."); 
-      }
-      return callback(err);
-         });
-  },
+//     try {
+//         // Connect to the MongoDB cluster
+//         await client.connect();
  
-  getDb: function () {
-    return _db;
-  },
-};
+//         // Make the appropriate DB calls
+//         await  listDatabases(client);
+ 
+//     } catch (e) {
+//         console.error(e);
+//     } finally {
+//         await client.close();
+//     }
+// }
+
+// main().catch(console.error);
+
+// const { MongoClient } = require("mongodb");
+// const Db = process.env.ATLAS_URI;
+// const client = new MongoClient(Db, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
+
+// module.exports = {
+//   connectToServer: function (callback) {
+//     try {
+//       client.connect(function (err, db) {
+//         listDatabases(client);
+//         return callback(err);
+//       });
+//     } catch (e) {
+//       console.error(e);
+//     } finally {
+//       client.close();
+//     }
+//   }
+//   // getDb: function () {
+//   //   return _db;
+//   // },
+// };
+// async function listDatabases(client){
+//     databasesList = await client.db().admin().listDatabases();
+ 
+//     console.log("Databases:");
+//     databasesList.databases.forEach(db => console.log(` - ${db.name}`));
+// };
+
+
