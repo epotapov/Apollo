@@ -20,12 +20,15 @@ var _db;
 module.exports = {
   connectToServer: function (callback) {
     client.connect(function (err, db) {
+      console.log("db: " + db);
       // Verify we got a good "db" object
-      if (db)
-      {
+      // if (db)
+      // {
+      db.once('open', () => {
         _db = db.db("employees");
         console.log("Successfully connected to MongoDB."); 
-      }
+      });
+      // }
       return callback(err);
          });
   },
