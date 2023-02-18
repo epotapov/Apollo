@@ -18,6 +18,9 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+//express router setup
+const loginpageRoutes = require('./routes/loginpage');
+
 // express app
 const app = express();
 const port = process.env.PORT || 5001;
@@ -26,9 +29,7 @@ app.use(cors());
 app.use(express.json());
 
 // routes
-app.get('/', (req, res) => {
-  res.json({mssg: 'testing 123'})
-})
+app.use('/api/loginpage', loginpageRoutes);
 
 // listen for requests
 app.listen(port, () => {
@@ -42,5 +43,3 @@ const connection = mongoose.connection;
 connection.once('open', () => {
   console.log("MongoDB database connection established successfully");
 })
-
-
