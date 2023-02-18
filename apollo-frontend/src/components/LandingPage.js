@@ -7,8 +7,8 @@ import { Link } from 'react-router-dom';
 export default function LandingPage() {
     return(
         <div className='Container'>
-            <Link to='/SignIn'>
-                <button className='SignIn'>Sign In</button>
+            <Link to='/Login'>
+                <button className='SignIn'>Log In</button>
             </Link>
             <section className='Search'>
                 <div id='LogoHolderLanding'>
