@@ -8,8 +8,13 @@
  * @source: https://linuxhint.com/get-started-with-mern-stack/#:~:text=To%20get%20started%20with%20the,js%20application
  */
 
+// express is web framework for Node.js
 const express = require('express');
+
+// cors installs a Node.js package that allows cross origin resource sharing
 const cors = require('cors');
+
+// mongoose helps with server-database communication
 const mongoose = require('mongoose');
 require('dotenv').config();
 
