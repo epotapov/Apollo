@@ -15,6 +15,17 @@ code {
 h1 {
   font-size: 3em;
   margin: 20px;
+  color: #353744;
+}
+
+#LoginForm h2 {
+  font-size: 2em;
+  margin: 20px;
+  color: #353744;
+}
+
+#LoginForm h3 {
+  text-align: left;
 }
 
 .Container {
@@ -28,7 +39,6 @@ h1 {
 }
 
 .Search {
-  height: 630px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -39,7 +49,7 @@ h1 {
 
 .SignIn {
   position: fixed;
-  background-color: #464545;
+  background-color: #353744;
   font-size: 1.5rem;
   cursor: pointer;
   top: 5px;
@@ -50,4 +60,69 @@ h1 {
   border: 2px solid white;
   border-radius: 20px;
   color: white;
+}
+
+#LoginForm button {
+  background-color: #353744;
+  font-size: 1.5rem;
+  cursor: pointer;
+  top: 5px;
+  right: 5px;
+  color: white;
+  width: 100px;
+  height: 40px;
+  border: 2px solid white;
+  border-radius: 20px;
+  color: white;
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+#InputHolder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#InputHolder input {
+  border: 2px solid #353744;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-family: open;
+  font-size: 1.5rem;
+  margin-top: 10px;
+  padding: 10px 20px;
+  color: #353744;
+  width: 500px;
+  outline: none;
+}
+
+#LogoHolderLanding {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+#LoginForm {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+}
+
+#LoginForm input {
+  border: 2px solid #353744;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-family: open;
+  font-size: 1.5rem;
+  margin-top: 10px;
+  padding: 10px 20px;
+  color: #353744;
+  width: 300px;
+  outline: none;
 }
