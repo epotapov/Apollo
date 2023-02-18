@@ -35,6 +35,10 @@ app.use((req, res, next) => {
 });
 
 // routes
+app.get('/', (req, res) => {
+  res.json({mssg: 'testing 123'})
+})
+
 app.use('/api/user', userRoutes);
 
 // listen for requests
