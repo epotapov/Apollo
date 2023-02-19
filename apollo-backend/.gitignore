@@ -1,0 +1,5 @@
+# .gitignore
+# 
+# add files that shall not be pushed to the hub
+
+node_modules
