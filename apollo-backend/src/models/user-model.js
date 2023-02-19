@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
+const bycrypt = require('bycrypt');
+
 const userSchema = new Schema({
 
     firstName: {
@@ -44,6 +46,26 @@ const userSchema = new Schema({
     }
     
 }, { timestamps: true});
+
+// static sighup method
+
+userSchema.statics.signup = async function(email, password, ) {
+
+    const exists = await this.findOne({ email });
+
+    if (exists) {
+
+        throw new Error('Email already in use');
+
+    }
+
+    const salt = await bycrpt.genSalt(10);           //salt adds random string of characters on top of password
+    const hashedPassword = await bycrpt.hash(password, salt);       //hashes salt with password
+
+    const user = await this.create({email, password: hashedPassword });
+
+    return user;
+}
 
 module.exports = mongoose.model('UserInfo', userSchema);
 
