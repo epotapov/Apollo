@@ -3,12 +3,12 @@ import { useEffect, useState }from 'react'
 const Home = () => {
 
     useEffect(() => {
-        const fetchWorkouts = async () => {
+        const fetchData = async () => {
             const response = await fetch('http://localhost:3000')
             const json = await response.json()
 
             if (response.ok) {
-                setWorkouts(json)
+                setData(json)
             }
         }
 
@@ -17,8 +17,10 @@ const Home = () => {
 
     return (
         <div className="home">
-            <div className = "workouts">
-                
+            <div className = "data">
+                {data && data.map(() => (
+                    <p key={data_id}>{data.title}</p>
+                ))}
             </div>
         </div>
     )
