@@ -37,7 +37,6 @@ app.use((req, res, next) => {
 // attaches all the routes that we attached to the router
 app.use('/api/user', userRoutes); // when we fire request to /api/user then check userRoutes for the route
 
-
 // connect to MongoDB
 mongoose.connect(process.env.ATLAS_URI)
   .then(() => {

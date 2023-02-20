@@ -4,8 +4,8 @@ const Schema = mongoose.Schema;
 
 const bcrypt = require('bcrypt');
 
+// a schema is similar to an object
 const userSchema = new Schema({
-
 
     email: {
         type: String, 
@@ -16,17 +16,15 @@ const userSchema = new Schema({
         trim: true,
         index: true
     },
-    
+
     password: {
         type: String,
         required: true
     }
-    
+
 }, { timestamps: true}, {typeKey: '$type'});
 
-
 // static signup method
-
 userSchema.statics.signup = async function(email, password) {
 
     const exists = await this.findOne({ email });
@@ -45,5 +43,6 @@ userSchema.statics.signup = async function(email, password) {
     return user;
 }
 
+// save userScheme to the UserInfo collection
 module.exports = mongoose.model('UserInfo', userSchema);
 
