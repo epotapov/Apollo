@@ -26,20 +26,16 @@ const app = express();
 const port = process.env.PORT || 5001;
 
 app.use(cors());
-app.use(express.json());
 
 //middleware
+app.use(express.json());
 app.use((req, res, next) => {
   console.log(req.path, req.method)
   next()
 });
 
-// routes
-app.get('/', (req, res) => {
-  res.json({mssg: 'testing 123'})
-})
-
-app.use('/api/user', userRoutes);
+// attaches all the routes that we attached to the router
+app.use('/api/user', userRoutes); // when we fire request to /api/user then check userRoutes for the route
 
 // listen for requests
 app.listen(port, () => {
