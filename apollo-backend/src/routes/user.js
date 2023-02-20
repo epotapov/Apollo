@@ -1,26 +1,14 @@
 const express = require('express');
 
+//controller functions
+const { signupUser, loginUser } = require('../controllers/user-controller');
+
 const router = express.Router();
 
-//controler functions
-const {loginUser, signupUser} = require('../controllers/user-controller');
+//login route
+router.post('login', () => {});
 
-
-//Get a single accounts info
-router.get('/', (req, res) => {
-    res.json({mssg: 'Get a single accounts info'});
-});
-
-//Add a new account
-router.post('/', (req, res) => {
-    res.json({mssg: "Add a new account"});
-});
-
-// login route
-router.post('/login', loginUser);
-
-// signup route
-router.post('/signup', signupUser);  
-
+//signup route
+router.post('/signup', () => {});
 
 module.exports = router;
