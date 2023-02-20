@@ -37,15 +37,16 @@ app.use((req, res, next) => {
 // attaches all the routes that we attached to the router
 app.use('/api/user', userRoutes); // when we fire request to /api/user then check userRoutes for the route
 
-// listen for requests
-app.listen(port, () => {
-  console.log(`Server is running on port: ${port}`);
-});
 
 // connect to MongoDB
-const uri = process.env.ATLAS_URI;
-mongoose.connect(uri);
-const connection = mongoose.connection;
-connection.once('open', () => {
-  console.log("MongoDB database connection established successfully");
-})
+mongoose.connect(process.env.ATLAS_URI)
+  .then(() => {
+    // listen for requests only if DB is connected
+    app.listen(port, () => {
+      console.log("MongoDB database connection established successfully");
+      console.log(`listening on port: ${port}`);
+    });
+  })
+  .catch((error) => {
+    console.log(error);
+  });
