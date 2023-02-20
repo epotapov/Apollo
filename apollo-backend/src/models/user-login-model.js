@@ -4,6 +4,9 @@ const Schema = mongoose.Schema;
 
 const bcrypt = require('bcrypt');
 
+const validator = require('validator'); // helps validate user input
+
+
 // a schema is similar to an object
 const userSchema = new Schema({
 
@@ -11,10 +14,6 @@ const userSchema = new Schema({
         type: String, 
         lowercase: true, 
         unique: true, 
-        required: [true, 'Email is required'], 
-        match: [/\S+@\S+\.\S+/, 'is invalid'], 
-        trim: true,
-        index: true
     },
 
     password: {
@@ -26,6 +25,31 @@ const userSchema = new Schema({
 
 // static signup method
 userSchema.statics.signup = async function(email, password) {
+
+    //validation
+
+    const purdueEmail = 'purdue.edu'
+
+    isEmailValid = validator.isEmail(email, options = {domain_specific_validation : true, 
+        host_whitelist : [purdueEmail]})
+
+
+
+    if (!email || !password) {
+        throw Error('Email and password are required');
+    }
+
+
+    if (!isEmailValid) {
+        throw Error('Must enter a Purdue email account');
+    }
+
+
+    if (!validator.isStrongPassword(password)) {
+        throw Error('Password is not strong enough');
+
+    }
+
 
     const exists = await this.findOne({ email });
 
