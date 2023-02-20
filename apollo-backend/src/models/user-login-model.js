@@ -9,8 +9,8 @@ const validator = require('validator'); // helps validate user input
 
 // a schema is similar to an object
 const userSchema = new Schema({
-
     email: {
+        _id: String,
         type: String, 
         lowercase: true, 
         unique: true, 
@@ -21,7 +21,7 @@ const userSchema = new Schema({
         required: true
     }
 
-}, { timestamps: true}, {typeKey: '$type'});
+}, { timestamps: true}/*, {typeKey: '$type'}*/);
 
 // static signup method
 userSchema.statics.signup = async function(email, password) {
