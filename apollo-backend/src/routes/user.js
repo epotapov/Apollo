@@ -5,10 +5,10 @@ const { signupUser, loginUser } = require('../controllers/user-controller');
 
 const router = express.Router();
 
-//login route
+//login route - no method is currently executed here bc () => {}
 router.post('login', () => {});
 
-//signup route
-router.post('/signup', () => {});
+//signup route - signupUser is the "method" that is executed
+router.post('/signup', signupUser);
 
 module.exports = router;
