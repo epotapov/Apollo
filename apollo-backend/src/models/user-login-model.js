@@ -13,7 +13,7 @@ const userSchema = new Schema({
         _id: String,
         type: String, 
         lowercase: true, 
-        unique: true, 
+        unique: true 
     },
 
     password: {
