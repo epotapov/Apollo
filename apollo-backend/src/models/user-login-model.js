@@ -41,6 +41,16 @@ const userSchema = new Schema({
         required: true
     },
 
+    friendsList: {
+        type: String,
+        required: true
+    },
+
+    blockList: {
+        type: String,
+        required: true
+    }
+
 }, { timestamps: true}/*, {typeKey: '$type'}*/);
 
 // static signup method
