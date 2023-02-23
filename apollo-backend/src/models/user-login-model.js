@@ -54,7 +54,7 @@ const userSchema = new Schema({
 }, { timestamps: true}/*, {typeKey: '$type'}*/);
 
 // static signup method
-userSchema.statics.signup = async function(username, email, password) {
+userSchema.statics.signup = async function(username, email, password, major, gradYear, accountType) {
 
     //validation
 
@@ -79,6 +79,10 @@ userSchema.statics.signup = async function(username, email, password) {
         throw Error('Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character');
 
 
+    }
+
+    if (typeof(major) != String) {
+        throw Error('Please type in a string');
     }
 
 
