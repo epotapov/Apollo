@@ -24,7 +24,22 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true
-    }
+    },
+
+    major: {
+        type: String,
+        required: true
+    },
+
+    gradYear: {
+        type: int,
+        required: true
+    },
+
+    accountType: {
+        type: String,
+        required: true
+    },
 
 }, { timestamps: true}/*, {typeKey: '$type'}*/);
 
