@@ -1,14 +1,22 @@
-import React from 'react';
-import { useState } from 'react';
+import { React, useState} from 'react';
 import '../index.css';
-
 import { Link } from 'react-router-dom'
+
+import { Button, Checkbox, Form, Input } from 'antd';
 
 export default function SignUpPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [size, setSize] = useState('large');
+
+  const onFinish = (values) => {
+    console.log('Success:', values);
+  };
+  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
 
   const handleSubmit = async (e) => {
 
@@ -42,38 +50,87 @@ export default function SignUpPage() {
 
   return(
     <div className='Container'>
-    <Link to='/'>
-    <button className='SignIn'>Back</button>
-    </Link>
+      <Link to='/'>
+        <Button type="primary" className="SignIn" size={size}>
+          Back
+        </Button>
+      </Link>
+      <Form
+          name="basic"
+          labelCol={{
+            span: 8,
+          }}
+          wrapperCol={{
+            span: 16,
+          }}
+          style={{
+            maxWidth: 600,
+          }}
+          initialValues={{
+            remember: true,
+          }}
+          onFinish={handleSubmit}
+          onFinishFailed={onFinishFailed}
+          autoComplete="off"
+      >
+          <h2>Sign Up</h2>
+          <Form.Item
+              label="Username"
+              name="username"
+              onChange={(e) => setUsername(e.target.value)}
+              value={username}
+              rules={[
+                  {
+                    required: true,
+                    message: 'Please input your username!',
+                  },
+              ]}
+          >
+          <Input />
+          </Form.Item>
 
-    <form id='LoginForm' onSubmit={handleSubmit}>
-      <h2>Sign Up</h2>
-      <h3>Username</h3>
-      <input
-        type="text"
-        placeholder="Username"
-        onChange={(e) => setUsername(e.target.value)}
-        value={username}
-      />
+          <Form.Item
+              label="Email"
+              name="email"
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              rules={[
+                  {
+                    required: true,
+                    message: 'Please input your username!',
+                  },
+              ]}
+          >
+          <Input />
+          </Form.Item>
 
-      <h3>Email</h3>
-      <input
-        type="text"
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-        value={email}
-      />
+          <Form.Item
+              label="Password"
+              name="password"
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
+              rules={[
+                  {
+                    required: true,
+                    message: 'Please input your password!',
+                  },
+              ]}
+          >
+          <Input.Password />
+          </Form.Item>
 
-      <h3>Password</h3>
-      <input
-        type="text"
-        placeholder="Password"
-        onChange={(e) => setPassword(e.target.value)}
-        value={password}
-      />
 
-      <button className='Submit'>Submit</button>
-    </form>
+          <Form.Item
+          wrapperCol={{
+              offset: 8,
+              span: 16,
+          }}
+          >
+          <Button type="primary" htmlType="submit">
+              Submit
+          </Button>
+          </Form.Item>
+      </Form>
     </div>
   );
 }
