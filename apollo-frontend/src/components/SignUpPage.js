@@ -2,12 +2,13 @@ import { React, useState} from 'react';
 import '../index.css';
 import { Link } from 'react-router-dom'
 
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Checkbox, Form, Input, Radio } from 'antd';
 
 export default function SignUpPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('student');
   const [error, setError] = useState(null);
   const [size, setSize] = useState('large');
 
@@ -118,7 +119,23 @@ export default function SignUpPage() {
           >
           <Input.Password />
           </Form.Item>
-
+          <Form.Item 
+            label="Role"
+            name="role"
+            onChange={(e) => setRole(e.target.value)}
+            value={role}
+            rules={[
+              {
+                required: true,
+                message: 'Please select your role!'
+              },
+            ]}  
+          >
+          <Radio.Group value={role}>
+            <Radio value={1}> Student </Radio>
+            <Radio value={2}> Professor </Radio>
+          </Radio.Group>
+          </Form.Item>
 
           <Form.Item
           wrapperCol={{
@@ -126,9 +143,11 @@ export default function SignUpPage() {
               span: 16,
           }}
           >
-          <Button type="primary" htmlType="submit">
-              Submit
-          </Button>
+          <Link to = '/TellUsMore'>
+            <Button type="primary" htmlType="submit">
+                Submit
+            </Button>
+          </Link>
           </Form.Item>
       </Form>
     </div>
