@@ -31,10 +31,10 @@ const userSchema = new Schema({
         required: true
     },
 
-    gradYear: {
-        type: int,
-        required: true
-    },
+    // gradYear: {
+    //     type: int,
+    //     required: true
+    // },
 
     accountType: {
         type: String,
@@ -52,6 +52,7 @@ const userSchema = new Schema({
     }
 
 }, { timestamps: true}/*, {typeKey: '$type'}*/);
+
 
 // static signup method
 userSchema.statics.signup = async function(username, email, password, major, gradYear, accountType) {

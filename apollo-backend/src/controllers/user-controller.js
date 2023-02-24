@@ -1,4 +1,4 @@
-const UserInfo = require('../models/user-login-model');
+const UserInfo = require('../models/user-model');
 
 
 //login user
