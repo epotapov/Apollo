@@ -8,7 +8,7 @@ export default function SignUpPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('student');
+  const [role, setRole] = useState('');
   const [error, setError] = useState(null);
   const [size, setSize] = useState('large');
 
@@ -131,7 +131,7 @@ export default function SignUpPage() {
               },
             ]}  
           >
-          <Radio.Group value={role}>
+          <Radio.Group value={1}>
             <Radio value={1}> Student </Radio>
             <Radio value={2}> Professor </Radio>
           </Radio.Group>
