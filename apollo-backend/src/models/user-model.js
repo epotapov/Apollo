@@ -24,12 +24,38 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true
+    },
+
+    major: {
+        type: String,
+        required: true
+    },
+
+    // gradYear: {
+    //     type: int,
+    //     required: true
+    // },
+
+    accountType: {
+        type: String,
+        required: true
+    },
+
+    friendsList: {
+        type: String,
+        required: true
+    },
+
+    blockList: {
+        type: String,
+        required: true
     }
 
 }, { timestamps: true}/*, {typeKey: '$type'}*/);
 
+
 // static signup method
-userSchema.statics.signup = async function(username, email, password) {
+userSchema.statics.signup = async function(username, email, password, major, gradYear, accountType) {
 
     //validation
 
@@ -54,6 +80,10 @@ userSchema.statics.signup = async function(username, email, password) {
         throw Error('Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character');
 
 
+    }
+
+    if (typeof(major) != String) {
+        throw Error('Please type in a string');
     }
 
 
