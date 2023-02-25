@@ -103,6 +103,30 @@ userSchema.statics.signup = async function(username, email, password, major, gra
     return user;
 }
 
+//static login method
+userSchema.statics.login = async function(email, password) {
+
+    if (!email || !password) {
+        throw Error('Email and password are required');
+    }
+
+    const user = await this.findOne({ email });
+
+    if (!exists) {
+
+        throw Error('Incorrect email');
+
+    }
+
+    const match = await bcrypt.compare(password, user.password)
+    
+    if (!match) {
+        throw Error('Incorrect password')
+    }
+
+    return user
+}
+
 // save userScheme to the UserInfo collection
 module.exports = mongoose.model('UserInfo', userSchema);
 
