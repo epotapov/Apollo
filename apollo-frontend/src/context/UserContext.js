@@ -22,8 +22,6 @@ export const UserContextProvider = ({ children }) => {
         user: null
     })
 
-    dispatch({type: 'CREATE_USER'}, payload )
-
     return (
         <UserContext.Provider value={{...state, dispatch}}>
             { children }
