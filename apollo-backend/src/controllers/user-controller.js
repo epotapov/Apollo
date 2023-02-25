@@ -4,7 +4,21 @@ const UserInfo = require('../models/user-model');
 //login user
 
 const loginUser = async (req, res) => {
-    res.json({mssg: 'login user'})
+    //TODO NEED TO CREATE WEB TOKEN AND STUFF
+
+    const {email, password} = req.body
+
+    try {
+        const user = await UserInfo.login(username, email, password);
+
+        //create a token
+        const token = createToken(user._id)
+
+        res.status(200).json({email, user});
+
+   } catch (error) {
+        res.status(400).json({error: error.message})
+   }
 }
 
 //signup user
