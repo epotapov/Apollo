@@ -38,9 +38,10 @@ router.get('/verify', async (req, res) => {
         }
         else {
             res.send('Email verified');
-            UserInfo.update({isverified : true}, {where : decoded.email});
+            UserInfo. findOneAndUpdate({where : decoded}, {isVerified : true});
+            res.redirect('http://localhost:5001/api/user/login')
         }
-        console.log(decoded)
+        console.log(decoded);
     });
 });
 
