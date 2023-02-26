@@ -1,5 +1,4 @@
 import { React, useState} from 'react';
-import '../index.css';
 import { Link } from 'react-router-dom'
 
 import { Button, Checkbox, Form, Input } from 'antd';

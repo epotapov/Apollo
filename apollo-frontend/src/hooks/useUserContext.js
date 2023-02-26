@@ -5,6 +5,8 @@ export const useUserContext = () => {
     const context = useContext(UserContext)
 
     if (!context) {
-        throw Error('useUserContext must be used inside the provider')
+        throw Error('useUserContext must be used inside the userContext provider')
     }
+
+    return context
 }

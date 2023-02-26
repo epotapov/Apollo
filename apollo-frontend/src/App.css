@@ -1,38 +1,146 @@
-.App {
-  text-align: center;
+h1 {
+  font-size: 3em;
+  margin: 20px;
+  color: #353744;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+#LoginForm h2 {
+  font-size: 2em;
+  margin: 20px;
+  color: #353744;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+#LoginForm h3 {
+  text-align: left;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.Container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+}
+
+.CourseContainer {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+}
+
+#Navbar {
+  background-color: #b4b8bb;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+#Navbar img {
+  height: 35px;
+  width: 35px;
+}
+
+.Search {
+  position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  overflow: hidden;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  align-items: center;
+}
+
+/*.SignIn {
+  position: fixed;
+  background-color: #353744;
+  font-size: 1.5rem;
+  cursor: pointer;
+  top: 5px;
+  right: 5px;
   color: white;
+  width: 100px;
+  height: 40px;
+  border: 2px solid white;
+  border-radius: 20px;
+  color: white;
+}*/
+
+.SignIn {
+  position: fixed;
+  cursor: pointer;
+  top: 5px;
+  right: 5px;
 }
 
-.App-link {
-  color: #61dafb;
+#LoginForm button {
+  background-color: #353744;
+  font-size: 1.5rem;
+  cursor: pointer;
+  top: 5px;
+  right: 5px;
+  color: white;
+  width: 100px;
+  height: 40px;
+  border: 2px solid white;
+  border-radius: 20px;
+  color: white;
+  margin-top: 25px;
+  margin-bottom: 25px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#SearchLandingHolder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/*#InputHolder input {
+  border: 2px solid #353744;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-family: open;
+  font-size: 1.5rem;
+  margin-top: 10px;
+  padding: 10px 20px;
+  color: #353744;
+  width: 500px;
+  outline: none;
+}*/
+
+#SearchLandingHolder input {
+  width: 500px;
+}
+
+
+#LogoHolderLanding {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+#LoginForm {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+}
+
+#LoginForm input {
+  border: 2px solid #353744;
+  border-radius: 10px;
+  box-sizing: border-box;
+  font-family: open;
+  font-size: 1.5rem;
+  margin-top: 10px;
+  padding: 10px 20px;
+  color: #353744;
+  width: 300px;
+  outline: none;
 }

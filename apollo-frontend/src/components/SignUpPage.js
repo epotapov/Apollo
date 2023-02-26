@@ -1,5 +1,4 @@
 import { React, useState} from 'react';
-import '../index.css';
 import { Link } from 'react-router-dom'
 
 import { Button, Form, Radio, Input } from 'antd';
