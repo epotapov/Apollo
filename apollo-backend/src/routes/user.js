@@ -31,10 +31,7 @@ router.get('/verify', async (req, res) => {
 
     const token = decodeURIComponent(req.query.token);;
 
-    const user = await UserInfo.findOne({token})
-    console.log(user)
-
-    jwt.verify(token, 'secretKey', function(error, decoded) {
+    decoded = jwt.verify(token, 'secretKey', function(error, decoded) {
         if (error) {
             console.log(error);
             res.send('Email verification failed or link has expired');
@@ -43,6 +40,7 @@ router.get('/verify', async (req, res) => {
             res.send('Email verified');
             // UserInfo.isVerified.update({isVerified: true}, {where: {email: decoded.email}});
         }
+        console.log(decoded)
     });
 });
 
