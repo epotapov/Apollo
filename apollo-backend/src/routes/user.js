@@ -27,10 +27,12 @@ router.get('/send', function(req, res) {
 
 })
 
-router.get('/verify', (req, res) => {
+router.get('/verify', async (req, res) => {
 
     const token = decodeURIComponent(req.query.token);;
 
+    const user = await UserInfo.findOne({token})
+    console.log(user)
 
     jwt.verify(token, 'secretKey', function(error, decoded) {
         if (error) {
