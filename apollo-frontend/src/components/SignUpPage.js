@@ -2,7 +2,7 @@ import { React, useState} from 'react';
 import '../index.css';
 import { Link } from 'react-router-dom'
 
-import { Button, Checkbox, Form, Input, Radio } from 'antd';
+import { Button, Form, Radio, Input } from 'antd';
 
 export default function SignUpPage() {
   const [username, setUsername] = useState('');
@@ -51,7 +51,7 @@ export default function SignUpPage() {
 
   return(
     <div className='Container'>
-      <Link to='/'>
+      <Link to='/Login'>
         <Button type="primary" className="SignIn" size={size}>
           Back
         </Button>

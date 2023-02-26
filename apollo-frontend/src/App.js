@@ -6,6 +6,7 @@ import LoginPage from './components/LoginPage';
 import SignUpPage from './components/SignUpPage';
 import TellUsMore from './components/TellUsMore';
 import DiningHall from './components/DiningHall';
+import { CoursePage } from './components/CoursePage';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Route exact path='/SignUp' element={<SignUpPage/>}/>
       <Route exact path='/TellUsMore' element={<TellUsMore/>}/>
       <Route exact path='/DiningHall' element={<DiningHall/>}/>
+      <Route exact path='/Course' element={<CoursePage/>}/>
     </Routes>
   );
 }
