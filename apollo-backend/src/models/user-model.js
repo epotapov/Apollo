@@ -69,7 +69,7 @@ const userSchema = new Schema({
 
 
 // static signup method
-userSchema.statics.signup = async function(username, email, password, major, gradYear, role) {
+userSchema.statics.signup = async function(username, email, password, major, gradYear, role, isVerified) {
 
    
 
