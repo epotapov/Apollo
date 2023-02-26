@@ -2,14 +2,50 @@ import { React, useState} from 'react';
 import { Link } from 'react-router-dom'
 
 import { Button, Form, Radio, Input } from 'antd';
+import Password from 'antd/es/input/Password';
+
+const validatePassword = (value) => {
+  // Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character
+  var pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm;
+  var return_msg = {
+    validateStatus: 'success',
+    errorMsg: null,
+  };
+  if (value.length < 8) {
+    return_msg = {
+      validateStatus: 'error',
+      errorMsg: 'Password is too short (Minimum 8 characters needed.)',
+    };
+  }
+  if (!pattern.test(value)) {
+    return_msg = {
+      validateStatus: 'error',
+      errorMsg: 'Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character',
+    };
+  }
+  else {
+    return_msg = {
+      validateStatus: 'success',
+      errorMsg: null,
+    };
+  }
+  return return_msg;
+}
+
+const validateStatus = 'success' | 'warning' | 'error' | 'validating' | undefined;
 
 export default function SignUpPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState<{
+    value: '',
+    valid: 'error',
+    errorMsg: 'Password is too short (Minimum 8 characters needed.)'
+  }>('');
   const [role, setRole] = useState('');
   const [error, setError] = useState(null);
   const [size, setSize] = useState('large');
+
 
   const onFinish = (values) => {
     console.log('Success:', values);
@@ -47,6 +83,12 @@ export default function SignUpPage() {
     }
   }
 
+  const onPasswordChange = (value) => {
+    setPassword({
+      ...validatePassword(value),
+      value,
+    });
+  };
 
   return(
     <div className='Container'>
@@ -92,12 +134,14 @@ export default function SignUpPage() {
           <Form.Item
               label="Email"
               name="email"
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => 
+                setEmail(e.target.value)
+              }
               value={email}
               rules={[
                   {
                     required: true,
-                    message: 'Please input your username!',
+                    message: 'Please input your email!',
                   },
               ]}
           >
@@ -107,8 +151,9 @@ export default function SignUpPage() {
           <Form.Item
               label="Password"
               name="password"
-              onChange={(e) => setPassword(e.target.value)}
               value={password}
+              validateStatus={password.validateStatus}
+              help={'Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character'}
               rules={[
                   {
                     required: true,
@@ -116,7 +161,7 @@ export default function SignUpPage() {
                   },
               ]}
           >
-          <Input.Password />
+          <Input.Password onChange={onPasswordChange} value={password.value} />
           </Form.Item>
           <Form.Item 
             label="Role"
