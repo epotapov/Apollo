@@ -6,6 +6,10 @@ const bcrypt = require('bcrypt');
 
 const validator = require('validator'); // helps validate user input
 
+const jwt = require('jsonwebtoken');
+
+const nodemailer = require('nodemailer');
+
 
 // a schema is similar to an object
 const userSchema = new Schema({
@@ -109,6 +113,42 @@ userSchema.statics.signup = async function(username, email, password, major, gra
 
     const user = await this.create({username, email, password: hashedPassword });
 
+    // User Verification method
+
+    const token = jwt.sign({
+        data: 'token'
+    }, 'secretKey', { expiresIn: '20 minutes' }
+
+    );
+
+    const smtpConfig = {
+        service: 'gmail',
+        auth: {
+            user: 'TestDummy2199@gmail.com',
+            pass: 'qjlyzponqvxkuzhp',
+        }
+    };
+
+    const transporter = nodemailer.createTransport(smtpConfig);
+
+    const mailOptions = { 
+        from: 'TestDummy2199@gmail.com',
+        to: email,
+        subject: 'Verify your email',
+        text:`Verify: http://localhost:5001/api/user/verify?token=${encodeURIComponent(token)}`
+    };
+
+    transporter.sendMail(mailOptions, (error) => {
+        if (error) {
+            console.log(error);
+        }
+        else {
+            console.log('email sent');
+        }
+
+    })
+
+
     return user;
 }
 
@@ -137,5 +177,5 @@ userSchema.statics.login = async function(email, password) {
 }
 
 // save userScheme to the UserInfo collection
-var User = module.exports = mongoose.model('UserInfo', userSchema);
+module.exports = mongoose.model('UserInfo', userSchema);
 

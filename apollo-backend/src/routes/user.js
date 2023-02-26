@@ -23,43 +23,7 @@ router.post('/signup', signupUser);
 
 router.get('/send', function(req, res) {
 
-    const email = req.body;
-
-    const token = jwt.sign({
-        data: 'token'
-    }, 'secretKey', { expiresIn: '20 minutes' }
-
-    );
-
-    const smtpConfig = {
-        service: 'gmail',
-        auth: {
-            user: 'TestDummy2199@gmail.com',
-            pass: 'qjlyzponqvxkuzhp',
-        }
-    };
-
-    const transporter = nodemailer.createTransport(smtpConfig);
-
-    const mailOptions = { 
-        from: 'TestDummy2199@gmail.com',
-        to: email,
-        subject: 'Verify your email',
-        text:`Verify: http://localhost:5001/api/user/verify?token=${encodeURIComponent(token)}`
-    };
-
-    transporter.sendMail(mailOptions, (error) => {
-        if (error) {
-            console.log(error);
-        }
-        else {
-            console.log('email sent');
-        }
-
-    })
-
-    // return res.status(200).json({message: 'Please verify your email' });
-    return console.log(email);
+    return res.status(200).json({message: 'Please verify your email' });
 
 })
 
@@ -75,7 +39,7 @@ router.get('/verify', (req, res) => {
         }
         else {
             res.send('Email verified');
-            UserInfo.isVerified = true;
+            UserInfo.isVerified.update({isVerified: true}, {where: {email: decoded.email}});
         }
     });
 });
