@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom'
 import { Button, Form, Radio, Input } from 'antd';
 import Password from 'antd/es/input/Password';
 
-const validatePassword = (value) => {
+function validatePassword(value) {
   // Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character
-  var pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm;
+  const pattern = new RegExp("^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}");
+
   var return_msg = {
     validateStatus: 'success',
     errorMsg: null,
@@ -18,6 +19,7 @@ const validatePassword = (value) => {
     };
   }
   if (!pattern.test(value)) {
+    console.log("test")
     return_msg = {
       validateStatus: 'error',
       errorMsg: 'Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character',
@@ -32,16 +34,14 @@ const validatePassword = (value) => {
   return return_msg;
 }
 
-const validateStatus = 'success' | 'warning' | 'error' | 'validating' | undefined;
-
 export default function SignUpPage() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState<{
+  const [password, setPassword] = useState({
     value: '',
     valid: 'error',
     errorMsg: 'Password is too short (Minimum 8 characters needed.)'
-  }>('');
+  });
   const [role, setRole] = useState('');
   const [error, setError] = useState(null);
   const [size, setSize] = useState('large');
@@ -84,10 +84,9 @@ export default function SignUpPage() {
   }
 
   const onPasswordChange = (value) => {
-    setPassword({
-      ...validatePassword(value),
-      value,
-    });
+    var state=validatePassword(value);
+    var msg = validatePassword(value);
+    console.log(state)
   };
 
   return(
@@ -152,8 +151,8 @@ export default function SignUpPage() {
               label="Password"
               name="password"
               value={password}
-              validateStatus={password.validateStatus}
-              help={'Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character'}
+              validateStatus={password.valid}
+              help={password.errorMsg || "ok"}
               rules={[
                   {
                     required: true,
