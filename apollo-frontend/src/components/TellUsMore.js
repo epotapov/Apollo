@@ -391,7 +391,7 @@ export default function TellUsMore() {
                     span: 16,
                 }}
                 >
-                <Link to = '/'>
+                <Link to = '/DiningHall'>
                     <Button type="primary" htmlType="submit">
                         Continue
                     </Button>
