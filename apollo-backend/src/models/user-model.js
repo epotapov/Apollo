@@ -2,9 +2,13 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
+const jwt = require('jsonwebtoken')
+
 const bcrypt = require('bcrypt');
 
 const validator = require('validator'); // helps validate user input
+
+const nodemailer = require('nodemailer');
 
 
 // a schema is similar to an object
@@ -28,28 +32,37 @@ const userSchema = new Schema({
 
     major: {
         type: String,
-        required: true
+        required: false
     },
 
-    // gradYear: {
-    //     type: int,
-    //     required: true
-    // },
+    gradYear: {
+        type: int,
+        required: false
+    },
 
     accountType: {
         type: String,
-        required: true
+        required: false
     },
 
     friendsList: {
         type: String,
-        required: true
+        required: false
     },
 
     blockList: {
         type: String,
-        required: true
+        required: false
+    },
+
+    emailToken: {
+        type: String
+    },
+    
+    isVerified: {
+        type: Boolean
     }
+
 
 }, { timestamps: true}/*, {typeKey: '$type'}*/);
 
@@ -82,9 +95,9 @@ userSchema.statics.signup = async function(username, email, password, major, gra
 
     }
 
-    if (typeof(major) != String) {
-        throw Error('Please type in a string');
-    }
+    // if (typeof(major) != String) {
+    //     throw Error('Please type in a string');
+    // }
 
 
     const exists = await this.findOne({ email });
@@ -100,7 +113,70 @@ userSchema.statics.signup = async function(username, email, password, major, gra
 
     const user = await this.create({username, email, password: hashedPassword });
 
+    // User Verification method
+
+    const token = jwt.sign({
+        data: 'token'
+    }, 'secretKey', { expiresIn: '20 minutes' }
+
+    );
+
+    const smtpConfig = {
+        service: 'gmail',
+        auth: {
+            user: 'TestDummy2199@gmail.com',
+            pass: 'qjlyzponqvxkuzhp',
+        }
+    };
+
+    const transporter = nodemailer.createTransport(smtpConfig);
+
+    const mailOptions = { 
+        from: 'TestDummy2199@gmail.com',
+        to: email,
+        subject: 'Verify your email',
+        text:`Verify: http://localhost:5001/api/user/verify?token=${encodeURIComponent(token)}`
+    };
+
+    transporter.sendMail(mailOptions, (error) => {
+        if (error) {
+            console.log(error);
+        }
+        else {
+            console.log('email sent');
+        }
+
+    })
+
+
     return user;
+}
+
+//static login method
+userSchema.statics.login = async function(email, password) {
+
+    if (!email || !password) {
+        throw Error('Email and password are required');
+    }
+
+    const user = await this.findOne({ email });
+    const exists = await this.findOne({ email });
+
+    if (!exists) {
+
+        throw Error('Incorrect email');
+
+    }
+
+    const match = await bcrypt.compare(password, user.password)
+    
+    if (!match) {
+        throw Error('Incorrect password')
+    }
+
+
+    console.log('user logged in' + user)
+    return user
 }
 
 // save userScheme to the UserInfo collection

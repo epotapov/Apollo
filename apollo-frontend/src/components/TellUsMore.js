@@ -1,6 +1,4 @@
-import {React, useState} from 'react';
-import '../index.css';
-import '@ant-design/colors'
+import { React, useState } from 'react';
 import { Link } from 'react-router-dom'
 import { Grid, Button, Checkbox, Form, Input, Select, DatePicker} from 'antd';
 

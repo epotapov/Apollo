@@ -1,6 +1,5 @@
 import React from 'react';
 import { useState } from 'react';
-import '../index.css';
 import { Link } from 'react-router-dom';
 
 import { AutoComplete, Input, Button } from 'antd';
