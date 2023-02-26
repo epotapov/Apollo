@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
+const jwt = require('jsonwebtoken')
+
 const bcrypt = require('bcrypt');
 
 const validator = require('validator'); // helps validate user input
-
-const jwt = require('jsonwebtoken');
 
 const nodemailer = require('nodemailer');
 
@@ -160,6 +160,7 @@ userSchema.statics.login = async function(email, password) {
     }
 
     const user = await this.findOne({ email });
+    const exists = await this.findOne({ email });
 
     if (!exists) {
 
@@ -173,6 +174,8 @@ userSchema.statics.login = async function(email, password) {
         throw Error('Incorrect password')
     }
 
+
+    console.log('user logged in' + user)
     return user
 }
 

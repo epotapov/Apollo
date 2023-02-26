@@ -15,7 +15,7 @@ const UserInfo = require('../models/user-model');
 const router = express.Router();
 
 //login route - no method is currently executed here bc () => {}
-router.get('/login', () => {});
+router.post('/login', loginUser);
 
 //signup route - signupUser is the "method" that is executed
 router.post('/signup', signupUser);
@@ -39,7 +39,7 @@ router.get('/verify', (req, res) => {
         }
         else {
             res.send('Email verified');
-            UserInfo.isVerified.update({isVerified: true}, {where: {email: decoded.email}});
+            // UserInfo.isVerified.update({isVerified: true}, {where: {email: decoded.email}});
         }
     });
 });

@@ -9,10 +9,10 @@ const loginUser = async (req, res) => {
     const {email, password} = req.body
 
     try {
-        const user = await UserInfo.login(username, email, password);
+        const user = await UserInfo.login(email, password);
 
         //create a token
-        const token = createToken(user._id)
+        // const token = createToken(user._id)
 
         res.status(200).json({email, user});
 
