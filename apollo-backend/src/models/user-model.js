@@ -26,30 +26,39 @@ const userSchema = new Schema({
         required: true
     },
 
-    major: {
-        type: String,
-        required: true
-    },
+    // major: {
+    //     type: String,
+    //     required: true
+    // },
 
     // gradYear: {
     //     type: int,
     //     required: true
     // },
 
-    accountType: {
-        type: String,
-        required: true
-    },
+    // accountType: {
+    //     type: String,
+    //     required: true
+    // },
 
-    friendsList: {
-        type: String,
-        required: true
-    },
+    // friendsList: {
+    //     type: String,
+    //     required: true
+    // },
 
-    blockList: {
-        type: String,
-        required: true
+    // blockList: {
+    //     type: String,
+    //     required: true
+    // },
+
+    // emailToken: {
+    //     type: String
+    // },
+    
+    isVerified: {
+        type: Boolean
     }
+
 
 }, { timestamps: true}/*, {typeKey: '$type'}*/);
 
@@ -82,9 +91,9 @@ userSchema.statics.signup = async function(username, email, password, major, gra
 
     }
 
-    if (typeof(major) != String) {
-        throw Error('Please type in a string');
-    }
+    // if (typeof(major) != String) {
+    //     throw Error('Please type in a string');
+    // }
 
 
     const exists = await this.findOne({ email });
@@ -128,5 +137,5 @@ userSchema.statics.login = async function(email, password) {
 }
 
 // save userScheme to the UserInfo collection
-module.exports = mongoose.model('UserInfo', userSchema);
+var User = module.exports = mongoose.model('UserInfo', userSchema);
 
