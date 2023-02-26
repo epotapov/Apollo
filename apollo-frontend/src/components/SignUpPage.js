@@ -6,26 +6,19 @@ import Password from 'antd/es/input/Password';
 
 function validatePassword(value) {
   // Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character
-  const pattern = new RegExp("^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}");
-
+  const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   var return_msg = {
     validateStatus: 'success',
     errorMsg: null,
   };
-  if (value.length < 8) {
-    return_msg = {
-      validateStatus: 'error',
-      errorMsg: 'Password is too short (Minimum 8 characters needed.)',
-    };
-  }
-  if (!pattern.test(value)) {
-    console.log("test")
+  if (pattern.test(value) == false) {
     return_msg = {
       validateStatus: 'error',
       errorMsg: 'Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character',
     };
   }
   else {
+    console.log(value.length);
     return_msg = {
       validateStatus: 'success',
       errorMsg: null,
@@ -40,7 +33,7 @@ export default function SignUpPage() {
   const [password, setPassword] = useState({
     value: '',
     valid: 'error',
-    errorMsg: 'Password is too short (Minimum 8 characters needed.)'
+    errorMsg: 'Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character'
   });
   const [role, setRole] = useState('');
   const [error, setError] = useState(null);
@@ -84,9 +77,11 @@ export default function SignUpPage() {
   }
 
   const onPasswordChange = (value) => {
-    var state=validatePassword(value);
-    var msg = validatePassword(value);
-    console.log(state)
+    setPassword({
+      value: value,
+      ...validatePassword(value)
+    });
+    console.log(password);
   };
 
   return(
@@ -151,8 +146,8 @@ export default function SignUpPage() {
               label="Password"
               name="password"
               value={password}
-              validateStatus={password.valid}
-              help={password.errorMsg || "ok"}
+              validateStatus={password.validateStatus}
+              help={password.errorMsg}
               rules={[
                   {
                     required: true,
@@ -160,7 +155,10 @@ export default function SignUpPage() {
                   },
               ]}
           >
-          <Input.Password onChange={onPasswordChange} value={password.value} />
+          <Input.Password 
+            // Log the password to console when user types
+            onChange={(e) => onPasswordChange(e.target.value)}
+          />
           </Form.Item>
           <Form.Item 
             label="Role"
