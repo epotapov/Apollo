@@ -10,6 +10,8 @@ export default function SignUpPage() {
   const [role, setRole] = useState('');
   const [error, setError] = useState(null);
   const [size, setSize] = useState('large');
+  const [major, setMajor] = useState(null);
+  const [gradYear, setGradYear] = useState(null);
 
   const onFinish = (values) => {
     console.log('Success:', values);
@@ -20,7 +22,7 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e) => {
 
-    const user = {username, email, password};
+    const user = {username, email, password, major, gradYear, role};
     console.log('hello');
 
     // TODO this URL will need to change eventually (once we have the server on another machine)
@@ -42,6 +44,8 @@ export default function SignUpPage() {
       setUsername('');
       setEmail('');
       setPassword('');
+      setMajor('');
+      setGradYear('');
       setError(null);
       console.log('User created', json);
     }
