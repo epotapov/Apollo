@@ -30,34 +30,34 @@ const userSchema = new Schema({
         required: true
     },
 
-    // major: {
-    //     type: String,
-    //     required: true
-    // },
+    major: {
+        type: String,
+        required: false
+    },
 
-    // gradYear: {
-    //     type: int,
-    //     required: true
-    // },
+    gradYear: {
+        type: int,
+        required: false
+    },
 
-    // accountType: {
-    //     type: String,
-    //     required: true
-    // },
+    accountType: {
+        type: String,
+        required: false
+    },
 
-    // friendsList: {
-    //     type: String,
-    //     required: true
-    // },
+    friendsList: {
+        type: String,
+        required: false
+    },
 
-    // blockList: {
-    //     type: String,
-    //     required: true
-    // },
+    blockList: {
+        type: String,
+        required: false
+    },
 
-    // emailToken: {
-    //     type: String
-    // },
+    emailToken: {
+        type: String
+    },
     
     isVerified: {
         type: Boolean
