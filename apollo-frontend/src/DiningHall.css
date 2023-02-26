@@ -1,0 +1,11 @@
+#name {
+    text-align: center;
+}
+#menu {
+    width: 50%;
+    margin: auto; 
+    align-items: center;
+}
+#cont {
+    align-items: center;
+}

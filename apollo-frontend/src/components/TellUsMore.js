@@ -265,6 +265,7 @@ const countryList = [
 const {Option} = Select;
 
 export default function TellUsMore() { 
+	const [aboutMe, setAboutMe] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [country, setCountry] = useState('');
     const [gender, setGender] = useState('');
@@ -277,7 +278,7 @@ export default function TellUsMore() {
     return (
         <div className='Container'>
             <Form 
-                name="Tell us more"
+                name="tellusmore"
                 labelCol={{
                     span: 8,
                 }} 
@@ -295,6 +296,18 @@ export default function TellUsMore() {
                 autoComplete="off"
             >
                 <h2> Tell Us More </h2>
+				<Form.Item
+					name="aboutme"
+					label="About Me"
+					onChange={(e) => setAboutMe(e.target.value)}
+					value={aboutMe}
+				>
+					<Input.TextArea 
+						placeholder="About Me"
+						showCount={true}
+						allowClear={true}
+						autoSize={true} />
+				</Form.Item>
                 <Form.Item 
                     name="gender"
                     label="Gender"
@@ -376,7 +389,7 @@ export default function TellUsMore() {
                     span: 16,
                 }}
                 >
-                <Link to = '/'>
+                <Link to = '/DiningHall'>
                     <Button type="primary" htmlType="submit">
                         Continue
                     </Button>
