@@ -142,11 +142,9 @@ export default function SignUpPage() {
               span: 16,
           }}
           >
-          <Link to = '/TellUsMore'>
-            <Button type="primary" htmlType="submit">
-                Submit
-            </Button>
-          </Link>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
           </Form.Item>
       </Form>
     </div>
