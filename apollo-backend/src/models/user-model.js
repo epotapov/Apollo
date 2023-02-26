@@ -40,7 +40,7 @@ const userSchema = new Schema({
         required: false
     },
 
-    accountType: {
+    role: {
         type: String,
         required: false
     },
@@ -69,7 +69,9 @@ const userSchema = new Schema({
 
 
 // static signup method
-userSchema.statics.signup = async function(username, email, password, major, gradYear, accountType) {
+userSchema.statics.signup = async function(username, email, password, major, gradYear, role) {
+
+   
 
     //validation
 
@@ -112,7 +114,7 @@ userSchema.statics.signup = async function(username, email, password, major, gra
     const salt = await bcrypt.genSalt(10);           //salt adds random string of characters on top of password
     const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
 
-    const user = await this.create({username, email, password: hashedPassword });
+    const user = await this.create({username, email, password: hashedPassword, major, gradYear, role });
 
     // User Verification method
 

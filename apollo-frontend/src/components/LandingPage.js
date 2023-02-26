@@ -3,7 +3,7 @@ import { useState } from 'react';
 import logo from '../img/apollo-gray.png';
 import { Link } from 'react-router-dom';
 
-import { SearchBar } from './SearchBar';
+import SearchBar from './SearchBar';
 
 import { Button } from 'antd';
 

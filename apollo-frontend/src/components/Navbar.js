@@ -2,10 +2,10 @@ import { React, useState} from 'react';
 import { Link } from 'react-router-dom'
 import logo from '../img/apollo-gray.png';
 
-import { AutoComplete, Button } from 'antd';
-import { SearchBar } from './SearchBar';
+import { Button } from 'antd';
+import SearchBar from './SearchBar';
 
-export const Navbar = () => {
+export default function Navbar() {
     const [size, setSize] = useState('large');
     return(
         <div id='Navbar'>
