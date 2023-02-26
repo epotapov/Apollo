@@ -119,7 +119,7 @@ userSchema.statics.signup = async function(username, email, password, major, gra
     // User Verification method
 
     const token = jwt.sign({
-        data: 'token'
+        user
     }, 'secretKey', { expiresIn: '20 minutes' }
 
     );
