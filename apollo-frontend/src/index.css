@@ -38,6 +38,26 @@ h1 {
   align-items: center;
 }
 
+.CourseContainer {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+}
+
+#Navbar {
+  background-color: #b4b8bb;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+#Navbar img {
+  height: 35px;
+  width: 35px;
+}
+
 .Search {
   position: relative;
   display: flex;
@@ -47,7 +67,7 @@ h1 {
   align-items: center;
 }
 
-.SignIn {
+/*.SignIn {
   position: fixed;
   background-color: #353744;
   font-size: 1.5rem;
@@ -60,6 +80,13 @@ h1 {
   border: 2px solid white;
   border-radius: 20px;
   color: white;
+}*/
+
+.SignIn {
+  position: fixed;
+  cursor: pointer;
+  top: 5px;
+  right: 5px;
 }
 
 #LoginForm button {
@@ -78,13 +105,13 @@ h1 {
   margin-bottom: 25px;
 }
 
-#InputHolder {
+#SearchLandingHolder {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-#InputHolder input {
+/*#InputHolder input {
   border: 2px solid #353744;
   border-radius: 10px;
   box-sizing: border-box;
@@ -95,7 +122,12 @@ h1 {
   color: #353744;
   width: 500px;
   outline: none;
+}*/
+
+#SearchLandingHolder input {
+  width: 500px;
 }
+
 
 #LogoHolderLanding {
   width: 100%;
