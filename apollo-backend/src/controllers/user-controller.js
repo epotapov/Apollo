@@ -29,7 +29,7 @@ const signupUser = async (req, res) => {
     try {
         const user = await UserInfo.signup(username, email, password);
 
-        // res.status(200).json({email, user});
+        res.status(200).json({email, user});
         res.redirect('http://localhost:5001/api/user/send');
 
    } catch (error) {
