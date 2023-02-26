@@ -36,7 +36,7 @@ const userSchema = new Schema({
     },
 
     gradYear: {
-        type: int,
+        type: Number,
         required: false
     },
 
@@ -60,7 +60,8 @@ const userSchema = new Schema({
     },
     
     isVerified: {
-        type: Boolean
+        type: Boolean,
+        default: false
     }
 
 

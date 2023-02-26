@@ -38,7 +38,7 @@ router.get('/verify', async (req, res) => {
         }
         else {
             res.send('Email verified');
-            // UserInfo.isVerified.update({isVerified: true}, {where: {email: decoded.email}});
+            UserInfo.update({isverified : true}, {where : decoded.email});
         }
         console.log(decoded)
     });
