@@ -6,7 +6,6 @@ const nodemailer = require('nodemailer');
 //generates jwt token
 const jwt = require('jsonwebtoken');
 
-
 //controller functions
 const { signupUser, loginUser } = require('../controllers/user-controller');
 
@@ -53,7 +52,7 @@ router.get('/verify', async (req, res) => {
 
 router.post('/edit', async (req, res) => {
     const token = decodeURIComponent(req.query.token);
-    
+
     decoded = jwt.verify(token, 'secretKey', async function (error, decoded) {
         if (error) {
             console.log(error);
@@ -71,14 +70,100 @@ router.post('/edit', async (req, res) => {
             user.friendsList = req.body.friendsList;
             user.blockList = req.body.blockList;
             user.gradYear = req.body.gradYear;
-            user.password = req.body.password;
 
             await user.save();
         }
         console.log(decoded);
     });
-    
+
 })
+
+router.get('/forgot-password', async (req, res) => {
+    const email = req.body;
+
+    const user = await UserInfo.findOne({ email: email });
+
+    // If user does not exist
+    if (!user) {
+        res.send('Email does not exist');
+        return;
+    }
+
+    const secret = 'secretKey' + user.password;
+
+    const token = jwt.sign({
+        user: {username: user.username, email: user.email}
+    }, 'secretKey', { expiresIn: '20 minutes' }
+    );
+
+    res.send('Please check your email to reset your password');
+
+
+    //Send reset password email
+
+    const smtpConfig = {
+        service: 'gmail',
+        auth: {
+            user: 'TestDummy2199@gmail.com',
+            pass: 'qjlyzponqvxkuzhp',
+        }
+    };
+
+    const transporter = nodemailer.createTransport(smtpConfig);
+
+    const mailOptions = { 
+        from: 'TestDummy2199@gmail.com',
+        to: email,
+        subject: 'Apollo Password Reset',
+        text:`Reset Password Link: http://localhost:5001/api/user/reset-password/?token=${token}`
+    };
+
+    transporter.sendMail(mailOptions, (error) => {
+        if (error) {
+            console.log(error);
+        }
+        else {
+            console.log('Reset password email sent');
+        }
+
+    })
+   
+});
+
+//reset password route
+
+router.post('/reset-password', async (req, res) => {
+    const token = decodeURIComponent(req.query.token);
+
+    decoded = jwt.verify(token, 'secretKey', async function (error, decoded) {
+        if (error) {
+            console.log(error);
+            res.send('Link has failed or expired');
+        }
+        else {
+            const user = await UserInfo.findOne({ username: decoded.user.username });
+
+            if (!user) {
+                res.send('User does not exist');
+            }
+
+            const password = req.body.password;
+            const confirmPassword = req.body.confirmPassword;
+
+            if (password!== confirmPassword) {
+                res.send('Passwords do not match');
+                return;
+            }
+
+            await user.save();
+
+            res.send(`Please click the link to return to login page: http://localhost:5001/api/user/login`);
+        }
+        console.log(decoded);
+    });
+})
+
+
 
 module.exports = router;
 

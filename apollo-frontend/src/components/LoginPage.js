@@ -1,5 +1,6 @@
 import { React, useState} from 'react';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import { useLogin } from '../hooks/useLogin';
 
 import { Button, Checkbox, Form, Input } from 'antd';
 
@@ -10,9 +11,48 @@ const onFinishFailed = (errorInfo) => {
   console.log('Failed:', errorInfo);
 };
 
+function validatePassword(value) {
+    // Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character
+    /*const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    var return_msg = {
+        validateStatus: 'success',
+        errorMsg: null,
+    };
+    if (pattern.test(value) == false) {
+        return_msg = {
+        validateStatus: 'error',
+        errorMsg: 'Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character',
+        };
+    }
+    else {
+        console.log(value.length);
+        return_msg = {
+        validateStatus: 'success',
+        errorMsg: null,
+        };
+        password = value;
+    }
+    return return_msg;*/
+}
+
 export default function LoginPage() {
     const [size, setSize] = useState('large');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [passwordObj, setPasswordObj] = useState({
+        value: '',
+        valid: 'error',
+        errorMsg: 'Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character'
+    });
     const [forgotPass, setForgotPass] = useState(false);
+    const { login, isLoading, error } = useLogin();
+
+
+    const handleLoginSubmit = async (e) => {
+        await login(username, password);
+    }
+
+
     if (!forgotPass) {
         return(
             <div className='Container'>
@@ -35,7 +75,7 @@ export default function LoginPage() {
                     initialValues={{
                     remember: true,
                     }}
-                    onFinish={onFinish}
+                    onFinish={handleLoginSubmit}
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
                 >
@@ -43,6 +83,7 @@ export default function LoginPage() {
                     <Form.Item
                         label="Username"
                         name="username"
+                        onChange={(e) => setUsername(e.target.value)}
                         rules={[
                             {
                             required: true,
@@ -56,6 +97,7 @@ export default function LoginPage() {
                     <Form.Item
                         label="Password"
                         name="password"
+                        onChange={(e) => setPassword(e.target.value)}
                         rules={[
                             {
                             required: true,
@@ -65,18 +107,6 @@ export default function LoginPage() {
                     >
                     <Input.Password />
                     </Form.Item>
-
-                    <Form.Item
-                        name="remember"
-                        valuePropName="checked"
-                        wrapperCol={{
-                            offset: 8,
-                            span: 16,
-                        }}
-                    >
-                    <Checkbox>Remember me</Checkbox>
-                    </Form.Item>
-
 
                     <Link to='/SignUp'>
                         <h3>Sign Up</h3>
@@ -92,7 +122,8 @@ export default function LoginPage() {
                         span: 16,
                     }}
                     >
-                    <Button type="primary" htmlType="submit">
+                    {error && <p>{error}</p>}
+                    <Button type="primary" disabled={isLoading} htmlType="submit">
                         Submit
                     </Button>
                     </Form.Item>
