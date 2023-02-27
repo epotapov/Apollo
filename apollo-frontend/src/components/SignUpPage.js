@@ -11,19 +11,19 @@ var password = '';
 
 function validatePassword(value) {
   // Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character
-  const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!#%*?&])[A-Za-z\d@#$!%*?&]{8,}$/;
   var return_msg = {
     validateStatus: 'success',
     errorMsg: null,
   };
-  if (pattern.test(value) == false) {
+  if (pattern.test(value) === false) {
+    console.log(value);
     return_msg = {
       validateStatus: 'error',
       errorMsg: 'Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character',
     };
   }
   else {
-    console.log(value.length);
     return_msg = {
       validateStatus: 'success',
       errorMsg: null,
