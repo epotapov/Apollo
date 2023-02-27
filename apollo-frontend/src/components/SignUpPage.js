@@ -6,8 +6,8 @@ import { Button, Form, Radio, Input } from 'antd';
 
 var submitStatus = false;
 
-var email = '';
-var password = '';
+let email = '';
+let password = '';
 
 function validatePassword(value) {
   // Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character
