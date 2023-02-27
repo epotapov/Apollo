@@ -111,6 +111,14 @@ userSchema.statics.signup = async function(username, email, password, major, gra
 
     }
 
+    const usernameExists = await this.findOne({ username });
+
+    if (usernameExists) {
+
+        throw Error('Username already in use');
+
+    }
+
     const salt = await bcrypt.genSalt(10);           //salt adds random string of characters on top of password
     const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
 
@@ -119,7 +127,7 @@ userSchema.statics.signup = async function(username, email, password, major, gra
     // User Verification method
 
     const token = jwt.sign({
-        user
+        user: {username: user.username, email: user.email}
     }, 'secretKey', { expiresIn: '20 minutes' }
 
     );

@@ -21,29 +21,65 @@ router.post('/login', loginUser);
 router.post('/signup', signupUser);
 
 
-router.get('/send', function(req, res) {
+router.get('/send', function (req, res) {
 
-    return res.status(200).json({message: 'Please verify your email' });
+    return res.status(200).json({ message: 'Please verify your email' });
 
 })
 
 router.get('/verify', async (req, res) => {
 
-    const token = decodeURIComponent(req.query.token);;
+    const token = decodeURIComponent(req.query.token);
 
-    decoded = jwt.verify(token, 'secretKey', function(error, decoded) {
+    decoded = jwt.verify(token, 'secretKey', async function (error, decoded) {
         if (error) {
             console.log(error);
             res.send('Email verification failed or link has expired');
         }
         else {
-            res.send('Email verified');
-            UserInfo. findOneAndUpdate({where : decoded}, {isVerified : true});
-            res.redirect('http://localhost:5001/api/user/login')
+            const user = await UserInfo.findOne({ username: decoded.user.username });
+
+            if (!user) {
+                res.send('User does not exist');
+            }
+
+            user.isVerified = true;
+            await user.save();
+            res.redirect('http://localhost:5001/api/user/login');
         }
         console.log(decoded);
     });
 });
+
+router.post('/edit', async (req, res) => {
+    const token = decodeURIComponent(req.query.token);
+    
+    decoded = jwt.verify(token, 'secretKey', async function (error, decoded) {
+        if (error) {
+            console.log(error);
+            res.send('Account does not exist');
+        }
+        else {
+            const user = await UserInfo.findOne({ username: decoded.user.username });
+
+            if (!user) {
+                res.send('User does not exist');
+            }
+
+            user.major = req.body.major;
+            user.role = req.body.role;
+            user.friendsList = req.body.friendsList;
+            user.blockList = req.body.blockList;
+            user.gradYear = req.body.gradYear;
+            user.password = req.body.password;
+
+            await user.save();
+            res.redirect('http://localhost:5001/api/user/login');
+        }
+        console.log(decoded);
+    });
+    
+})
 
 module.exports = router;
 
