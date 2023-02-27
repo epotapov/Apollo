@@ -20,6 +20,7 @@ require('dotenv').config();
 
 //express router setup
 const userRoutes = require('./routes/user');
+const courseRoutes = require('./routes/course');
 
 // express app
 const app = express();
@@ -36,6 +37,7 @@ app.use((req, res, next) => {
 
 // attaches all the routes that we attached to the router
 app.use('/api/user', userRoutes); // when we fire request to /api/user then check userRoutes for the route
+app.use('/api/course', courseRoutes);
 
 // connect to MongoDB
 mongoose.connect(process.env.ATLAS_URI)
@@ -49,3 +51,7 @@ mongoose.connect(process.env.ATLAS_URI)
   .catch((error) => {
     console.log(error);
   });
+
+// export so we can use db elsewhere
+// const db = mongoose.connection;
+// export default db;
