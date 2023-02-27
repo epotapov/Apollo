@@ -164,18 +164,18 @@ userSchema.statics.signup = async function(username, email, password, major, gra
 }
 
 //static login method
-userSchema.statics.login = async function(email, password) {
+userSchema.statics.login = async function(username, password) {
 
-    if (!email || !password) {
-        throw Error('Email and password are required');
+    if (!username || !password) {
+        throw Error('Username and password are required');
     }
 
-    const user = await this.findOne({ email });
-    const exists = await this.findOne({ email });
+    const user = await this.findOne({ username });
+    const exists = await this.findOne({ username });
 
     if (!exists) {
 
-        throw Error('Incorrect email');
+        throw Error('Incorrect username');
 
     }
 

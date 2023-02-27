@@ -11,6 +11,46 @@ const onFinishFailed = (errorInfo) => {
 };
 
 export default function LoginPage() {
+    // middleware
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState(null);
+
+    const handleLogin = async (e) => {
+      const loginUser = {username, password}
+
+      // ping the server
+      const response = await fetch('http://localhost:5001/api/user/login', {
+        method: 'POST',
+        body: JSON.stringify(loginUser),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      // this holds the user obj that is returned
+      const returnedUser = await response.json();
+
+      if (!response.ok) {
+        setError(returnedUser.error);
+      }
+
+      if (response.ok) {
+        setUsername('');
+        setPassword('');
+        console.log('user logged in', returnedUser);
+      }
+    }
+
+//     const onUsernameChange = (value) => {
+//       setUsername({ value: value });
+//     };
+
+//     const onPasswordChange = (value) => {
+//       setPassword({ value: value });
+//     };
+
+    // forgot pass
     const [size, setSize] = useState('large');
     const [forgotPass, setForgotPass] = useState(false);
     if (!forgotPass) {
@@ -35,7 +75,7 @@ export default function LoginPage() {
                     initialValues={{
                     remember: true,
                     }}
-                    onFinish={onFinish}
+                    onFinish={handleLogin}
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
                 >
@@ -43,6 +83,8 @@ export default function LoginPage() {
                     <Form.Item
                         label="Username"
                         name="username"
+                        onChange{...(e) => setUsername(e.target.value)}
+                        value={username}
                         rules={[
                             {
                             required: true,
@@ -56,6 +98,8 @@ export default function LoginPage() {
                     <Form.Item
                         label="Password"
                         name="password"
+                        value={password}
+                        onChange{...(e) => setPassword(e.target.value)}
                         rules={[
                             {
                             required: true,
