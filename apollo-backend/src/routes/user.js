@@ -45,7 +45,7 @@ router.get('/verify', async (req, res) => {
 
             user.isVerified = true;
             await user.save();
-            res.redirect('http://localhost:5001/api/user/login');
+            res.send('Please click the link to return to login page: http://localhost:3000/api/user/login');
         }
         console.log(decoded);
     });
