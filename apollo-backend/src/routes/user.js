@@ -74,7 +74,6 @@ router.post('/edit', async (req, res) => {
             user.password = req.body.password;
 
             await user.save();
-            res.redirect('http://localhost:5001/api/user/login');
         }
         console.log(decoded);
     });
