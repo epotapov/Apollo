@@ -3,6 +3,8 @@ const express = require('express');
 // email verification
 const nodemailer = require('nodemailer');
 
+const bcrypt = require('bcrypt');
+
 //generates jwt token
 const jwt = require('jsonwebtoken');
 
@@ -78,14 +80,14 @@ router.post('/edit', async (req, res) => {
 
 })
 
-router.get('/forgot-password', async (req, res) => {
-    const email = req.body;
+router.post('/forgot-password', async (req, res) => {
+    const {email} = req.body;
 
     const user = await UserInfo.findOne({ email: email });
 
     // If user does not exist
     if (!user) {
-        res.send('Email does not exist');
+        res.send('Incorrect email or email does not exist');
         return;
     }
 
@@ -132,7 +134,7 @@ router.get('/forgot-password', async (req, res) => {
 
 //reset password route
 
-router.post('/reset-password', async (req, res) => {
+router.get('/reset-password', async (req, res) => {
     const token = decodeURIComponent(req.query.token);
 
     decoded = jwt.verify(token, 'secretKey', async function (error, decoded) {
@@ -146,21 +148,47 @@ router.post('/reset-password', async (req, res) => {
             if (!user) {
                 res.send('User does not exist');
             }
+        }
+    });
+})
+
+router.post('/reset-password', async (req, res) => {
+    const token = decodeURIComponent(req.query.token);
+
+    const salt = await bcrypt.genSalt(10);           //salt adds random string of characters on top of password
+
+    decoded = jwt.verify(token, 'secretKey', async function (error, decoded) {
+        if (error) {
+            console.log(error);
+            res.send('Link expired or failed');
+        }
+        else {
+            const user = await UserInfo.findOne({ username: decoded.user.username });
+
+            if (!user) {
+                res.send('User does not exist');
+            }
 
             const password = req.body.password;
             const confirmPassword = req.body.confirmPassword;
 
-            if (password!== confirmPassword) {
-                res.send('Passwords do not match');
-                return;
+            if (password !== confirmPassword) {
+                console.log('Passwords do not match');
+            } 
+            else {
+
+                const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
+
+                user.password = hashedPassword;
+
+                await user.save();
+                res.send(`Password changed! Please click the link to return to login page: http://localhost:5001/api/user/login`);
+
             }
-
-            await user.save();
-
-            res.send(`Please click the link to return to login page: http://localhost:5001/api/user/login`);
         }
         console.log(decoded);
     });
+    
 })
 
 

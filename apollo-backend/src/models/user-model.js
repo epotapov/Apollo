@@ -175,7 +175,8 @@ userSchema.statics.login = async function(username, password) {
 
     if (!exists) {
 
-        throw Error('Incorrect email');
+        throw Error('Username does not exist');
+
 
     }
 
