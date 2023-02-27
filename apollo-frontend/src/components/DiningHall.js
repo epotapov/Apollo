@@ -3,10 +3,13 @@ import {Card, Col, Row} from 'antd';
 import '../index.css';
 import '../DiningHall.css'
 
+import Navbar from './Navbar';
+
 export default function DiningHall() {
     const [size, setSize] = useState('large');
     return( 
         <div id='cont'>
+            <Navbar/>
             <div id='name'>
                 <h1 > Dining Hall </h1>
             </div>

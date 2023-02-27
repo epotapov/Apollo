@@ -2,7 +2,12 @@ import { React, useState} from 'react';
 import { Link } from 'react-router-dom'
 
 import { Button, Form, Radio, Input } from 'antd';
-import Password from 'antd/es/input/Password';
+
+
+var submitStatus = false;
+
+var email = '';
+var password = '';
 
 function validatePassword(value) {
   // Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character
@@ -23,20 +28,52 @@ function validatePassword(value) {
       validateStatus: 'success',
       errorMsg: null,
     };
+    submitStatus = true;
+    password = value;
+  }
+  return return_msg;
+}
+
+function validateEmail(value) {
+  const pattern = value.includes("@purdue.edu")
+  console.log("teype")
+  var return_msg = {
+    validateStatus: 'success',
+    errorMsg: null,
+  };
+  if (!pattern) {
+    return_msg = {
+      validateStatus: 'error',
+      errorMsg: 'Email has to be a Purdue Email',
+    };
+  }
+  else {
+    console.log(value.length);
+    return_msg = {
+      validateStatus: 'success',
+      errorMsg: null,
+    };
+    submitStatus = true;
+    email = value;
   }
   return return_msg;
 }
 
 export default function SignUpPage() {
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState({
+  const [emailObj, setEmail] = useState({
+    value: '',
+    valid: 'error',
+    errorMsg: 'Email has to be a Purdue Email'
+  });
+  const [passwordObj, setPassword] = useState({
     value: '',
     valid: 'error',
     errorMsg: 'Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character'
   });
   const [role, setRole] = useState('');
   const [error, setError] = useState(null);
+  const [confirm, setConfirm] = useState(null)
   const [size, setSize] = useState('large');
   const [major, setMajor] = useState(null);
   const [gradYear, setGradYear] = useState(null);
@@ -50,9 +87,14 @@ export default function SignUpPage() {
   };
 
   const handleSubmit = async (e) => {
-
+    setConfirm(null)
+    setError(null)
+    if (!submitStatus) {
+      return
+    }
     const user = {username, email, password, major, gradYear, role};
     console.log('hello');
+    console.log(user)
 
     // TODO this URL will need to change eventually (once we have the server on another machine)
     const response = await fetch('http://localhost:5001/api/user/signup', {
@@ -76,6 +118,7 @@ export default function SignUpPage() {
       setMajor('');
       setGradYear('');
       setError(null);
+      setConfirm(json)
       console.log('User created', json);
     }
   }
@@ -85,7 +128,13 @@ export default function SignUpPage() {
       value: value,
       ...validatePassword(value)
     });
-    console.log(password);
+  };
+
+  const onEmailChange = (value) => {
+    setEmail({
+      value: value,
+      ...validateEmail(value)
+    });
   };
 
   return(
@@ -132,10 +181,10 @@ export default function SignUpPage() {
           <Form.Item
               label="Email"
               name="email"
-              onChange={(e) => 
-                setEmail(e.target.value)
-              }
-              value={email}
+              onChange={(e) => onEmailChange(e.target.value)}
+              value={emailObj}
+              validateStatus={emailObj.validateStatus}
+              help={emailObj.errorMsg}
               rules={[
                   {
                     required: true,
@@ -143,15 +192,16 @@ export default function SignUpPage() {
                   },
               ]}
           >
-          <Input />
+          <Input/>
           </Form.Item>
 
           <Form.Item
               label="Password"
               name="password"
-              value={password}
-              validateStatus={password.validateStatus}
-              help={password.errorMsg}
+              value={passwordObj}
+              validateStatus={passwordObj.validateStatus}
+              onChange={(e) => onPasswordChange(e.target.value)}
+              help={passwordObj.errorMsg}
               rules={[
                   {
                     required: true,
@@ -159,10 +209,7 @@ export default function SignUpPage() {
                   },
               ]}
           >
-          <Input.Password 
-            // Log the password to console when user types
-            onChange={(e) => onPasswordChange(e.target.value)}
-          />
+          <Input.Password/>
           </Form.Item>
           <Form.Item 
             label="Role"
@@ -188,6 +235,8 @@ export default function SignUpPage() {
               span: 16,
           }}
           >
+          {error && <p>{error}</p>}
+          {confirm && <p>{confirm.message}</p>}
           <Button type="primary" htmlType="submit">
             Submit
           </Button>
