@@ -2,68 +2,82 @@ import React from 'react';
 import { useState } from 'react';
 import '../App.css'
 
-import { UserOutlined } from '@ant-design/icons';
-import { AutoComplete, Input } from 'antd';
+import { Select } from 'antd';
 
-
-const renderTitle = (title) => (
-    <span>
-      {title}
-      <a
-        style={{
-          float: 'right',
-        }}
-        href="https://www.google.com/search?q=antd"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        more
-      </a>
-    </span>
-  );
-
-const renderItem = (title, count) => ({
-    value: title,
-    label: (
-        <div
-        style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-        }}
-        >
-        {title}
-        <span>
-            <UserOutlined /> {count}
-        </span>
-        </div>
-    ),
-});
-
-const options = [
-    {
-        label: renderTitle('Courses'),
-        options: [renderItem('AntDesign', 10000), renderItem('AntDesign UI', 10600)],
-    },
-    {
-        label: renderTitle('Dining Courts'),
-        options: [renderItem('AntDesign UI FAQ', 60100), renderItem('AntDesign FAQ', 30010)],
-    },
-    {
-        label: renderTitle('Users'),
-        options: [renderItem('AntDesign design language', 100000)],
-    }
-];
+const onChange = (value) => {
+    console.log(`selected ${value}`);
+};
+  
+const onSearch = (value) => {
+    console.log('search:', value);
+};
 
 export default function SearchBar() {
-    const [options, setOptions] = useState([]);
     const [size, setSize] = useState('large');
     return(
-        <AutoComplete
-            popupClassName="certain-category-search-dropdown"
+        <Select
+            showSearch
+            placeholder="Select a person"
+            optionFilterProp="children"
+            onChange={onChange}
+            onSearch={onSearch}
+            size="large"
+            style={{ width: 500 }}
             dropdownMatchSelectWidth={500}
-            options={options}
-        >
-            <Input.Search size="large"/>
-        </AutoComplete>
+            defaultOpen={false}
+            filterOption={(input, option) =>
+            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
+            options={[
+            {
+                value: 'CS 18000',
+                label: 'CS 18000',
+            },
+            {
+                value: 'CS 18001',
+                label: 'CS 18001',
+            },
+            {
+                value: 'CS 20000',
+                label: 'CS 20000',
+            },
+            {   
+                value: 'CS 25000',
+                label: 'CS 25000',
+            },
+            {
+                value: 'CS 25100',
+                label: 'CS 25100',
+            },
+            {
+                value: 'Tom',
+                label: 'Tom',
+            },
+            {
+                value: 'Jerry',
+                label: 'Jerry',
+            },
+            {
+                value: 'Mickey',
+                label: 'Mickey',
+            },
+            {
+                value: 'Minnie',
+                label: 'Minnie',
+            },
+            {
+                value: 'Windsor Dining Hall',
+                label: 'Windsor Dining Hall',
+            },
+            {
+                value: 'Roosevelt Dining Hall',
+                label: 'Roosevelt Dining Hall',
+            },
+            {
+                value: 'Ferris Dining Hall',
+                label: 'Ferris Dining Hall',
+            }
+            ]}
+      />        
     )
 }
