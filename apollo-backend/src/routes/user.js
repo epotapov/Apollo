@@ -72,6 +72,7 @@ router.post('/edit', async (req, res) => {
             user.friendsList = req.body.friendsList;
             user.blockList = req.body.blockList;
             user.gradYear = req.body.gradYear;
+            user.profilePicture = req.body.profilePicture;
 
             await user.save();
         }

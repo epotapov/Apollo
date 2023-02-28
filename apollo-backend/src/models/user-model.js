@@ -45,6 +45,11 @@ const userSchema = new Schema({
         required: false
     },
 
+    profilePicture: {
+        type: String,
+        required: false
+    },
+
     friendsList: {
         type: String,
         required: false
@@ -69,7 +74,7 @@ const userSchema = new Schema({
 
 
 // static signup method
-userSchema.statics.signup = async function(username, email, password, major, gradYear, role, isVerified) {
+userSchema.statics.signup = async function(username, email, password, major, gradYear, role, isVerified, profilePicture) {
 
    
 
@@ -122,7 +127,7 @@ userSchema.statics.signup = async function(username, email, password, major, gra
     const salt = await bcrypt.genSalt(10);           //salt adds random string of characters on top of password
     const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
 
-    const user = await this.create({username, email, password: hashedPassword, major, gradYear, role });
+    const user = await this.create({username, email, password: hashedPassword, major, gradYear, role, profilePicture});
 
     // User Verification method
 
