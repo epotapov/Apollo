@@ -70,9 +70,20 @@ h1 {
 
 .SignIn {
   position: fixed;
-  cursor: pointer;
   top: 5px;
   right: 5px;
+}
+
+.Corner {
+  position: fixed;
+  top: 5px;
+  right: 5px;
+}
+
+.CornerButtons {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
 }
 
 #LoginForm button {

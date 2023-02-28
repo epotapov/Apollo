@@ -1,5 +1,5 @@
 import { React, useState} from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLogin } from '../hooks/useLogin';
 
 import { Button, Checkbox, Form, Input } from 'antd';
@@ -39,17 +39,27 @@ export default function LoginPage() {
     const [size, setSize] = useState('large');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
     const [passwordObj, setPasswordObj] = useState({
         value: '',
         valid: 'error',
         errorMsg: 'Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character'
     });
     const [forgotPass, setForgotPass] = useState(false);
-    const { login, isLoading, error } = useLogin();
+    const { login } = useLogin();
+    const [isLoading, setIsLoading] = useState(null);
+    const [error, setError] = useState(null);
 
 
     const handleLoginSubmit = async (e) => {
-        await login(username, password);
+        const {isLoading, error} = await login(username, password);
+        setIsLoading(isLoading);
+        setError(error);
+        console.log(error)
+        console.log(isLoading)
+        if (!error) {
+            navigate('/');
+        }
     }
 
 
@@ -123,7 +133,7 @@ export default function LoginPage() {
                     }}
                     >
                     {error && <p>{error}</p>}
-                    <Button type="primary" disabled={isLoading} htmlType="submit">
+                    <Button type="primary" htmlType="submit">
                         Submit
                     </Button>
                     </Form.Item>
