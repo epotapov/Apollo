@@ -3,19 +3,19 @@ const Schema = mongoose.Schema;
 
 const courseSchema = new mongoose.Schema({
 
-  courseName: {
+  Course: {
     type: String
   },
 
-  title: {
+  Title: {
     type: String
   },
 
-  creditHours: {
+  CreditHours: {
     type: Number
   },
 
-  description: {
+  Description: {
     type: String
   }
 });

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const express = require('express');
+const mongodb = require('mongodb');
 
 // controller
 const { getCourse } = require('../controllers/course-controller');
@@ -11,22 +12,17 @@ const router = express.Router();
 router.get('/getAll', async function (req, res) {
 
   const allCourses = await CourseInfo.find();
+  console.log("Responding with all courses");
   res.json(allCourses);
 
-  // let collection = await (mongoose.connection).collection("course");
-  // let results = await collection.find().toArray();
-
-  // return res.send(results).status(200);
-
 });
 
-// ex: /api/course/get/:SubjectId/:Number
-router.get('/get/:courseName', async function (req, res) {
-
-  const idk = "CS30700";
-  const courseReturned = await CourseInfo.findOne({ Course: idk });
+// ex: /api/course/get/CS30700
+router.get('/get/:courseName', async (req, res) => {
+  const name = req.params.courseName;
+  const courseReturned = await CourseInfo.findOne({ Course: name });
+  console.log(courseReturned);
   res.json(courseReturned);
-
-});
+ });
 
 module.exports = router;
