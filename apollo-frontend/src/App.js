@@ -7,6 +7,7 @@ import SignUpPage from './components/SignUpPage';
 import TellUsMore from './components/TellUsMore';
 import DiningHall from './components/DiningHall';
 import CoursePage from './components/CoursePage';
+import ProfilePage from './components/ProfilePage';
 import Error from './components/Error';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
       <Route exact path='/TellUsMore' element={<TellUsMore/>}/>
       <Route exact path='/DiningHall' element={<DiningHall/>}/>
       <Route exact path='/Course' element={<CoursePage/>}/>
+      <Route exact path='/Profile' element={<ProfilePage/>}/>
       <Route exact path='*' element={<Error/>}/>
     </Routes>
   );

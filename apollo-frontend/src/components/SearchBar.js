@@ -63,7 +63,7 @@ export default function SearchBar() {
             dropdownMatchSelectWidth={500}
             options={options}
         >
-            <Input.Search size="large" placeholder="input here" />
+            <Input.Search size="large"/>
         </AutoComplete>
     )
 }

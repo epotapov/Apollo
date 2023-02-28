@@ -48,7 +48,6 @@ function validateEmail(value) {
     };
   }
   else {
-    console.log(value.length);
     return_msg = {
       validateStatus: 'success',
       errorMsg: null,
