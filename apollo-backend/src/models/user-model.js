@@ -74,7 +74,7 @@ const userSchema = new Schema({
 
 
 // static signup method
-userSchema.statics.signup = async function(username, email, password, major, gradYear, role, isVerified, profilePicture) {
+userSchema.statics.signup = async function(username, email, password, major, gradYear, role, isVerified) {
 
    
     //validation
@@ -127,11 +127,11 @@ userSchema.statics.signup = async function(username, email, password, major, gra
     const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
 
     //Check if a profile pick was not chosen. If not chosen, select the default profile picture.
-    if (profilePicture.length <= 3) {
+    /*if (!profilePicture && profilePicture.length <= 3) {
         profilePicture = "../../profile_pictures/defaultpfp.png"
-    }
+    }*/
 
-    const user = await this.create({username, email, password: hashedPassword, major, gradYear, role, profilePicture});
+    const user = await this.create({username, email, password: hashedPassword, major, gradYear, role});
 
     // User Verification method
 

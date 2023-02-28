@@ -106,6 +106,7 @@ export default function SignUpPage() {
     });
 
     const json = await response.json();
+    console.log(json)
 
     if (!response.ok) {
       setError(json.error);
