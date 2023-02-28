@@ -13,7 +13,9 @@ export default function Navbar() {
     const { user } = useUserContext();
     return(
         <div id='Navbar'>
-            <img src={logo} alt="logo" />
+            <Link to='/'>
+                <img src={logo} alt="logo" />
+            </Link>
             <SearchBar/>
             <div className='CornerButtons'>
                 {user && (
