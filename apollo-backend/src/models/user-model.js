@@ -77,7 +77,6 @@ const userSchema = new Schema({
 userSchema.statics.signup = async function(username, email, password, major, gradYear, role, isVerified, profilePicture) {
 
    
-
     //validation
 
     const purdueEmail = 'purdue.edu'
@@ -127,6 +126,11 @@ userSchema.statics.signup = async function(username, email, password, major, gra
     const salt = await bcrypt.genSalt(10);           //salt adds random string of characters on top of password
     const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
 
+    //Check if a profile pick was not chosen. If not chosen, select the default profile picture.
+    if (profilePicture.length <= 3) {
+        profilePicture = "../../profile_pictures/defaultpfp.png"
+    }
+
     const user = await this.create({username, email, password: hashedPassword, major, gradYear, role, profilePicture});
 
     // User Verification method
@@ -163,7 +167,6 @@ userSchema.statics.signup = async function(username, email, password, major, gra
         }
 
     })
-
 
     return user;
 }
