@@ -1,12 +1,12 @@
 const CourseInfo = require('../models/course-model');
 
 const getAllCourses = async (req, res) => {
-  const { number, subjectId } = req.body;
+  const { courseName } = req.body;
 
   try {
-    const course = await CourseInfo.getAll(subjectId, courseNumber);
+    const courses = await CourseInfo.getAll(courseName);
 
-    res.status(200).json({subjectId, number});
+    res.status(200).json({courseName});
 
   } catch (error) {
     res.status(400).json({error: error.message});

@@ -3,15 +3,15 @@ const express = require('express');
 
 // controller
 const { getCourse } = require('../controllers/course-controller');
-const courseModel = require('../models/course-model');
+const CourseInfo = require('../models/course-model');
 
 const router = express.Router();
 
 // ex: /api/course/getAll
 router.get('/getAll', async function (req, res) {
 
-  const data = await courseModel.find();
-  res.json(data);
+  const allCourses = await CourseInfo.find();
+  res.json(allCourses);
 
   // let collection = await (mongoose.connection).collection("course");
   // let results = await collection.find().toArray();
@@ -21,11 +21,11 @@ router.get('/getAll', async function (req, res) {
 });
 
 // ex: /api/course/get/:SubjectId/:Number
-router.get('/get/:subjectId/:courseNumber', async function (req, res) {
+router.get('/get/:courseName', async function (req, res) {
 
-  const id = String(req.params.productID);
-  const courseNumber = Number(req.params.CourseNumber);
-  const course = courseModel.find(course => course.SubjectId === id)
+  const idk = "CS30700";
+  const courseReturned = await CourseInfo.findOne({ Course: idk });
+  res.json(courseReturned);
 
 });
 
