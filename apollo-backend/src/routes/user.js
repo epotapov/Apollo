@@ -21,6 +21,22 @@ router.post('/login', loginUser);
 //signup route - signupUser is the "method" that is executed
 router.post('/signup', signupUser);
 
+// ex: /api/user/getAll
+router.get('/getAll', async function (req, res) {
+
+  const allUsers = await UserInfo.find();
+  console.log("Responding with all users");
+  res.json(allUsers);
+
+});
+
+// ex: /api/course/get/CS30700
+router.get('/get/:username', async (req, res) => {
+  const param = req.params.username;
+  const userReturned = await UserInfo.findOne({ username: param });
+  console.log(userReturned);
+  res.json(userReturned);
+ });
 
 router.get('/send', function (req, res) {
 
