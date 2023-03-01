@@ -98,6 +98,13 @@ router.post('/edit', async (req, res) => {
     user.blockList = req.body;
     user.gradYear = req.body;
     user.profilePicture = req.body;
+    user.courses = req.body;
+    user.aboutMe = req.body;
+    user.gender = req.body;
+    user.planOfstudy = req.body;
+    user.DOB = req.body;
+    user.country = req.body;
+    user.isPrivate = req.body;
 
     const changePassword = req.body;
     const confirmPassword = req.body;
