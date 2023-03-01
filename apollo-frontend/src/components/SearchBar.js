@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import '../App.css'
 
 import { Select } from 'antd';
+import ProfilePage from './ProfilePage';
 
-const onChange = (value) => {
-    console.log(`selected ${value}`);
-};
-  
+
 const onSearch = (value) => {
     console.log('search:', value);
 };
@@ -16,6 +15,22 @@ export default function SearchBar() {
     const [courseData, setCourseData] = useState([]);
     const [diningHallData, setDiningHallData] = useState([]);
     const [userData, setUserData] = useState([]);
+    const navigate = useNavigate();
+    
+    const onChange = (val) => {
+        if (val.group=="Courses") {
+            console.log('Courses:', val);
+        }
+        else if (val.group=="Dining Halls") {
+            console.log('Dining Halls:', val);
+        }
+        else {
+            fetch('http://localhost:5001/api/user/get/' + val)
+            .then(response => response.json())
+            .then(data => navigate('/profile/', {state: data}))
+        }
+    };
+      
 
     useEffect(() => {
         fetch('http://localhost:5001/api/course/getAll')
@@ -23,7 +38,7 @@ export default function SearchBar() {
         .then(data => {
             for (let i = 0; i < data.length; i++) {
                 let val = data[i].Course + ": " + data[i].Title;
-                const element = {value: val, label: val};
+                const element = {value: val, label: val, group: 'Courses'};
                 setCourseData(courseData => courseData.concat(element));
             }
         })
@@ -33,7 +48,7 @@ export default function SearchBar() {
         .then(data => {
             for (let i = 0; i < data.length; i++) {
                 let val = data[i].name;
-                const element = {value: val, label: val};
+                const element = {value: val, label: val, group: 'Dining Halls'};
                 setDiningHallData(diningHallData => diningHallData.concat(element));
             }
         })
@@ -41,7 +56,7 @@ export default function SearchBar() {
         .then(response => response.json())
         .then(data => {
             for (let i = 0; i < data.length; i++) {
-                const element = {value: data[i].username, label: data[i].username};
+                const element = {value: data[i].username, label: data[i].username, group: 'Users'};
                 setUserData(userData => userData.concat(element))
             }
         })

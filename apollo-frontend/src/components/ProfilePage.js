@@ -5,8 +5,9 @@ import '../App.css'
 import Navbar from './Navbar';
 import { Avatar, Card, Button} from 'antd';
 
-export default function ProfilePage([props]) {
+export default function ProfilePage(props) {
 
+    console.log(props)
     const [username, setUserName] = useState(props.username)
     const [email, setEmaiil] = useState(props.email)
     const [dob, setDOB] = useState('10/20/2022')
@@ -24,7 +25,7 @@ export default function ProfilePage([props]) {
         <Navbar/>
         <Card id="ProfileCard" title="Profile" bordered={true}>
           <Avatar size={100} shape="circle" src="../img/apollo-gray.png" />
-          <h3>{username}</h3>
+          <h3></h3>
         </Card>
         <p> About me: {bio} </p>
         <p> Email: {email} </p>
