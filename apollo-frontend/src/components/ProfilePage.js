@@ -6,7 +6,7 @@ import Navbar from './Navbar';
 import { Avatar, Card, Button} from 'antd';
 
 export default function ProfilePage() {
-
+  
     const [username, setUserName] = useState('TestUser')
     const [email, setEmaiil] = useState('test@purdue.edu')
     const [dob, setDOB] = useState('10/20/2022')
