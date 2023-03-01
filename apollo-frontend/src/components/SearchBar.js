@@ -15,30 +15,32 @@ const onSearch = (value) => {
 const options= [ 'CS150', 'CS240', 'CS320']
 
 export default function SearchBar() {
-
-
     const [courseData, setCourseData] = useState([]);
-    const [diningHallData, setDiningHallData] = useState([])
+    const [diningHallData, setDiningHallData] = useState([]);
 
     useEffect(() => {
-        let diningHallTemp = [];
-        let courseTemp = [];
         fetch('http://localhost:5001/api/course/getAll')
         .then(response => response.json())
         .then(data => {
             for (let i = 0; i < data.length; i++) {
-                courseData.push({value: data[i].Course});
+                setCourseData(courseData => courseData.concat({value: data[i].Course}));
+                //courseTemp.push({value: data[i].Course})
             }
         })
 
-        fetch('http://localhost:5001/api/course/getAll')
+        fetch('http://localhost:5001/api/dining/getAll')
         .then(response => response.json())
         .then(data => {
             for (let i = 0; i < data.length; i++) {
-                courseData.push({value: data[i].Course});
+                setDiningHallData(diningHallData.concat({value: data[i].name}))
             }
         })
+        console.log("Dining ")
+        console.log(courseData)
+        console.log("Course")
+        console.log(diningHallData)
     }, []);
+
     const [size, setSize] = useState('large');
     return(
         <Select
