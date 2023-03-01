@@ -3,7 +3,6 @@ const express = require('express');
 const mongodb = require('mongodb');
 
 // controller
-const { getCourse } = require('../controllers/course-controller');
 const CourseInfo = require('../models/course-model');
 
 const router = express.Router();

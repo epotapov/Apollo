@@ -21,6 +21,7 @@ require('dotenv').config();
 //express router setup
 const userRoutes = require('./routes/user');
 const courseRoutes = require('./routes/course');
+const diningHallRoutes = require('./routes/dining');
 
 // express app
 const app = express();
@@ -38,6 +39,7 @@ app.use((req, res, next) => {
 // attaches all the routes that we attached to the router
 app.use('/api/user', userRoutes); // when we fire request to /api/user then check userRoutes for the route
 app.use('/api/course', courseRoutes);
+app.use('/api/dining', diningHallRoutes);
 
 // connect to MongoDB
 mongoose.connect(process.env.ATLAS_URI)
