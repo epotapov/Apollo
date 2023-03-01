@@ -220,23 +220,6 @@ export default function SignUpPage() {
           >
           <Input.Password/>
           </Form.Item>
-          <Form.Item 
-            label="Role"
-            name="role"
-            onChange={(e) => setRole(e.target.value)}
-            value={role}
-            rules={[
-              {
-                required: true,
-                message: 'Please select your role!'
-              },
-            ]}  
-          >
-          <Radio.Group value={1}>
-            <Radio value={1}> Student </Radio>
-            <Radio value={2}> Professor </Radio>
-          </Radio.Group>
-          </Form.Item>
 
           <Form.Item
           wrapperCol={{

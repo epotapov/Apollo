@@ -38,6 +38,7 @@ function validatePassword(value) {
 export default function LoginPage() {
     const [size, setSize] = useState('large');
     const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
     const [passwordObj, setPasswordObj] = useState({
@@ -49,6 +50,7 @@ export default function LoginPage() {
     const { login } = useLogin();
     const [isLoading, setIsLoading] = useState(null);
     const [error, setError] = useState(null);
+    const [confirm, setConfirm] = useState(null);
 
 
     const handleLoginSubmit = async (e) => {
@@ -61,6 +63,33 @@ export default function LoginPage() {
             navigate('/');
         }
     }
+
+    const handleResetSubmit = async (e) => {
+        const resetEmail = {email};
+    
+        // TODO this URL will need to change eventually (once we have the server on another machine)
+        const response = await fetch('http://localhost:5001/api/user/reset-password', {
+          method: 'POST',
+          body: JSON.stringify(resetEmail),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+    
+        const json = await response.json();
+        console.log(json)
+    
+        if (!response.ok) {
+          setError(json.error);
+          setConfirm(null);
+        }
+    
+        if (response.ok) {
+          setError(null);
+          setConfirm(json)
+          console.log('User reset password sent', json);
+        }
+      }
 
 
     if (!forgotPass) {
@@ -161,7 +190,7 @@ export default function LoginPage() {
                     initialValues={{
                     remember: true,
                     }}
-                    onFinish={onFinish}
+                    onFinish={handleResetSubmit}
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
                 >
@@ -170,6 +199,7 @@ export default function LoginPage() {
                     <Form.Item
                         label="Email"
                         name="email"
+                        onChange={(e) => setEmail(e.target.value)}
                         rules={[
                             {
                                 required: true,
@@ -181,24 +211,13 @@ export default function LoginPage() {
                     </Form.Item>
 
                     <Form.Item
-                        label="New Password"
-                        name="newpassword"
-                        rules={[
-                            {
-                            required: true,
-                            message: 'Please input your password!',
-                            },
-                        ]}
-                    >
-                    <Input.Password />
-                    </Form.Item>
-
-                    <Form.Item
                     wrapperCol={{
                         offset: 8,
                         span: 16,
                     }}
                     >
+                    {error && <p>{error}</p>}
+                    {confirm && <p>{confirm.message}</p>}
                     <Button type="primary" htmlType="submit">
                         Submit
                     </Button>
