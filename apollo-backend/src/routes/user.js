@@ -54,6 +54,7 @@ router.get('/verify', async (req, res) => {
 
 router.post('/edit', async (req, res) => {
     const token = decodeURIComponent(req.query.token);
+    const salt = await bcrypt.genSalt(10);
 
     decoded = jwt.verify(token, 'secretKey', async function (error, decoded) {
         if (error) {
@@ -73,10 +74,18 @@ router.post('/edit', async (req, res) => {
             user.blockList = req.body.blockList;
             user.gradYear = req.body.gradYear;
             user.profilePicture = req.body.profilePicture;
+            
+            const changePassword = req.body.changePassword;
+            const confirmPassword = req.body.confirmPassword;
+
+            if (changePassword !== confirmPassword) {
+                res.send('Passwords do not match');
+            } else { 
+                user.password = bcrypt.hash(changePassword, salt);
+            }
 
             await user.save();
         }
-        console.log(decoded);
     });
 
 })
