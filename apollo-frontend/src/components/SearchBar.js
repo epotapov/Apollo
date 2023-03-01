@@ -24,7 +24,6 @@ export default function SearchBar() {
             for (let i = 0; i < data.length; i++) {
                 let val = data[i].Course + ": " + data[i].Title;
                 const element = {value: val, label: val};
-                console.log(element)
                 setCourseData(courseData => courseData.concat(element));
             }
         })
@@ -33,15 +32,17 @@ export default function SearchBar() {
         .then(response => response.json())
         .then(data => {
             for (let i = 0; i < data.length; i++) {
-                setDiningHallData(diningHallData.concat({value: data[i].name}))
-                console.log(data[i].name)
+                let val = data[i].name;
+                const element = {value: val, label: val};
+                setDiningHallData(diningHallData => diningHallData.concat(element));
             }
         })
         fetch('http://localhost:5001/api/user/getAll')
         .then(response => response.json())
         .then(data => {
             for (let i = 0; i < data.length; i++) {
-                setUserData(userData.concat({value: data[i].username}))
+                const element = {value: data[i].username, label: data[i].username};
+                setUserData(userData => userData.concat(element))
             }
         })
     }, []);
@@ -61,21 +62,21 @@ export default function SearchBar() {
             filterOption={(input, option) =>
                 (option?.value ?? '').toLowerCase().includes(input.toLowerCase())
             }
-            options={
+            options= {
                 [
-                {
-                    label: 'Courses',
-                    options: courseData,
-                },
-                {
-                    label: 'Dining Halls',
-                    options: diningHallData,
-                },
-                {
-                    label: 'Users',
-                    options: userData,
-                }
-            ]
+                    {
+                        label: 'Courses',
+                        options: courseData 
+                    },
+                    {
+                        label: 'Dining Halls',
+                        options: diningHallData
+                    },
+                    {
+                        label: 'Users',
+                        options: userData
+                    }
+                ]
             }
       />        
     )
