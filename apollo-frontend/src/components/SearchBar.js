@@ -23,7 +23,8 @@ export default function SearchBar() {
         .then(response => response.json())
         .then(data => {
             for (let i = 0; i < data.length; i++) {
-                setCourseData(courseData => courseData.concat({value: data[i].Course}));
+                let temp = data[i].Course + ": " + data[i].Title;
+                setCourseData(courseData => courseData.concat({value: temp, label: temp}));
                 //courseTemp.push({value: data[i].Course})
             }
         })
@@ -54,7 +55,7 @@ export default function SearchBar() {
             dropdownMatchSelectWidth={500}
             defaultOpen={false}
             filterOption={(input, option) =>
-            (option?.label  ?? '').toLowerCase().includes(input.toLowerCase())
+                (option?.value ?? '').toLowerCase().includes(input.toLowerCase())
             }
             options={courseData}
       />        

@@ -5,14 +5,16 @@ import '../DiningHall.css'
 
 import Navbar from './Navbar';
 
-export default function DiningHall() {
-    const [name, setName] = useState();
+export default function DiningHall(props) {
+    const [name, setName] = useState(props.name);
+    const [address, setAddress] = useState(props.address);
+    
     const [size, setSize] = useState('large');
     return( 
         <div id='cont'>
             <Navbar/>
             <div id='name'>
-                <h1 > Dining Hall </h1>
+                <h1 > {name} </h1>
             </div>
             <div id='menu'>
                 <Row>

@@ -266,7 +266,6 @@ const {Option} = Select;
 
 export default function TellUsMore() { 
 	const [aboutMe, setAboutMe] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
     const [country, setCountry] = useState('');
     const [gender, setGender] = useState('');
     const [major, setMajor] = useState('');
@@ -351,21 +350,6 @@ export default function TellUsMore() {
                         <Option value="senior">Senior</Option>
                         <Option value="graduate">Graduate</Option>
                     </Select>
-                </Form.Item>
-                <Form.Item 
-                    name="phonenumber"
-                    label="Phone Number"
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    value = {phoneNumber}
-                >
-                    <Input.Group compact>
-                        <Input 
-                            style={{width: '25%'}} 
-                            addonBefore={"+"}
-                            maxLength={3}
-                            />
-                        <Input allowClear style={{width: '50%'}} placeholder="Number" />
-                    </Input.Group>
                 </Form.Item>
                 <Form.Item
                     name="major"
