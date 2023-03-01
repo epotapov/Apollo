@@ -23,8 +23,10 @@ export default function SearchBar() {
         .then(response => response.json())
         .then(data => {
             for (let i = 0; i < data.length; i++) {
-                let temp = data[i].Course + ": " + data[i].Title;
-                setCourseData(courseData => courseData.concat({value: temp, label: temp}));
+                let val = data[i].Course + ": " + data[i].Title;
+                const element = {value: val, label: val};
+                console.log(element)
+                setCourseData(courseData => courseData.concat(element));
                 //courseTemp.push({value: data[i].Course})
             }
         })
@@ -40,6 +42,7 @@ export default function SearchBar() {
         console.log(courseData)
         console.log("Course")
         console.log(diningHallData)
+        console.log("Page")
     }, []);
 
     const [size, setSize] = useState('large');
