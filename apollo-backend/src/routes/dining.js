@@ -1,6 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const mongodb = require('mongodb');
 
 // controller
 const DiningInfo = require('../models/dining-model');
