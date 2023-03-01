@@ -30,7 +30,7 @@ router.get('/getAll', async function (req, res) {
 
 });
 
-// ex: /api/course/get/CS30700
+// ex: /api/user/get/{username}
 router.get('/get/:username', async (req, res) => {
   const param = req.params.username;
   const userReturned = await UserInfo.findOne({ username: param });
