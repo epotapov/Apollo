@@ -10,6 +10,9 @@ const validator = require('validator'); // helps validate user input
 
 const nodemailer = require('nodemailer');
 
+const fs = require('fs'); //file reader
+const { resourceLimits } = require('worker_threads');
+
 
 // a schema is similar to an object
 const userSchema = new Schema({

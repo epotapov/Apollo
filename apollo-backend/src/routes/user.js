@@ -53,40 +53,33 @@ router.get('/verify', async (req, res) => {
 });
 
 router.post('/edit', async (req, res) => {
-    const token = decodeURIComponent(req.query.token);
     const salt = await bcrypt.genSalt(10);
 
-    decoded = jwt.verify(token, 'secretKey', async function (error, decoded) {
-        if (error) {
-            console.log(error);
-            res.send('Account does not exist');
-        }
-        else {
-            const user = await UserInfo.findOne({ username: decoded.user.username });
+    const user = req.body.user;
+  
+    const exists = await UserInfo.findOne({ username: decoded.user.username });
 
-            if (!user) {
-                res.send('User does not exist');
-            }
+    if (!exists) {
+        res.send('User does not exist');
+    }
 
-            user.major = req.body.major;
-            user.role = req.body.role;
-            user.friendsList = req.body.friendsList;
-            user.blockList = req.body.blockList;
-            user.gradYear = req.body.gradYear;
-            user.profilePicture = req.body.profilePicture;
-            
-            const changePassword = req.body.changePassword;
-            const confirmPassword = req.body.confirmPassword;
+    user.major = req.body.major;
+    user.role = req.body.role;
+    user.friendsList = req.body.friendsList;
+    user.blockList = req.body.blockList;
+    user.gradYear = req.body.gradYear;
+    user.profilePicture = req.body.profilePicture;
+    
+    const changePassword = req.body.changePassword;
+    const confirmPassword = req.body.confirmPassword;
 
-            if (changePassword !== confirmPassword) {
-                res.send('Passwords do not match');
-            } else { 
-                user.password = bcrypt.hash(changePassword, salt);
-            }
+    if (changePassword !== confirmPassword) {
+        res.send('Passwords do not match');
+    } else { 
+        user.password = bcrypt.hash(changePassword, salt);
+    }
 
-            await user.save();
-        }
-    });
+    await user.save();
 
 })
 
