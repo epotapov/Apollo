@@ -76,7 +76,12 @@ export default function SignUpPage() {
   const [size, setSize] = useState('large');
   const [major, setMajor] = useState(null);
   const [gradYear, setGradYear] = useState(null);
-
+  const [courses, setCourses] = useState(null);
+  const [aboutMe, setaboutMe] = useState(null);
+  const [country, setCountry] = useState(null);
+  const [gender, setGender] = useState(null);
+  const [planOfStudy, setplanOfStudy] = useState(null);
+  const [DOB, setDOB] = useState(null);
 
   const onFinish = (values) => {
     console.log('Success:', values);
@@ -91,7 +96,7 @@ export default function SignUpPage() {
     if (!submitStatus) {
       return
     }
-    const user = {username, email, password, major, gradYear, role};
+    const user = {username, email, password, major, gradYear, role, courses, aboutMe, country, gender, planOfStudy, DOB};
     console.log('hello');
     console.log(user)
 
@@ -117,6 +122,10 @@ export default function SignUpPage() {
       setPassword('');
       setMajor('');
       setGradYear('');
+      setCountry('');
+      setGender('');
+      setplanOfStudy('');
+      setDOB('');
       setError(null);
       setConfirm(json)
       console.log('User created', json);
