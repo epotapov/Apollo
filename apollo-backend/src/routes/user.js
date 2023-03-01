@@ -8,6 +8,8 @@ const bcrypt = require('bcrypt');
 //generates jwt token
 const jwt = require('jsonwebtoken');
 
+const fs = require('fs');
+
 //controller functions
 const { signupUser, loginUser } = require('../controllers/user-controller');
 
@@ -24,19 +26,19 @@ router.post('/signup', signupUser);
 // ex: /api/user/getAll
 router.get('/getAll', async function (req, res) {
 
-  const allUsers = await UserInfo.find();
-  console.log("Responding with all users");
-  res.json(allUsers);
+    const allUsers = await UserInfo.find();
+    console.log("Responding with all users");
+    res.json(allUsers);
 
 });
 
 // ex: /api/user/get/{username}
 router.get('/get/:username', async (req, res) => {
-  const param = req.params.username;
-  const userReturned = await UserInfo.findOne({ username: param });
-  console.log(userReturned);
-  res.json(userReturned);
- });
+    const param = req.params.username;
+    const userReturned = await UserInfo.findOne({ username: param });
+    console.log(userReturned);
+    res.json(userReturned);
+});
 
 router.get('/send', function (req, res) {
 
@@ -60,18 +62,20 @@ router.get('/verify', async (req, res) => {
                 res.send('User does not exist');
             }
 
-            if (!user.isProf) {
-                 fs.readFile('profemails.txt', function (error, data) {
-                      if (error) { throw error };
-                      if (data.includes(user.email)) {
-                           isProf = true;
-                           console.log("user is professor");
-                      }
-                 })
-            }
 
-            user.isVerified = true;
-            await user.save();
+            fs.readFile('profemails.txt', async function (error, data) {
+                if (error) { throw error };
+                if (data.includes(user.email)) {
+                    user.isProf = true;
+                    console.log("user is professor");
+                }
+                user.isVerified = true;
+                await user.save();
+            })
+
+            
+
+
             res.send('Please click the link to return to login page: http://localhost:3000/api/user/login');
         }
         console.log(decoded);
@@ -82,8 +86,8 @@ router.post('/edit', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
 
     const user = req.body.user;
-  
-    const exists = await UserInfo.findOne({ username: decoded.user.username });
+
+    const exists = await UserInfo.findOne({ username: user.username });
 
     if (!exists) {
         res.send('User does not exist');
@@ -94,13 +98,13 @@ router.post('/edit', async (req, res) => {
     user.blockList = req.body;
     user.gradYear = req.body;
     user.profilePicture = req.body;
-    
+
     const changePassword = req.body;
     const confirmPassword = req.body;
 
     if (changePassword !== confirmPassword) {
         res.send('Passwords do not match');
-    } else { 
+    } else {
         user.password = bcrypt.hash(changePassword, salt);
     }
 
@@ -109,7 +113,7 @@ router.post('/edit', async (req, res) => {
 })
 
 router.post('/forgot-password', async (req, res) => {
-    const {email} = req.body;
+    const { email } = req.body;
 
     const user = await UserInfo.findOne({ email: email });
 
@@ -122,7 +126,7 @@ router.post('/forgot-password', async (req, res) => {
     const secret = 'secretKey' + user.password;
 
     const token = jwt.sign({
-        user: {username: user.username, email: user.email}
+        user: { username: user.username, email: user.email }
     }, 'secretKey', { expiresIn: '20 minutes' }
     );
 
@@ -141,11 +145,11 @@ router.post('/forgot-password', async (req, res) => {
 
     const transporter = nodemailer.createTransport(smtpConfig);
 
-    const mailOptions = { 
+    const mailOptions = {
         from: 'TestDummy2199@gmail.com',
         to: email,
         subject: 'Apollo Password Reset',
-        text:`Reset Password Link: http://localhost:5001/api/user/reset-password/?token=${token}`
+        text: `Reset Password Link: http://localhost:5001/api/user/reset-password/?token=${token}`
     };
 
     transporter.sendMail(mailOptions, (error) => {
@@ -157,7 +161,7 @@ router.post('/forgot-password', async (req, res) => {
         }
 
     })
-   
+
 });
 
 //reset password route
@@ -202,7 +206,7 @@ router.post('/reset-password', async (req, res) => {
 
             if (password !== confirmPassword) {
                 console.log('Passwords do not match');
-            } 
+            }
             else {
 
                 const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
@@ -216,7 +220,7 @@ router.post('/reset-password', async (req, res) => {
         }
         console.log(decoded);
     });
-    
+
 })
 
 
