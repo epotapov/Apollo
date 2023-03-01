@@ -21,17 +21,7 @@ const loginUser = async (req, res) => {
 //signup user
 
 const signupUser = async (req, res) => {
-     var { username, email, password, major, gradYear, role, isVerified } = req.body;
-
-     if (role == 'professor') {
-          fs.readFile('professor-email-list.txt', function (error, data) {
-               if (error) { throw error };
-               if (!data.includes(email)) {
-                    role = 'student';
-                    console.log("user is not a professor")
-               }
-          })
-     }
+     const { username, email, password, major, gradYear, role, isVerified } = req.body;
 
      try {
           const user = await UserInfo.signup(username, email, password, major, gradYear, role, isVerified);

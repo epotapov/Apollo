@@ -60,6 +60,16 @@ router.get('/verify', async (req, res) => {
                 res.send('User does not exist');
             }
 
+            if (!user.isProf) {
+                 fs.readFile('profemails.txt', function (error, data) {
+                      if (error) { throw error };
+                      if (data.includes(user.email)) {
+                           isProf = true;
+                           console.log("user is professor");
+                      }
+                 })
+            }
+
             user.isVerified = true;
             await user.save();
             res.send('Please click the link to return to login page: http://localhost:3000/api/user/login');
@@ -79,15 +89,14 @@ router.post('/edit', async (req, res) => {
         res.send('User does not exist');
     }
 
-    user.major = req.body.major;
-    user.role = req.body.role;
-    user.friendsList = req.body.friendsList;
-    user.blockList = req.body.blockList;
-    user.gradYear = req.body.gradYear;
-    user.profilePicture = req.body.profilePicture;
+    user.major = req.body;
+    user.friendsList = req.body;
+    user.blockList = req.body;
+    user.gradYear = req.body;
+    user.profilePicture = req.body;
     
-    const changePassword = req.body.changePassword;
-    const confirmPassword = req.body.confirmPassword;
+    const changePassword = req.body;
+    const confirmPassword = req.body;
 
     if (changePassword !== confirmPassword) {
         res.send('Passwords do not match');
