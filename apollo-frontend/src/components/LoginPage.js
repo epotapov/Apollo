@@ -68,7 +68,7 @@ export default function LoginPage() {
         const resetEmail = {email};
     
         // TODO this URL will need to change eventually (once we have the server on another machine)
-        const response = await fetch('http://localhost:5001/api/user/reset-password', {
+        const response = await fetch('http://localhost:5001/api/user/forgot-password', {
           method: 'POST',
           body: JSON.stringify(resetEmail),
           headers: {
