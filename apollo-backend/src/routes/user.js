@@ -87,7 +87,7 @@ router.post('/edit', async (req, res) => {
 
     const user = req.body.user;
 
-    const exists = await UserInfo.findOne({ username: decoded.user.username });
+    const exists = await UserInfo.findOne({ username: user.username });
 
     if (!exists) {
         res.send('User does not exist');
