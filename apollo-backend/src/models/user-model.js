@@ -132,7 +132,7 @@ userSchema.statics.signup = async function(username, email, password, major, gra
         profilePicture = "../../profile_pictures/defaultpfp.png"
     }*/
 
-    const user = await this.create({username, email, password: hashedPassword, major, gradYear, role});
+    const user = await this.create({username, email, password: hashedPassword, major, gradYear, isProf});
 
     // User Verification method
 
