@@ -12,11 +12,10 @@ const onSearch = (value) => {
     console.log('search:', value);
 };
 
-const options= [ 'CS150', 'CS240', 'CS320']
-
 export default function SearchBar() {
     const [courseData, setCourseData] = useState([]);
     const [diningHallData, setDiningHallData] = useState([]);
+    const [userData, setUserData] = useState([]);
 
     useEffect(() => {
         fetch('http://localhost:5001/api/course/getAll')
@@ -25,9 +24,7 @@ export default function SearchBar() {
             for (let i = 0; i < data.length; i++) {
                 let val = data[i].Course + ": " + data[i].Title;
                 const element = {value: val, label: val};
-                console.log(element)
                 setCourseData(courseData => courseData.concat(element));
-                //courseTemp.push({value: data[i].Course})
             }
         })
 
@@ -35,14 +32,19 @@ export default function SearchBar() {
         .then(response => response.json())
         .then(data => {
             for (let i = 0; i < data.length; i++) {
-                setDiningHallData(diningHallData.concat({value: data[i].name}))
+                let val = data[i].name;
+                const element = {value: val, label: val};
+                setDiningHallData(diningHallData => diningHallData.concat(element));
             }
         })
-        console.log("Dining ")
-        console.log(courseData)
-        console.log("Course")
-        console.log(diningHallData)
-        console.log("Page")
+        fetch('http://localhost:5001/api/user/getAll')
+        .then(response => response.json())
+        .then(data => {
+            for (let i = 0; i < data.length; i++) {
+                const element = {value: data[i].username, label: data[i].username};
+                setUserData(userData => userData.concat(element))
+            }
+        })
     }, []);
 
     const [size, setSize] = useState('large');
@@ -60,7 +62,22 @@ export default function SearchBar() {
             filterOption={(input, option) =>
                 (option?.value ?? '').toLowerCase().includes(input.toLowerCase())
             }
-            options={courseData}
+            options= {
+                [
+                    {
+                        label: 'Courses',
+                        options: courseData 
+                    },
+                    {
+                        label: 'Dining Halls',
+                        options: diningHallData
+                    },
+                    {
+                        label: 'Users',
+                        options: userData
+                    }
+                ]
+            }
       />        
     )
 }
