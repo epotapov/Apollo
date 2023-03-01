@@ -5,18 +5,19 @@ import '../App.css'
 import Navbar from './Navbar';
 import { Avatar, Card, Button} from 'antd';
 
-export default function ProfilePage() {
-  
-    const [username, setUserName] = useState('TestUser')
-    const [email, setEmaiil] = useState('test@purdue.edu')
+export default function ProfilePage([props]) {
+
+    const [username, setUserName] = useState(props.username)
+    const [email, setEmaiil] = useState(props.email)
     const [dob, setDOB] = useState('10/20/2022')
-    const [major, setMajor] = useState('Computer Science')
-    const [year, setYear] = useState('Junior')
-    const [bio, setBio] = useState('I am currently a third year student at Purdue. blablablalablabla')
-    const [role, setRole] = useState('Student')
-    const [country, setCountry] = useState('United States')
-    const [gender, setGender] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('1234567890')
+    const [major, setMajor] = useState(props.major)
+    const [year, setYear] = useState(props.year)
+    const [bio, setBio] = useState(props.bio)
+    const [role, setRole] = useState(props.role)
+    const [country, setCountry] = useState(props.country)
+    const [gender, setGender] = useState(props.gender);
+    const [courses, setCourses] = useState(props.courses);
+    const [planOfStudy, setPlanOfStudy] = useState(props.planOfStudy);
 
     return (
       <div id="ProfilePage">
@@ -33,7 +34,7 @@ export default function ProfilePage() {
         <p> Role: {role} </p>
         <p> Country: {country} </p>
         <p> Gender: {gender} </p>
-        <p> Phone Number: {phoneNumber} </p>
+        <p>  </p>
         <Button type="primary" shape="round" size="large" href="/TellUsMore">
           Edit Profile
         </Button>
