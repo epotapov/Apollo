@@ -104,6 +104,7 @@ router.post('/edit', async (req, res) => {
     user.planOfstudy = req.body;
     user.DOB = req.body;
     user.country = req.body;
+    user.isPrivate = req.body;
 
     const changePassword = req.body;
     const confirmPassword = req.body;

@@ -101,6 +101,11 @@ var userSchema = new Schema({
     DOB: {
         type: String,
         required: false
+    },
+
+    isPrivate: {
+        type: String,
+        required: false
     }
 
 
@@ -108,7 +113,7 @@ var userSchema = new Schema({
 
 
 // static signup method
-userSchema.statics.signup = async function(username, email, password, major, gradYear, role, isVerified, courses, aboutMe, country, gender, planOfStudy, DOB) {
+userSchema.statics.signup = async function(username, email, password, major, gradYear, role, isVerified, courses, aboutMe, country, gender, planOfStudy, DOB, isPrivate) {
 
    
     //validation
@@ -163,7 +168,7 @@ userSchema.statics.signup = async function(username, email, password, major, gra
         profilePicture = "../../profile_pictures/defaultpfp.png"
     }*/
 
-    const user = await this.create({username, email, password: hashedPassword, major, gradYear, role, courses, aboutMe, country, gender, planOfStudy, DOB});
+    const user = await this.create({username, email, password: hashedPassword, major, gradYear, role, courses, aboutMe, country, gender, planOfStudy, DOB, isPrivate});
 
     // User Verification method
 
