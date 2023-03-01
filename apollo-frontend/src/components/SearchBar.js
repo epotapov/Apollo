@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import '../App.css'
 
@@ -12,7 +12,33 @@ const onSearch = (value) => {
     console.log('search:', value);
 };
 
+const options= [ 'CS150', 'CS240', 'CS320']
+
 export default function SearchBar() {
+
+
+    const [courseData, setCourseData] = useState([]);
+    const [diningHallData, setDiningHallData] = useState([])
+
+    useEffect(() => {
+        let diningHallTemp = [];
+        let courseTemp = [];
+        fetch('http://localhost:5001/api/course/getAll')
+        .then(response => response.json())
+        .then(data => {
+            for (let i = 0; i < data.length; i++) {
+                courseData.push({value: data[i].Course});
+            }
+        })
+
+        fetch('http://localhost:5001/api/course/getAll')
+        .then(response => response.json())
+        .then(data => {
+            for (let i = 0; i < data.length; i++) {
+                courseData.push({value: data[i].Course});
+            }
+        })
+    }, []);
     const [size, setSize] = useState('large');
     return(
         <Select
@@ -26,58 +52,9 @@ export default function SearchBar() {
             dropdownMatchSelectWidth={500}
             defaultOpen={false}
             filterOption={(input, option) =>
-            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            (option?.label  ?? '').toLowerCase().includes(input.toLowerCase())
             }
-            options={[
-            {
-                value: 'CS 18000',
-                label: 'CS 18000',
-            },
-            {
-                value: 'CS 18001',
-                label: 'CS 18001',
-            },
-            {
-                value: 'CS 20000',
-                label: 'CS 20000',
-            },
-            {   
-                value: 'CS 25000',
-                label: 'CS 25000',
-            },
-            {
-                value: 'CS 25100',
-                label: 'CS 25100',
-            },
-            {
-                value: 'Tom',
-                label: 'Tom',
-            },
-            {
-                value: 'Jerry',
-                label: 'Jerry',
-            },
-            {
-                value: 'Mickey',
-                label: 'Mickey',
-            },
-            {
-                value: 'Minnie',
-                label: 'Minnie',
-            },
-            {
-                value: 'Windsor Dining Hall',
-                label: 'Windsor Dining Hall',
-            },
-            {
-                value: 'Roosevelt Dining Hall',
-                label: 'Roosevelt Dining Hall',
-            },
-            {
-                value: 'Ferris Dining Hall',
-                label: 'Ferris Dining Hall',
-            }
-            ]}
+            options={courseData}
       />        
     )
 }

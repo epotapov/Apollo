@@ -6,6 +6,7 @@ import '../DiningHall.css'
 import Navbar from './Navbar';
 
 export default function DiningHall() {
+    const [name, setName] = useState();
     const [size, setSize] = useState('large');
     return( 
         <div id='cont'>
