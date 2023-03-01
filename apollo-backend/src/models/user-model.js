@@ -10,9 +10,12 @@ const validator = require('validator'); // helps validate user input
 
 const nodemailer = require('nodemailer');
 
+const fs = require('fs'); //file reader
+const { resourceLimits } = require('worker_threads');
+
 
 // a schema is similar to an object
-const userSchema = new Schema({
+var userSchema = new Schema({
 
     username: {
       type: String,
@@ -40,9 +43,9 @@ const userSchema = new Schema({
         required: false
     },
 
-    role: {
-        type: String,
-        required: false
+    isProf: {
+        type: Boolean,
+        default: false
     },
 
     profilePicture: {
@@ -74,7 +77,7 @@ const userSchema = new Schema({
 
 
 // static signup method
-userSchema.statics.signup = async function(username, email, password, major, gradYear, role, isVerified) {
+userSchema.statics.signup = async function(username, email, password, major, gradYear, isProf, isVerified) {
 
    
     //validation
