@@ -72,10 +72,6 @@ router.get('/verify', async (req, res) => {
                 user.isVerified = true;
                 await user.save();
             })
-
-            
-
-
             res.send('Please click the link to return to login page: http://localhost:3000/api/user/login');
         }
         console.log(decoded);
@@ -126,7 +122,8 @@ router.post('/forgot-password', async (req, res) => {
 
     // If user does not exist
     if (!user) {
-        res.send('Incorrect email or email does not exist');
+        // res.send("Incorrect email or email does not exist");
+        res.status(400).json({ error: "Incorrect or nonexistent email!" })
         return;
     }
 
@@ -162,6 +159,7 @@ router.post('/forgot-password', async (req, res) => {
     transporter.sendMail(mailOptions, (error) => {
         if (error) {
             console.log(error);
+            throw Error(error.message);
         }
         else {
             console.log('Reset password email sent');
@@ -179,13 +177,17 @@ router.get('/reset-password', async (req, res) => {
     decoded = jwt.verify(token, 'secretKey', async function (error, decoded) {
         if (error) {
             console.log(error);
-            res.send('Link has failed or expired');
+            // res.send('Link has failed or expired');
+            res.status(400).json({ error: "Link has failed or expired'" })
+            return;
         }
         else {
             const user = await UserInfo.findOne({ username: decoded.user.username });
 
             if (!user) {
-                res.send('User does not exist');
+                // res.send('User does not exist');
+                res.status(400).json({ error: "User does not exist" })
+                return;
             }
         }
     });
@@ -199,13 +201,17 @@ router.post('/reset-password', async (req, res) => {
     decoded = jwt.verify(token, 'secretKey', async function (error, decoded) {
         if (error) {
             console.log(error);
-            res.send('Link expired or failed');
+            // res.send('Link expired or failed');
+            res.status(400).json({ error: "Link has failed or expired'" })
+            return;
         }
         else {
             const user = await UserInfo.findOne({ username: decoded.user.username });
 
             if (!user) {
-                res.send('User does not exist');
+                // res.send('User does not exist');
+                res.status(400).json({ error: "User does not exist" })
+                return;
             }
 
             const password = req.body.password;
@@ -213,16 +219,19 @@ router.post('/reset-password', async (req, res) => {
 
             if (password !== confirmPassword) {
                 console.log('Passwords do not match');
+                res.status(400).json({ error: "Passwords do not match" })
+                return;
             }
             else {
-
-                const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
-
-                user.password = hashedPassword;
-
-                await user.save();
-                res.send(`Password changed! Please click the link to return to login page: http://localhost:5001/api/user/login`);
-
+                try {
+                  const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
+                  user.password = hashedPassword;
+                  await user.save();
+                  res.send(`Password changed! Please click the link to return to login page: http://localhost:5001/api/user/login`);
+                } catch (error) {
+                  console.log("There was an issue with the data provided");
+                  res.status(400).json({ error: "There was an issue with the data provided" })
+                }
             }
         }
         console.log(decoded);
