@@ -205,7 +205,7 @@ router.get('/reset-password', async (req, res) => {
                     const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
                     user.password = hashedPassword;
                     await user.save();
-                    res.send(`Password changed! Please click the link to return to login page: http://localhost:5001/api/user/login`);
+                    res.send(`Password changed!`);
                 } catch (error) {
                     console.log("There was an issue with the data provided");
                     res.status(400).json({ error: "There was an issue with the data provided" })
