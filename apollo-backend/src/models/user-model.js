@@ -54,12 +54,12 @@ var userSchema = new Schema({
     },
 
     friendsList: {
-        type: String,
+        type: Array,
         required: false
     },
 
     blockList: {
-        type: String,
+        type: Array,
         required: false
     },
 
@@ -71,7 +71,6 @@ var userSchema = new Schema({
         type: Boolean,
         default: false
     }, 
-    
     
     courses: {
         type: Array,
