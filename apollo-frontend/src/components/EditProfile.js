@@ -1,7 +1,8 @@
 import { React, useState } from 'react';
 import { Link } from 'react-router-dom'
-import { Grid, Button, Checkbox, Form, Input, Select, DatePicker} from 'antd';
+import {Button, Checkbox, Form, Input, Select, DatePicker, InputNumber, message, Switch} from 'antd';
 import {useLocation} from 'react-router-dom';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 let user = null;
@@ -9,6 +10,7 @@ let username = '';
 let aboutMe = '';
 let dob = '';
 let major = '';
+let isPrivate = null;
 let year = '';
 let role = '';
 let email = '';
@@ -270,9 +272,31 @@ const countryList = [
 	"Åland Islands"
 ];
 
+
 const {Option} = Select;
 
 export default function TellUsMore() { 
+
+	const [messageApi, contextHolder] = message.useMessage();
+	const success = (message) => {
+		messageApi.open({
+			type: 'success',
+			content: message,
+		  });
+	};	
+
+	const [courseData, setCourseData] = useState([]); // for course dropdown
+	useEffect(() => {
+        fetch('http://localhost:5001/api/course/getAll')
+        .then(response => response.json())
+        .then(data => {
+            for (let i = 0; i < data.length; i++) {
+                let val = data[i].Course + ": " + data[i].Title;
+                const element = {value: val, label: val, group: 'Courses'};
+                setCourseData(courseData => courseData.concat(element));
+            }
+        })
+	}, []);
 
 	const navigate = useNavigate();
 	const onFinish = (values) => {
@@ -287,9 +311,12 @@ export default function TellUsMore() {
 		country = values.country ? values.country : country;
 		year = values.classyear ? values.classyear : year;
 		gender = values.gender ? values.gender : gender;
+		planOfStudy = values.planofstudy ? values.planofstudy : planOfStudy;
+		courses = values.courses ? values.courses : courses;
+		isPrivate = values.isprivate ? values.isprivate : isPrivate;
 
 		const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
-			country, gender, planOfStudy, dob, year};
+			country, gender, planOfStudy, dob, year, isPrivate};
 		
 		const response = await fetch('http://localhost:5001/api/user/edit', {
 			method: 'POST',
@@ -298,6 +325,8 @@ export default function TellUsMore() {
 			  'Content-Type': 'application/json'
 			}
 		});
+		<success message="Profile updated successfully!"/>
+		console.log(updated_user);
 		fetch('http://localhost:5001/api/user/get/' + user.username)
 		.then(response => response.json())
 		.then(data => navigate('/Profile',{state: {user: data}}))
@@ -313,6 +342,7 @@ export default function TellUsMore() {
 		  major = user.major;
 		  year = user.currentYear;
 		  email = user.email;
+		  gradYear = user.gradYear;
 		  if (user.isProf) {
 			role = "Professor";
 		  }
@@ -321,22 +351,35 @@ export default function TellUsMore() {
 		  }
 		  country = user.country;
 		  gender = user.gender;
+		  gradYear = user.gradYear;
+		  planOfStudy = user.planOfStudy;
+		  courses = user.courses;
+		  isPrivate = user.isPrivate;
 		}
 	}
     const [size, setSize] = useState('large');
 
     return (
-        <div className='Container'>
+        <div className="container">
             <Form 
                 name="tellusmore"
                 labelCol={{
-                    span: 8,
+                    span: 12,
                 }} 
                 wrapperCol={{
-                    span: 16,
+                    span: 24,
                 }}
                 style={{
-                    maxWidth: 600,
+                    maxWidth: 1000,
+					width: '100%',
+					margin: 'auto',
+					padding: '20px',
+					display: 'inline-block',
+					backgroundColor: 'white',
+					borderRadius: '10px',
+					boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.1)',
+					marginTop: '20px',
+					marginBottom: '20px',
                 }}
                 initialValues={{
                     remember: true,
@@ -413,6 +456,44 @@ export default function TellUsMore() {
                 >
                     <DatePicker />
                 </Form.Item>
+				<Form.Item
+					name="courses"
+					label="Courses"
+				>
+					<Select
+						mode="multiple"
+						placeholder="Insert courses"
+						defaultValue={courses}
+						style={{ width: '100%' }}
+						options={courseData}
+					/>
+				</Form.Item>
+				<Form.Item
+					name="gradyear"
+					label="Graduation Year"
+					defaultValue={gradYear}
+				>
+					<InputNumber min={2020} max={2040} placeholder="Graduation Year" />
+				</Form.Item>
+				<Form.Item
+					name="planofstudy"
+					label="Plan of Study"
+				> 
+					<Select
+						mode="multiple"
+						placeholder="Insert courses"
+						defaultValue={planOfStudy}
+						style={{ width: '100%' }}
+						options={courseData}
+   					/>
+				</Form.Item>
+				<Form.Item
+					name="isprivate"
+					label="Private Profile"
+					
+				>
+					<Switch defaultChecked={isPrivate} />
+				</Form.Item>
                 <Form.Item
                 wrapperCol={{
                     offset: 8,

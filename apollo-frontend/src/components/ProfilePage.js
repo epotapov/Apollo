@@ -23,6 +23,10 @@ export default function ProfilePage() {
   let year = '';
   let role = '';
   let country = '';
+  let gradYear = '';
+  let courses = {};
+  let planOfStudy = {};
+
   let gender = '';
   
   const data = useLocation();
@@ -35,6 +39,9 @@ export default function ProfilePage() {
         dob = user.DOB;
         major = user.major;
         year = user.currentYear;
+        gradYear = user.gradYear;
+        courses = user.courses;
+        planOfStudy = user.planOfStudy;
         if (user.isProf) {
           role = "Professor";
         }
@@ -60,6 +67,9 @@ export default function ProfilePage() {
         <p> Role: {role} </p>
         <p> Country: {country} </p>
         <p> Gender: {gender} </p>
+        <p> Graduation year: {gradYear} </p>
+        <p> Courses: {courses} </p>
+        <p> Plan of Study: {planOfStudy} </p>
         <Button type="primary" shape="round" size="large" onClick={editProfile}>
           Edit Profile
         </Button>

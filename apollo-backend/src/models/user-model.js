@@ -109,9 +109,9 @@ var userSchema = new Schema({
     },
 
     isPrivate: {
-        type: String,
+        type: Boolean,
         required: false,
-        default: true
+        default: false
     },
 
 

@@ -83,7 +83,7 @@ export default function SearchBar() {
     return(
         <Select
             showSearch
-            placeholder="Select a person"
+            placeholder="Search for a course, dining hall, or user"
             optionFilterProp="children"
             onChange={onChange}
             onSearch={onSearch}
