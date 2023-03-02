@@ -106,14 +106,20 @@ var userSchema = new Schema({
     isPrivate: {
         type: String,
         required: false
+    },
+
+
+    currentYear: {
+        type: String,
+        required: false
     }
 
 
-}, { timestamps: true}/*, {typeKey: '$type'}*/);
+}, { timestamps: true});
 
 
 // static signup method
-userSchema.statics.signup = async function(username, email, password, major, gradYear, role, isVerified, courses, aboutMe, country, gender, planOfStudy, DOB, isPrivate) {
+userSchema.statics.signup = async function(username, email, password, major, gradYear, role, isVerified, courses, aboutMe, country, gender, planOfStudy, DOB, isPrivate, currentYear) {
 
    
     //validation
@@ -222,7 +228,10 @@ userSchema.statics.login = async function(username, password) {
 
         throw Error('Username does not exist');
 
+    }
 
+    if (!user.isVerified) {
+        throw Error('This account has not been verified');
     }
 
     const match = await bcrypt.compare(password, user.password)

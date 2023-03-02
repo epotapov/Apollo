@@ -10,6 +10,8 @@ const jwt = require('jsonwebtoken');
 
 const fs = require('fs');
 
+const validator = require('validator'); // helps validate user input
+
 //controller functions
 const { signupUser, loginUser } = require('../controllers/user-controller');
 
@@ -90,18 +92,18 @@ router.post('/edit', async (req, res) => {
         res.send('User does not exist');
     }
 
-    user.major = req.body;
-    user.friendsList = req.body;
-    user.blockList = req.body;
-    user.gradYear = req.body;
-    user.profilePicture = req.body;
-    user.courses = req.body;
-    user.aboutMe = req.body;
-    user.gender = req.body;
-    user.planOfstudy = req.body;
-    user.DOB = req.body;
-    user.country = req.body;
-    user.isPrivate = req.body;
+    user.major = req.body.major;
+    user.friendsList = req.body.friendsList;
+    user.blockList = req.body.blockList;;
+    user.gradYear = req.body.gradYear;;
+    user.profilePicture = req.body.profilePicture;
+    user.courses = req.body.courses;
+    user.aboutMe = req.body.aboutMe;
+    user.gender = req.body.gender;
+    user.planOfstudy = req.body.planOfstudy;
+    user.DOB = req.body.DOB;
+    user.country = req.body.country;
+    user.isPrivate = req.body.isPrivate;
 
     const changePassword = req.body;
     const confirmPassword = req.body;
@@ -128,7 +130,6 @@ router.post('/forgot-password', async (req, res) => {
         return;
     }
 
-    const secret = 'secretKey' + user.password;
 
     const token = jwt.sign({
         user: { username: user.username, email: user.email }
@@ -174,6 +175,11 @@ router.post('/forgot-password', async (req, res) => {
 
 router.get('/reset-password', async (req, res) => {
     const token = decodeURIComponent(req.query.token);
+    const salt = await bcrypt.genSalt(10);
+
+    const password = req.body.password;
+    const confirmPassword = req.body.confirmPassword;
+
 
     decoded = jwt.verify(token, 'secretKey', async function (error, decoded) {
         if (error) {
@@ -190,34 +196,6 @@ router.get('/reset-password', async (req, res) => {
                 res.status(400).json({ error: "User does not exist" })
                 return;
             }
-        }
-    });
-})
-
-router.post('/reset-password', async (req, res) => {
-    const token = decodeURIComponent(req.query.token);
-
-    const salt = await bcrypt.genSalt(10);           //salt adds random string of characters on top of password
-
-    decoded = jwt.verify(token, 'secretKey', async function (error, decoded) {
-        if (error) {
-            console.log(error);
-            // res.send('Link expired or failed');
-            res.status(400).json({ error: "Link has failed or expired'" })
-            return;
-        }
-        else {
-            const user = await UserInfo.findOne({ username: decoded.user.username });
-
-            if (!user) {
-                // res.send('User does not exist');
-                res.status(400).json({ error: "User does not exist" })
-                return;
-            }
-
-            const password = req.body.password;
-            const confirmPassword = req.body.confirmPassword;
-
             if (password !== confirmPassword) {
                 console.log('Passwords do not match');
                 res.status(400).json({ error: "Passwords do not match" })
@@ -225,20 +203,64 @@ router.post('/reset-password', async (req, res) => {
             }
             else {
                 try {
-                  const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
-                  user.password = hashedPassword;
-                  await user.save();
-                  res.send(`Password changed! Please click the link to return to login page: http://localhost:5001/api/user/login`);
+                    const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
+                    user.password = hashedPassword;
+                    await user.save();
+                    res.send(`Password changed!`);
                 } catch (error) {
-                  console.log("There was an issue with the data provided");
-                  res.status(400).json({ error: "There was an issue with the data provided" })
+                    console.log("There was an issue with the data provided");
+                    res.status(400).json({ error: "There was an issue with the data provided" })
                 }
             }
-        }
-        console.log(decoded);
-    });
 
+        }
+    });
 })
+
+// router.post('/reset-password', async (req, res) => {
+//     const token = decodeURIComponent(req.query.token);
+
+//     const salt = await bcrypt.genSalt(10);           //salt adds random string of characters on top of password
+
+//     decoded = jwt.verify(token, 'secretKey', async function (error, decoded) {
+//         if (error) {
+//             console.log(error);
+//             // res.send('Link expired or failed');
+//             res.status(400).json({ error: "Link has failed or expired'" })
+//             return;
+//         }
+//         else {
+//             const user = await UserInfo.findOne({ username: decoded.user.username });
+
+//             if (!user) {
+//                 // res.send('User does not exist');
+//                 res.status(400).json({ error: "User does not exist" })
+//                 return;
+//             }
+
+//             const password = req.body.password;
+//             const confirmPassword = req.body.confirmPassword;
+
+//             if (password !== confirmPassword) {
+//                 console.log('Passwords do not match');
+//                 res.status(400).json({ error: "Passwords do not match" })
+//                 return;
+//             }
+//             else {
+//                 try {
+//                   const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
+//                   user.password = hashedPassword;
+//                   await user.save();
+//                   res.send(`Password changed! Please click the link to return to login page: http://localhost:5001/api/user/login`);
+//                 } catch (error) {
+//                   console.log("There was an issue with the data provided");
+//                   res.status(400).json({ error: "There was an issue with the data provided" })
+//                 }
+//             }
+//         }
+//     });
+
+// })
 
 
 
