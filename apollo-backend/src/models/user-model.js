@@ -35,12 +35,14 @@ var userSchema = new Schema({
 
     major: {
         type: String,
-        required: false
+        required: false, 
+        default: ""
     },
 
     gradYear: {
         type: Number,
-        required: false
+        required: false,
+        default: ""
     },
 
     isProf: {
@@ -54,12 +56,12 @@ var userSchema = new Schema({
     },
 
     friendsList: {
-        type: String,
+        type: Array,
         required: false
     },
 
     blockList: {
-        type: String,
+        type: Array,
         required: false
     },
 
@@ -80,38 +82,44 @@ var userSchema = new Schema({
 
     aboutMe: {
         type: String,
-        required: false
+        required: false,
+        default: ""
     },
 
     country: {
         type: String,
-        required: false
+        required: false,
+        default: ""
     },
 
     gender: {
         type: String,
-        required: false
+        required: false,
+        default: ""
     },
 
     planOfStudy: {
         type: Array,
-        required: false
+        required: false,
     },
 
     DOB: {
         type: String,
-        required: false
+        required: false,
+        default: ""
     },
 
     isPrivate: {
         type: String,
-        required: false
+        required: false,
+        default: true
     },
 
 
     currentYear: {
         type: String,
-        required: false
+        required: false,
+        default: ""
     }
 
 
