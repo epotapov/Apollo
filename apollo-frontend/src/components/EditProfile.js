@@ -270,8 +270,6 @@ const countryList = [
 	"Åland Islands"
 ];
 
-
-
 const {Option} = Select;
 
 export default function TellUsMore() { 
@@ -281,12 +279,14 @@ export default function TellUsMore() {
 		handleSubmit(values);
 	};
 	const handleSubmit = async (values) => {
-		aboutMe = values.aboutme;
-		dob = values.dob;
-		major = values.major;
-		country = values.country;
-		year = values.classyear;
-		gender = values.gender;
+
+		aboutMe = values.aboutme ? values.aboutme : aboutMe;
+		gradYear = values.gradyear ? values.gradyear : gradYear;
+		dob = values.dob ? values.dob : dob;
+		major = values.major ? values.major : major;
+		country = values.country ? values.country : country;
+		year = values.classyear ? values.classyear : year;
+		gender = values.gender ? values.gender : gender;
 
 		const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
 			country, gender, planOfStudy, dob, year};
@@ -302,7 +302,6 @@ export default function TellUsMore() {
 		.then(response => response.json())
 		.then(data => navigate('/Profile',{state: {user: data}}))
 	}
-	
 
 	const data = useLocation();
 	if (data.state != null) {
