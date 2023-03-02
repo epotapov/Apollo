@@ -26,7 +26,6 @@ export default function SearchBar() {
             console.log('Dining Halls:', val);
         }
         else {
-            
             fetch('http://localhost:5001/api/user/get/' + val)
             .then(response => response.json())
             .then(data => navigate('/Profile',{state: {user: data}}))

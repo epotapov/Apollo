@@ -19,33 +19,35 @@ export default function ProfilePage() {
     country: ''
   }
 
-  const {username, setUsername} = useState('');
-  const {bio, setBio} = useState('');
-  const {email, setEmail} = useState('');
-  const {dob, setDob} = useState('');
-  const {major, setMajor} = useState('');
-  const {year, setYear} = useState('');
-  const {role, setRole} = useState('');
-  const {country, setCountry} = useState('');
-  const {gender, setGender} = useState('');
+  var username = '';
+  var bio = '';
+  var email = '';
+  var dob = '';
+  var major = '';
+  var year = '';
+  var role = '';
+  var country = '';
+  var gender = '';
+  
   const data = useLocation();
-    if (data != null) {
+    if (data.state != null) {
       const user = data.state.user;
       if (user != null) {
-        setUsername(user.username);
-        setBio(user.bio);
-        setEmail(user.email);
-        setDob(user.dob);
-        setMajor(user.major);
-        setYear(user.year);
+        console.log(user);
+        username = user.username;
+        bio = user.bio;
+        email = user.email;
+        dob = user.dob;
+        major = user.major;
+        year = user.year;
         if (user.isProf) {
-          setRole("Professor");
+          role = "Professor";
         }
         else {
-          setRole("Student");
+          role = "Student";
         }
-        setCountry(user.country);
-        setGender(user.gender);
+        country = user.country;
+        gender = user.gender;
       }
     }
     return (
