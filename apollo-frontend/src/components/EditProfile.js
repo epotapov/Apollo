@@ -271,12 +271,13 @@ export default function TellUsMore() {
 
 	const navigate = useNavigate();
 	const handleSubmit = async () => {
-		user.bio = bio;
-		user.dob = dob;
+		user.aboutMe = aboutMe;
+		user.DOB = dob;
 		user.major = major;
 		user.year = year;
 		user.country = country;
 		user.gender = gender;
+		console.log(user);
 		const response = await fetch('http://localhost:5001/api/user/edit', {
 			method: 'POST',
 			body: JSON.stringify(user),
@@ -287,35 +288,27 @@ export default function TellUsMore() {
 		navigate('/Profile', {state: {user: user}});	
 	}
 
-	var user = {
-		username: '',
-		bio: '',
-		email: '',
-		dob: '',
-		major: '',
-		year: '',
-		role: '',
-		country: ''
-	  }
-
+	var user = null;
 	var username = '';
-	var bio = '';
+	var aboutMe = '';
 	var dob = '';
 	var major = '';
 	var year = '';
 	var role = '';
+	var email = '';
 	var country = '';
 	var gender = '';
 	
 	const data = useLocation();
-	  if (data.state != null) {
-		const user = data.state.user;
+	if (data.state != null) {
+		user = data.state.user;
 		if (user != null) {
 		  username = user.username;
-		  bio = user.bio;
-		  dob = user.dob;
+		  aboutMe = user.aboutMe;
+		  dob = user.DOB;
 		  major = user.major;
-		  year = user.year;
+		  year = user.currentYear;
+		  email = user.email;
 		  if (user.isProf) {
 			role = "Professor";
 		  }
@@ -352,8 +345,8 @@ export default function TellUsMore() {
 				<Form.Item
 					name="aboutme"
 					label="About Me"
-					onChange={(e) => {bio = e.target.value}}
-					value={bio}
+					onChange={(e) => {aboutMe = e.target.value}}
+					value={aboutMe}
 				>
 					<Input.TextArea 
 						placeholder="About Me"
