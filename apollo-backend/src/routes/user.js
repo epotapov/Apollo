@@ -74,7 +74,7 @@ router.get('/verify', async (req, res) => {
                 user.isVerified = true;
                 await user.save();
             })
-            res.send('Please click the link to return to login page: http://localhost:3000/api/user/login');
+            res.send('Account verification successful! Please return to the ' + 'login page'.link('http://localhost:3000/Login'));
         }
         console.log(decoded);
     });
@@ -151,7 +151,7 @@ router.post('/forgot-password', async (req, res) => {
         from: 'TestDummy2199@gmail.com',
         to: email,
         subject: 'Apollo Password Reset',
-        text: `Reset Password Link: http://localhost:5001/api/user/reset-password/?token=${token}`
+        text: `Reset Password Link: http://localhost:3000/reset-password/${token}`
     };
 
     transporter.sendMail(mailOptions, (error) => {
