@@ -8,24 +8,16 @@ import { Avatar, Card, Button} from 'antd';
 export default function ProfilePage() {
 
   const navigate = useNavigate();
-  const editProfile = (username) => {
+  const editProfile = () => {
     console.log("Edit Profile");
-    navigate('/EditProfile', {state: {user: user}});
+    console.log(user);
+    let userData = JSON.stringify(user);
+    navigate('/EditProfile', {state: {user: userData}});
   }
 
-  var user = {
-    username: '',
-    bio: '',
-    email: '',
-    dob: '',
-    major: '',
-    year: '',
-    role: '',
-    country: ''
-  }
-
+  let user = null;
   var username = '';
-  var bio = '';
+  var aboutMe = '';
   var email = '';
   var dob = '';
   var major = '';
@@ -36,14 +28,14 @@ export default function ProfilePage() {
   
   const data = useLocation();
     if (data.state != null) {
-      const user = data.state.user;
+      user = data.state.user;
       if (user != null) {
         username = user.username;
-        bio = user.bio;
+        aboutMe = user.aboutMe;
         email = user.email;
-        dob = user.dob;
+        dob = user.DOB;
         major = user.major;
-        year = user.year;
+        year = user.currentYear;
         if (user.isProf) {
           role = "Professor";
         }
@@ -61,7 +53,7 @@ export default function ProfilePage() {
           <Avatar size={100} shape="circle" src="../img/apollo-gray.png" />
           <h3> Username: {username}</h3>
         </Card>
-        <p> About me: {bio} </p>
+        <p> About me: {aboutMe} </p>
         <p> Email: {email} </p>
         <p> Date of Birth: {dob} </p>
         <p> Major: {major} </p>
