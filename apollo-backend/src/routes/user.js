@@ -74,39 +74,35 @@ router.get('/verify', async (req, res) => {
                 user.isVerified = true;
                 await user.save();
             })
-            res.send('Please click the link to return to login page: http://localhost:3000/api/user/login');
+            res.send('Account verification successful! Please return to the ' + 'login page'.link('http://localhost:3000/Login'));
         }
         console.log(decoded);
     });
 });
 
 router.post('/edit', async (req, res) => {
-    const salt = await bcrypt.genSalt(10);
+    // const salt = await bcrypt.genSalt(10);
 
-    const user = req.body.user;
+    const {username, email, major, gradYear, role, isVerified, courses, aboutMe, country, gender, planOfStudy, dob, isPrivate, year} = req.body;
 
-    console.log(user);
-    const exists = await UserInfo.findOne({ username: user.username });
+    const user = await UserInfo.findOne({ email: email });
 
-    if (!exists) {
+    if (!user) {
         res.send('User does not exist');
     }
 
-    user.major = req.body.major;
-    user.friendsList = req.body.friendsList;
-    user.blockList = req.body.blockList;;
-    user.gradYear = req.body.gradYear;;
-    user.profilePicture = req.body.profilePicture;
-    user.courses = req.body.courses;
-    user.aboutMe = req.body.aboutMe;
-    user.gender = req.body.gender;
-    user.planOfstudy = req.body.planOfstudy;
-    user.DOB = req.body.DOB;
-    user.country = req.body.country;
-    user.isPrivate = req.body.isPrivate;
-    user.currentYear = req.body.currentYear;
+    user.major = major;
+    user.gradYear = gradYear;
+    user.aboutMe = aboutMe;
+    user.planOfStudy = planOfStudy;
+    user.currentYear = year;
+    user.courses = courses;
+    user.gender = gender;
+    user.DOB = dob;
+    user.country = country;
+    user.isPrivate = isPrivate;
 
-
+    /*
     const changePassword = req.body;
     const confirmPassword = req.body;
 
@@ -114,10 +110,11 @@ router.post('/edit', async (req, res) => {
         res.send('Passwords do not match');
     } else {
         user.password = bcrypt.hash(changePassword, salt);
-    }
+    }*/
 
     await user.save();
-
+    res.send('User information updated');
+    console.log(user);
 })
 
 router.post('/forgot-password', async (req, res) => {
@@ -157,7 +154,7 @@ router.post('/forgot-password', async (req, res) => {
         from: 'TestDummy2199@gmail.com',
         to: email,
         subject: 'Apollo Password Reset',
-        text: `Reset Password Link: http://localhost:5001/api/user/reset-password/?token=${token}`
+        text: `Reset Password Link: http://localhost:3000/reset-password/${token}`
     };
 
     transporter.sendMail(mailOptions, (error) => {

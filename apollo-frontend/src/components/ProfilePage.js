@@ -9,22 +9,25 @@ export default function ProfilePage() {
 
   const navigate = useNavigate();
   const editProfile = () => {
-    console.log("Edit Profile");
-    console.log(user);
-    let userData = JSON.stringify(user);
-    navigate('/EditProfile', {state: {user: userData}});
+    fetch('http://localhost:5001/api/user/get/' + user.username)
+    .then(response => response.json())
+    .then(data => navigate('/EditProfile',{state: {user: data}}))
   }
 
   let user = null;
-  var username = '';
-  var aboutMe = '';
-  var email = '';
-  var dob = '';
-  var major = '';
-  var year = '';
-  var role = '';
-  var country = '';
-  var gender = '';
+  let username = '';
+  let aboutMe = '';
+  let email = '';
+  let dob = '';
+  let major = '';
+  let year = '';
+  let role = '';
+  let country = '';
+  let gradYear = '';
+  let courses = {};
+  let planOfStudy = {};
+
+  let gender = '';
   
   const data = useLocation();
     if (data.state != null) {
@@ -36,6 +39,9 @@ export default function ProfilePage() {
         dob = user.DOB;
         major = user.major;
         year = user.currentYear;
+        gradYear = user.gradYear;
+        courses = user.courses;
+        planOfStudy = user.planOfStudy;
         if (user.isProf) {
           role = "Professor";
         }
@@ -61,6 +67,9 @@ export default function ProfilePage() {
         <p> Role: {role} </p>
         <p> Country: {country} </p>
         <p> Gender: {gender} </p>
+        <p> Graduation year: {gradYear} </p>
+        <p> Courses: {courses} </p>
+        <p> Plan of Study: {planOfStudy} </p>
         <Button type="primary" shape="round" size="large" onClick={editProfile}>
           Edit Profile
         </Button>

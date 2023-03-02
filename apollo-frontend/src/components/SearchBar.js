@@ -19,17 +19,32 @@ export default function SearchBar() {
     
     const onChange = (val) => {
         console.log('onChange:', val);
-        if (val.group === 'Courses') {
-            console.log('Courses:', val);
+        console.log(courseData.length)
+        for (let i = 0; i < courseData.length; i++) {
+            if (courseData[i].value === val) {
+                console.log(val)
+                fetch('http://localhost:5001/api/course/get/' + val.substring(0, val.indexOf(":")))
+                .then(response => response.json())
+                .then(data => navigate('/Course',{state: {course: data}}))
+                return;
+            }
         }
-        else if (val.group === "Dining Halls") {
-            console.log('Dining Halls:', val);
+        for (let i = 0; i < diningHallData.length; i++) {
+            if (diningHallData[i].value === val) {
+                fetch('http://localhost:5001/api/dining/get/' + val)
+                .then(response => response.json())
+                .then(data => navigate('/DiningHall',{state: {dining: data}}))
+                return;
+            }
         }
-        else {
-            fetch('http://localhost:5001/api/user/get/' + val)
-            .then(response => response.json())
-            .then(data => navigate('/Profile',{state: {user: data}}))
-        } 
+        for (let i = 0; i < userData.length; i++) {
+            if (userData[i].value === val) {
+                fetch('http://localhost:5001/api/user/get/' + val)
+                .then(response => response.json())
+                .then(data => navigate('/Profile',{state: {user: data}}))
+                return;
+            }
+        }
     };
       
 
@@ -68,7 +83,7 @@ export default function SearchBar() {
     return(
         <Select
             showSearch
-            placeholder="Select a person"
+            placeholder="Search for a course, dining hall, or user"
             optionFilterProp="children"
             onChange={onChange}
             onSearch={onSearch}

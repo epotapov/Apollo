@@ -1,17 +1,24 @@
 import { React, useState } from 'react';
 import { Link } from 'react-router-dom'
-import { Grid, Button, Checkbox, Form, Input, Select, DatePicker} from 'antd';
+import {Button, Checkbox, Form, Input, Select, DatePicker, InputNumber, message, Switch} from 'antd';
 import {useLocation} from 'react-router-dom';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-
-const onFinish = (values) => {
-    console.log('Success:', values);
-  };
-
-const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-};
+let user = null;
+let username = '';
+let aboutMe = '';
+let dob = '';
+let major = '';
+let isPrivate = null;
+let year = '';
+let role = '';
+let email = '';
+let country = '';
+let gender = '';
+let gradYear = '';
+let courses = {};
+let planOfStudy = {};
 
 const countryList = [
     "Afghanistan",
@@ -265,40 +272,66 @@ const countryList = [
 	"Åland Islands"
 ];
 
+
 const {Option} = Select;
 
 export default function TellUsMore() { 
 
+	const [messageApi, contextHolder] = message.useMessage();
+	const success = (message) => {
+		messageApi.open({
+			type: 'success',
+			content: message,
+		  });
+	};	
+
+	const [courseData, setCourseData] = useState([]); // for course dropdown
+	useEffect(() => {
+        fetch('http://localhost:5001/api/course/getAll')
+        .then(response => response.json())
+        .then(data => {
+            for (let i = 0; i < data.length; i++) {
+                let val = data[i].Course + ": " + data[i].Title;
+                const element = {value: val, label: val, group: 'Courses'};
+                setCourseData(courseData => courseData.concat(element));
+            }
+        })
+	}, []);
+
 	const navigate = useNavigate();
-	const handleSubmit = async () => {
-		user.aboutMe = aboutMe;
-		user.DOB = dob;
-		user.major = major;
-		user.year = year;
-		user.country = country;
-		user.gender = gender;
-		console.log(user);
+	const onFinish = (values) => {
+		handleSubmit(values);
+	};
+	const handleSubmit = async (values) => {
+
+		aboutMe = values.aboutme ? values.aboutme : aboutMe;
+		gradYear = values.gradyear ? values.gradyear : gradYear;
+		dob = values.dob ? values.dob : dob;
+		major = values.major ? values.major : major;
+		country = values.country ? values.country : country;
+		year = values.classyear ? values.classyear : year;
+		gender = values.gender ? values.gender : gender;
+		planOfStudy = values.planofstudy ? values.planofstudy : planOfStudy;
+		courses = values.courses ? values.courses : courses;
+		isPrivate = values.isprivate ? values.isprivate : isPrivate;
+
+		const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
+			country, gender, planOfStudy, dob, year, isPrivate};
+		
 		const response = await fetch('http://localhost:5001/api/user/edit', {
 			method: 'POST',
-			body: JSON.stringify(user),
+			body: JSON.stringify(updated_user),
 			headers: {
 			  'Content-Type': 'application/json'
 			}
 		});
-		navigate('/Profile', {state: {user: user}});	
+		<success message="Profile updated successfully!"/>
+		console.log(updated_user);
+		fetch('http://localhost:5001/api/user/get/' + user.username)
+		.then(response => response.json())
+		.then(data => navigate('/Profile',{state: {user: data}}))
 	}
 
-	var user = null;
-	var username = '';
-	var aboutMe = '';
-	var dob = '';
-	var major = '';
-	var year = '';
-	var role = '';
-	var email = '';
-	var country = '';
-	var gender = '';
-	
 	const data = useLocation();
 	if (data.state != null) {
 		user = data.state.user;
@@ -309,6 +342,7 @@ export default function TellUsMore() {
 		  major = user.major;
 		  year = user.currentYear;
 		  email = user.email;
+		  gradYear = user.gradYear;
 		  if (user.isProf) {
 			role = "Professor";
 		  }
@@ -317,50 +351,64 @@ export default function TellUsMore() {
 		  }
 		  country = user.country;
 		  gender = user.gender;
+		  gradYear = user.gradYear;
+		  planOfStudy = user.planOfStudy;
+		  courses = user.courses;
+		  isPrivate = user.isPrivate;
 		}
 	}
     const [size, setSize] = useState('large');
 
     return (
-        <div className='Container'>
+        <div className="container">
             <Form 
                 name="tellusmore"
                 labelCol={{
-                    span: 8,
+                    span: 12,
                 }} 
                 wrapperCol={{
-                    span: 16,
+                    span: 24,
                 }}
                 style={{
-                    maxWidth: 600,
+                    maxWidth: 1000,
+					width: '100%',
+					margin: 'auto',
+					padding: '20px',
+					display: 'inline-block',
+					backgroundColor: 'white',
+					borderRadius: '10px',
+					boxShadow: '0 0 10px 0 rgba(0, 0, 0, 0.1)',
+					marginTop: '20px',
+					marginBottom: '20px',
                 }}
                 initialValues={{
                     remember: true,
+					
                 }}
-                onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
+                onFinish={handleSubmit}
                 autoComplete="off"
             >
                 <h2> Tell Us More </h2>
 				<Form.Item
 					name="aboutme"
 					label="About Me"
-					onChange={(e) => {aboutMe = e.target.value}}
-					value={aboutMe}
+					value="aboutMe"
 				>
 					<Input.TextArea 
 						placeholder="About Me"
 						showCount={true}
 						allowClear={true}
+						defaultValue={aboutMe}
 						autoSize={true} />
 				</Form.Item>
                 <Form.Item 
                     name="gender"
                     label="Gender"
-                    onChange={(e) => {gender = e.target.value}}
-                    value={gender}  
                 >
-                    <Select placeholder="Select Your Gender" allowClear>
+                    <Select 
+						placeholder="Select Your Gender" 
+						defaultValue={gender}
+					>
                         <Option value="male">Male</Option>
                         <Option value="female">Female</Option>
                         <Option value="other">Other</Option>
@@ -369,12 +417,11 @@ export default function TellUsMore() {
                 <Form.Item
                     name="country"
                     label="Country"
-                    onChange={(e) => {country = e.target.value}}
-                    value={country}
                 >
                     <Select 
                         placeholder="Select Country"
                         showSearch
+						defaultValue={country}
                         optionFilterProp="children"
                         filterOption={(input, option) => (option?.label ?? '').includes(input)}
                         filterSort={(optionA, optionB) =>
@@ -387,10 +434,8 @@ export default function TellUsMore() {
                 <Form.Item
                     name ="classyear"
                     label="Class Year"
-                    onChange={(e) => {year = e.target.value}}
-                    value={year}
                 >
-                    <Select placeholder="Select Class Year" allowClear> 
+                    <Select placeholder="Select Class Year" allowClear defaultValue={year}>
                         <Option value="freshman">Freshman</Option>
                         <Option value="sophomore">Sophomore</Option>
                         <Option value="junior">Junior</Option>
@@ -401,26 +446,61 @@ export default function TellUsMore() {
                 <Form.Item
                     name="major"
                     label="Major"
-                    onChange={(e) => {major = e.target.value}}
-                    value={major}
                 >
-                    <Input placeholder="Major" />
+                    <Input placeholder="Major" defaultValue={major} />
                 </Form.Item>
                 <Form.Item
                     name="dob"
                     label="Date of Birth"
-                    onChange={(e) => {dob = e.target.value}}
-                    value={dob}
+                    defaultValue={dob}
                 >
                     <DatePicker />
                 </Form.Item>
+				<Form.Item
+					name="courses"
+					label="Courses"
+				>
+					<Select
+						mode="multiple"
+						placeholder="Insert courses"
+						defaultValue={courses}
+						style={{ width: '100%' }}
+						options={courseData}
+					/>
+				</Form.Item>
+				<Form.Item
+					name="gradyear"
+					label="Graduation Year"
+					defaultValue={gradYear}
+				>
+					<InputNumber min={2020} max={2040} placeholder="Graduation Year" />
+				</Form.Item>
+				<Form.Item
+					name="planofstudy"
+					label="Plan of Study"
+				> 
+					<Select
+						mode="multiple"
+						placeholder="Insert courses"
+						defaultValue={planOfStudy}
+						style={{ width: '100%' }}
+						options={courseData}
+   					/>
+				</Form.Item>
+				<Form.Item
+					name="isprivate"
+					label="Private Profile"
+					
+				>
+					<Switch defaultChecked={isPrivate} />
+				</Form.Item>
                 <Form.Item
                 wrapperCol={{
                     offset: 8,
                     span: 16,
                 }}
                 >
-				<Button type="primary" htmlType="submit" onClick={handleSubmit}>
+				<Button type="primary" htmlType="submit">
 					Submit
 				</Button>
                 </Form.Item>
