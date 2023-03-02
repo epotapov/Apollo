@@ -156,24 +156,26 @@ h1 {
   outline: none;
 }
 
-.certain-category-search-dropdown .ant-select-dropdown-menu-item-group-title {
-  color: #666;
-  font-weight: bold;
-}
-
-.certain-category-search-dropdown .ant-select-dropdown-menu-item-group {
-  border-bottom: 1px solid #f6f6f6;
-}
-
-.certain-category-search-dropdown .ant-select-dropdown-menu-item {
-  padding-left: 16px;
-}
-
-.certain-category-search-dropdown .ant-select-dropdown-menu-item.show-all {
+#name {
   text-align: center;
-  cursor: default;
+}
+#menu {
+  width: 50%;
+  margin: auto; 
+  align-items: center;
+}
+#cont {
+  align-items: center;
 }
 
-.certain-category-search-dropdown .ant-select-dropdown-menu {
-  max-height: 300px;
+#course_name {
+  text-align: center;
+}
+#course_page {
+  width: 50%;
+  margin: auto; 
+  align-items: center;
+}
+#course_cont {
+  align-items: center;
 }
