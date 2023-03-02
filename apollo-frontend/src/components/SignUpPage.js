@@ -101,7 +101,7 @@ export default function SignUpPage() {
     console.log(user)
 
     // TODO this URL will need to change eventually (once we have the server on another machine)
-    const response = await fetch('http://localhost:5001/api/user/signup', {
+    const response = await fetch('http://localhost:5001/api/user/edit', {
       method: 'POST',
       body: JSON.stringify(user),
       headers: {

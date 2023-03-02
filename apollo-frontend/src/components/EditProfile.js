@@ -1,6 +1,9 @@
 import { React, useState } from 'react';
 import { Link } from 'react-router-dom'
 import { Grid, Button, Checkbox, Form, Input, Select, DatePicker} from 'antd';
+import {useLocation} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 
 const onFinish = (values) => {
     console.log('Success:', values);
@@ -265,13 +268,64 @@ const countryList = [
 const {Option} = Select;
 
 export default function TellUsMore() { 
-	const [aboutMe, setAboutMe] = useState('');
-    const [country, setCountry] = useState('');
-    const [gender, setGender] = useState('');
-    const [major, setMajor] = useState('');
-    const [year, setYear] = useState('');
-    const [dob, setDob] = useState('');
 
+	const navigate = useNavigate();
+	const handleSubmit = async () => {
+		user.bio = bio;
+		user.dob = dob;
+		user.major = major;
+		user.year = year;
+		user.country = country;
+		user.gender = gender;
+		const response = await fetch('http://localhost:5001/api/user/edit', {
+			method: 'POST',
+			body: JSON.stringify(user),
+			headers: {
+			  'Content-Type': 'application/json'
+			}
+		});
+		navigate('/Profile', {state: {user: user}});	
+	}
+
+	var user = {
+		username: '',
+		bio: '',
+		email: '',
+		dob: '',
+		major: '',
+		year: '',
+		role: '',
+		country: ''
+	  }
+
+	var username = '';
+	var bio = '';
+	var dob = '';
+	var major = '';
+	var year = '';
+	var role = '';
+	var country = '';
+	var gender = '';
+	
+	const data = useLocation();
+	  if (data.state != null) {
+		const user = data.state.user;
+		if (user != null) {
+		  username = user.username;
+		  bio = user.bio;
+		  dob = user.dob;
+		  major = user.major;
+		  year = user.year;
+		  if (user.isProf) {
+			role = "Professor";
+		  }
+		  else {
+			role = "Student";
+		  }
+		  country = user.country;
+		  gender = user.gender;
+		}
+	}
     const [size, setSize] = useState('large');
 
     return (
@@ -298,8 +352,8 @@ export default function TellUsMore() {
 				<Form.Item
 					name="aboutme"
 					label="About Me"
-					onChange={(e) => setAboutMe(e.target.value)}
-					value={aboutMe}
+					onChange={(e) => {bio = e.target.value}}
+					value={bio}
 				>
 					<Input.TextArea 
 						placeholder="About Me"
@@ -310,8 +364,8 @@ export default function TellUsMore() {
                 <Form.Item 
                     name="gender"
                     label="Gender"
-                    onChange={(e) => setGender(e.target.value)}
-                    value={gender}
+                    onChange={(e) => {gender = e.target.value}}
+                    value={gender}  
                 >
                     <Select placeholder="Select Your Gender" allowClear>
                         <Option value="male">Male</Option>
@@ -322,7 +376,7 @@ export default function TellUsMore() {
                 <Form.Item
                     name="country"
                     label="Country"
-                    onChange={(e) => setCountry(e.target.value)}
+                    onChange={(e) => {country = e.target.value}}
                     value={country}
                 >
                     <Select 
@@ -340,7 +394,7 @@ export default function TellUsMore() {
                 <Form.Item
                     name ="classyear"
                     label="Class Year"
-                    onChange={(e) => setYear(e.target.value)}
+                    onChange={(e) => {year = e.target.value}}
                     value={year}
                 >
                     <Select placeholder="Select Class Year" allowClear> 
@@ -354,7 +408,7 @@ export default function TellUsMore() {
                 <Form.Item
                     name="major"
                     label="Major"
-                    onChange={(e) => setMajor(e.target.value)}
+                    onChange={(e) => {major = e.target.value}}
                     value={major}
                 >
                     <Input placeholder="Major" />
@@ -362,7 +416,7 @@ export default function TellUsMore() {
                 <Form.Item
                     name="dob"
                     label="Date of Birth"
-                    onChange={(e) => setDob(e.target.value)}
+                    onChange={(e) => {dob = e.target.value}}
                     value={dob}
                 >
                     <DatePicker />
@@ -373,11 +427,9 @@ export default function TellUsMore() {
                     span: 16,
                 }}
                 >
-                <Link to = '/DiningHall'>
-                    <Button type="primary" htmlType="submit">
-                        Continue
-                    </Button>
-                </Link>
+				<Button type="primary" htmlType="submit" onClick={handleSubmit}>
+					Submit
+				</Button>
                 </Form.Item>
             </Form>
         </div>

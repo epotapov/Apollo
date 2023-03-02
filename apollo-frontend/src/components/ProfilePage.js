@@ -1,12 +1,17 @@
 import { React, useState, Component} from 'react';
-import { Link } from 'react-router-dom'
-import { useLocation } from 'react-router-dom';
+import { Link , useLocation, useNavigate} from 'react-router-dom'
 import '../ProfilePage.css'
 import '../App.css'
 import Navbar from './Navbar';
 import { Avatar, Card, Button} from 'antd';
 
 export default function ProfilePage() {
+
+  const navigate = useNavigate();
+  const editProfile = (username) => {
+    console.log("Edit Profile");
+    navigate('/EditProfile', {state: {user: user}});
+  }
 
   var user = {
     username: '',
@@ -33,7 +38,6 @@ export default function ProfilePage() {
     if (data.state != null) {
       const user = data.state.user;
       if (user != null) {
-        console.log(user);
         username = user.username;
         bio = user.bio;
         email = user.email;
@@ -65,8 +69,7 @@ export default function ProfilePage() {
         <p> Role: {role} </p>
         <p> Country: {country} </p>
         <p> Gender: {gender} </p>
-        <p>  </p>
-        <Button type="primary" shape="round" size="large" href="/TellUsMore">
+        <Button type="primary" shape="round" size="large" onClick={editProfile}>
           Edit Profile
         </Button>
         <Button type="primary" shape="round" size="large" href="/Login">
