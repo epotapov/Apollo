@@ -271,16 +271,11 @@ export default function TellUsMore() {
 
 	const navigate = useNavigate();
 	const handleSubmit = async () => {
-		user.aboutMe = aboutMe;
-		user.DOB = dob;
-		user.major = major;
-		user.year = year;
-		user.country = country;
-		user.gender = gender;
-		console.log(user);
+		const updated_user = {username, email, major, gradYear, role, courses, 
+			aboutMe, country, gender, planOfStudy, dob, year};
 		const response = await fetch('http://localhost:5001/api/user/edit', {
 			method: 'POST',
-			body: JSON.stringify(user),
+			body: JSON.stringify(updated_user),
 			headers: {
 			  'Content-Type': 'application/json'
 			}
@@ -288,7 +283,7 @@ export default function TellUsMore() {
 		navigate('/Profile', {state: {user: user}});	
 	}
 
-	var user = null;
+	let user = null;
 	var username = '';
 	var aboutMe = '';
 	var dob = '';
@@ -298,10 +293,15 @@ export default function TellUsMore() {
 	var email = '';
 	var country = '';
 	var gender = '';
+	var gradYear = '';
+	var courses = {};
+	var planOfStudy = {};
+	
 	
 	const data = useLocation();
 	if (data.state != null) {
 		user = data.state.user;
+		console.log(user);
 		if (user != null) {
 		  username = user.username;
 		  aboutMe = user.aboutMe;

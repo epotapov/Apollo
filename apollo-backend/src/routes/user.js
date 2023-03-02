@@ -83,28 +83,24 @@ router.get('/verify', async (req, res) => {
 router.post('/edit', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
 
-    const user = req.body.user;
+    const {username, email, major, gradYear, role, isVerified, courses, aboutMe, country, gender, planOfStudy, DOB, isPrivate, currentYear} = req.body;
 
-    console.log(user);
-    const exists = await UserInfo.findOne({ username: user.username });
+    console.log(email);
+    const user = await UserInfo.findOne({ email: email });
 
-    if (!exists) {
+    if (!user) {
         res.send('User does not exist');
     }
 
-    user.major = req.body.major;
-    user.friendsList = req.body.friendsList;
-    user.blockList = req.body.blockList;;
-    user.gradYear = req.body.gradYear;;
-    user.profilePicture = req.body.profilePicture;
-    user.courses = req.body.courses;
-    user.aboutMe = req.body.aboutMe;
-    user.gender = req.body.gender;
-    user.planOfstudy = req.body.planOfstudy;
-    user.DOB = req.body.DOB;
-    user.country = req.body.country;
-    user.isPrivate = req.body.isPrivate;
+    user.major = major;
+    user.gradYear = gradYear;
+    user.aboutMe = aboutMe;
+    user.gender = gender;
+    user.DOB = DOB;
+    user.country = country;
+    user.isPrivate = isPrivate;
 
+    /*
     const changePassword = req.body;
     const confirmPassword = req.body;
 
@@ -112,10 +108,9 @@ router.post('/edit', async (req, res) => {
         res.send('Passwords do not match');
     } else {
         user.password = bcrypt.hash(changePassword, salt);
-    }
+    }*/
 
     await user.save();
-
 })
 
 router.post('/forgot-password', async (req, res) => {

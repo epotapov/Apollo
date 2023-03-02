@@ -74,7 +74,6 @@ var userSchema = new Schema({
         default: false
     }, 
     
-    
     courses: {
         type: Array,
         required: false

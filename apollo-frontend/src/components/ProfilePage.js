@@ -9,10 +9,9 @@ export default function ProfilePage() {
 
   const navigate = useNavigate();
   const editProfile = () => {
-    console.log("Edit Profile");
-    console.log(user);
-    let userData = JSON.stringify(user);
-    navigate('/EditProfile', {state: {user: userData}});
+    fetch('http://localhost:5001/api/user/get/' + user.username)
+    .then(response => response.json())
+    .then(data => navigate('/EditProfile',{state: {user: data}}))
   }
 
   let user = null;
