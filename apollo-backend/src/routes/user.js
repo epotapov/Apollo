@@ -12,6 +12,21 @@ const fs = require('fs');
 
 const validator = require('validator'); // helps validate user input
 
+//Need for file upload
+const path = require('path')
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'profile_pictures')
+    },
+
+    filename: (req, file, cb) => {
+        console.log(file);
+        cb(null, Date.now() + path.extname(file.originalname))
+    }
+});
+const upload = multer({storage: storage});
+
 //controller functions
 const { signupUser, loginUser } = require('../controllers/user-controller');
 
@@ -261,7 +276,10 @@ router.get('/reset-password', async (req, res) => {
 
 // })
 
-
+//MUST RUN COMMAND "npm install multer"
+router.post("/upload-image", upload.single("image"), (req, res) => {
+    res.send("Image uploading")
+});
 
 module.exports = router;
 
