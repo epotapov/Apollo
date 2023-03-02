@@ -81,11 +81,10 @@ router.get('/verify', async (req, res) => {
 });
 
 router.post('/edit', async (req, res) => {
-    const salt = await bcrypt.genSalt(10);
+    // const salt = await bcrypt.genSalt(10);
 
     const {username, email, major, gradYear, role, isVerified, courses, aboutMe, country, gender, planOfStudy, DOB, isPrivate, currentYear} = req.body;
 
-    console.log(email);
     const user = await UserInfo.findOne({ email: email });
 
     if (!user) {
@@ -111,6 +110,8 @@ router.post('/edit', async (req, res) => {
     }*/
 
     await user.save();
+    res.send('User information updated');
+    console.log(user);
 })
 
 router.post('/forgot-password', async (req, res) => {

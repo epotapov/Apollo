@@ -15,15 +15,15 @@ export default function ProfilePage() {
   }
 
   let user = null;
-  var username = '';
-  var aboutMe = '';
-  var email = '';
-  var dob = '';
-  var major = '';
-  var year = '';
-  var role = '';
-  var country = '';
-  var gender = '';
+  let username = '';
+  let aboutMe = '';
+  let email = '';
+  let dob = '';
+  let major = '';
+  let year = '';
+  let role = '';
+  let country = '';
+  let gender = '';
   
   const data = useLocation();
     if (data.state != null) {

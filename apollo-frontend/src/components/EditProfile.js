@@ -4,14 +4,19 @@ import { Grid, Button, Checkbox, Form, Input, Select, DatePicker} from 'antd';
 import {useLocation} from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
-
-const onFinish = (values) => {
-    console.log('Success:', values);
-  };
-
-const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-};
+let user = null;
+let username = '';
+let aboutMe = '';
+let dob = '';
+let major = '';
+let year = '';
+let role = '';
+let email = '';
+let country = '';
+let gender = '';
+let gradYear = '';
+let courses = {};
+let planOfStudy = {};
 
 const countryList = [
     "Afghanistan",
@@ -265,14 +270,27 @@ const countryList = [
 	"Åland Islands"
 ];
 
+
+
 const {Option} = Select;
 
 export default function TellUsMore() { 
 
 	const navigate = useNavigate();
-	const handleSubmit = async () => {
-		const updated_user = {username, email, major, gradYear, role, courses, 
-			aboutMe, country, gender, planOfStudy, dob, year};
+	const onFinish = (values) => {
+		handleSubmit(values);
+	};
+	const handleSubmit = async (values) => {
+		aboutMe = values.aboutme;
+		dob = values.dob;
+		major = values.major;
+		country = values.country;
+		year = values.classyear;
+		gender = values.gender;
+
+		const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
+			country, gender, planOfStudy, dob, year};
+		
 		const response = await fetch('http://localhost:5001/api/user/edit', {
 			method: 'POST',
 			body: JSON.stringify(updated_user),
@@ -280,28 +298,15 @@ export default function TellUsMore() {
 			  'Content-Type': 'application/json'
 			}
 		});
-		navigate('/Profile', {state: {user: user}});	
+		fetch('http://localhost:5001/api/user/get/' + user.username)
+		.then(response => response.json())
+		.then(data => navigate('/Profile',{state: {user: data}}))
 	}
+	
 
-	let user = null;
-	var username = '';
-	var aboutMe = '';
-	var dob = '';
-	var major = '';
-	var year = '';
-	var role = '';
-	var email = '';
-	var country = '';
-	var gender = '';
-	var gradYear = '';
-	var courses = {};
-	var planOfStudy = {};
-	
-	
 	const data = useLocation();
 	if (data.state != null) {
 		user = data.state.user;
-		console.log(user);
 		if (user != null) {
 		  username = user.username;
 		  aboutMe = user.aboutMe;
@@ -336,31 +341,32 @@ export default function TellUsMore() {
                 }}
                 initialValues={{
                     remember: true,
+					
                 }}
-                onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
+                onFinish={handleSubmit}
                 autoComplete="off"
             >
                 <h2> Tell Us More </h2>
 				<Form.Item
 					name="aboutme"
 					label="About Me"
-					onChange={(e) => {aboutMe = e.target.value}}
-					value={aboutMe}
+					value="aboutMe"
 				>
 					<Input.TextArea 
 						placeholder="About Me"
 						showCount={true}
 						allowClear={true}
+						defaultValue={aboutMe}
 						autoSize={true} />
 				</Form.Item>
                 <Form.Item 
                     name="gender"
                     label="Gender"
-                    onChange={(e) => {gender = e.target.value}}
-                    value={gender}  
                 >
-                    <Select placeholder="Select Your Gender" allowClear>
+                    <Select 
+						placeholder="Select Your Gender" 
+						defaultValue={gender}
+					>
                         <Option value="male">Male</Option>
                         <Option value="female">Female</Option>
                         <Option value="other">Other</Option>
@@ -369,12 +375,11 @@ export default function TellUsMore() {
                 <Form.Item
                     name="country"
                     label="Country"
-                    onChange={(e) => {country = e.target.value}}
-                    value={country}
                 >
                     <Select 
                         placeholder="Select Country"
                         showSearch
+						defaultValue={country}
                         optionFilterProp="children"
                         filterOption={(input, option) => (option?.label ?? '').includes(input)}
                         filterSort={(optionA, optionB) =>
@@ -387,10 +392,8 @@ export default function TellUsMore() {
                 <Form.Item
                     name ="classyear"
                     label="Class Year"
-                    onChange={(e) => {year = e.target.value}}
-                    value={year}
                 >
-                    <Select placeholder="Select Class Year" allowClear> 
+                    <Select placeholder="Select Class Year" allowClear defaultValue={year}>
                         <Option value="freshman">Freshman</Option>
                         <Option value="sophomore">Sophomore</Option>
                         <Option value="junior">Junior</Option>
@@ -401,16 +404,13 @@ export default function TellUsMore() {
                 <Form.Item
                     name="major"
                     label="Major"
-                    onChange={(e) => {major = e.target.value}}
-                    value={major}
                 >
-                    <Input placeholder="Major" />
+                    <Input placeholder="Major" defaultValue={major} />
                 </Form.Item>
                 <Form.Item
                     name="dob"
                     label="Date of Birth"
-                    onChange={(e) => {dob = e.target.value}}
-                    value={dob}
+                    defaultValue={dob}
                 >
                     <DatePicker />
                 </Form.Item>
@@ -420,7 +420,7 @@ export default function TellUsMore() {
                     span: 16,
                 }}
                 >
-				<Button type="primary" htmlType="submit" onClick={handleSubmit}>
+				<Button type="primary" htmlType="submit">
 					Submit
 				</Button>
                 </Form.Item>
