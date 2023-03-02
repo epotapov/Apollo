@@ -18,17 +18,19 @@ export default function SearchBar() {
     const navigate = useNavigate();
     
     const onChange = (val) => {
-        if (val.group=="Courses") {
+        console.log('onChange:', val);
+        if (val.group === 'Courses') {
             console.log('Courses:', val);
         }
-        else if (val.group=="Dining Halls") {
+        else if (val.group === "Dining Halls") {
             console.log('Dining Halls:', val);
         }
         else {
+            
             fetch('http://localhost:5001/api/user/get/' + val)
             .then(response => response.json())
-            .then(data => navigate('/profile/', {state: data}))
-        }
+            .then(data => navigate('/Profile',{state: {user: data}}))
+        } 
     };
       
 
@@ -56,6 +58,7 @@ export default function SearchBar() {
         .then(response => response.json())
         .then(data => {
             for (let i = 0; i < data.length; i++) {
+                let val = data[i].username;
                 const element = {value: data[i].username, label: data[i].username, group: 'Users'};
                 setUserData(userData => userData.concat(element))
             }
