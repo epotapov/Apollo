@@ -25,7 +25,12 @@ const diningSchema = new mongoose.Schema({
 
   link: {
     type: String
+  },
+
+  hours: {
+    type: String
   }
+  
 });
 
 module.exports = mongoose.model('DiningInfo', diningSchema);
