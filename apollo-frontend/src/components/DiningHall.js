@@ -12,6 +12,7 @@ export default function DiningHall(props) {
     let mobileOrder = '';
     let description = '';
     let link = '';
+    let hours = '';
     
     const [size, setSize] = useState('large');
     const data = useLocation();
@@ -24,6 +25,7 @@ export default function DiningHall(props) {
         mobileOrder = hall.mobileOrder;
         description = hall.description;
         link = hall.link;
+        hours = hall.hours;
     }
     return( 
         <div id='cont'>
@@ -42,6 +44,8 @@ export default function DiningHall(props) {
                 {!mealSwipe && <p>No</p>}
                 <h2>Description:</h2>
                 {description}
+                <h2>Hours</h2>
+                {hours}
                 <h2><a href={link}>Menu</a></h2>
                 <h2>User Reviews:</h2>
                 {/*<Row>

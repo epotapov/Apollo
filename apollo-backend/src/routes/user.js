@@ -156,7 +156,7 @@ router.post('/forgot-password', async (req, res) => {
     }, 'secretKey', { expiresIn: '20 minutes' }
     );
 
-    res.send('Please check your email to reset your password');
+    res.status(200).json({ message: 'A reset password link has been sent to your email!' });
 
     //Send reset password email
 
@@ -225,7 +225,8 @@ router.post('/reset-password', async (req, res) => {
                   const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
                   user.password = hashedPassword;
                   await user.save();
-                  res.send(`Password changed! Please click the link to return to login page: http://localhost:5001/api/user/login`);
+                  res.status(200).json({ message: 'Password changed! Please return to the ' + 'login page'.link('http://localhost:3000/Login')});
+                  // res.send('Password changed! Please return to the ' + 'login page'.link('http://localhost:3000/Login'`);
                 } catch (error) {
                   console.log("There was an issue with the data provided");
                   res.status(400).json({ error: "There was an issue with the data provided" })

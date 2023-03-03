@@ -52,7 +52,8 @@ var userSchema = new Schema({
 
     profilePicture: {
         type: String,
-        required: false
+        required: false,
+        default: "../../profile_pictures/defaultpfp.png"
     },
 
     friendsList: {
@@ -196,10 +197,6 @@ userSchema.statics.signup = async function(username, email, password, major,
     const salt = await bcrypt.genSalt(10);           //salt adds random string of characters on top of password
     const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
 
-    //Check if a profile pick was not chosen. If not chosen, select the default profile picture.
-    /*if (!profilePicture && profilePicture.length <= 3) {
-        profilePicture = "../../profile_pictures/defaultpfp.png"
-    }*/
 
     const user = await this.create({username, email, password: hashedPassword, major, gradYear, profilePicture, role, courses, aboutMe, country, gender, planOfStudy, DOB, isPrivate});
 
