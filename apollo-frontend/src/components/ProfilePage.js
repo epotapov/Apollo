@@ -85,12 +85,13 @@ export default function ProfilePage() {
         twitterLink = userFound.twitterLink;
       }
     }
+    /*
     let courseItems = null;
     let planofstudyItems = null;
     if (!courses)
       courseItems = courses.map((course) => <p key={course.toString()}>{course} </p>);
     if (!planOfStudy)
-      planofstudyItems = planOfStudy.map((course) => <p key={course.toString()}>{course} </p>);
+      planofstudyItems = planOfStudy.map((course) => <p key={course.toString()}>{course} </p>);*/
     return (
       <div>
         <Navbar/>
@@ -115,10 +116,8 @@ export default function ProfilePage() {
               <p> Country: {country} </p>
               <p> Gender: {gender} </p>
               <p> Graduation year: {gradYear} </p>
-              <p> Courses: </p>
-              {courseItems}
-              <p> Plan of Study: </p>
-              {planofstudyItems}
+              <p> Courses: {displayArray(courses)} </p>
+              <p> Plan of Study: {displayArray(planOfStudy)} </p>
               <Card title="Social media Links" bordered={false} style={{ width: 200 }}>
               <a href={linkedinLink.toString}> 
                 <LinkedinFilled style={{ fontSize: '30px', color: '#08c' }}/>
