@@ -28,6 +28,8 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const { logout } = useLogout();
   const { user } = useUserContext();
+  // Passowrd Modal
+  const [visible, setVisible] = useState(false);
 
   const editProfile = () => {
     fetch('http://localhost:5001/api/user/get/' + user.username)
@@ -52,6 +54,7 @@ export default function ProfilePage() {
   let linkedinLink = '';
   let instagramLink = '';
   let twitterLink = '';
+
 
   let gender = '';
   
@@ -139,6 +142,9 @@ export default function ProfilePage() {
               <div>
                 <Button type="primary" shape="round" size="large" onClick={editProfile}>
                   Edit Profile
+                </Button>
+                <Button type="primary" shape="round" size="large" onClick={() => navigate('/ChangePass')}>
+                  Change Password
                 </Button>
                 <Button type="primary" shape="round" size="large" onClick={() => logout()}>
                   Log Out

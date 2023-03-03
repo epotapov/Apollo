@@ -9,6 +9,7 @@ import DiningHall from './components/DiningHall';
 import CoursePage from './components/CoursePage';
 import ProfilePage from './components/ProfilePage';
 import ResetPass from './components/ResetPass';
+import ChangePass from './components/ChangePass';
 import Error from './components/Error';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
       <Route exact path='/Course' element={<CoursePage/>}/>
       <Route exact path='/Profile' element={<ProfilePage />}/>
       <Route exact path="/ResetPass/:token" element={<ResetPass />}/>
+      <Route exact path="/ChangePass" element={<ChangePass />}/>
       <Route exact path='*' element={<Error/>}/>
     </Routes>
   );

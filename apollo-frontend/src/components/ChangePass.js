@@ -3,15 +3,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../App.css';
 import { useParams } from 'react-router-dom'
 import { Button, Form, Input } from 'antd';
+import { useUserContext } from '../hooks/useUserContext';
 
-export default function ResetPass() {
+export default function ChangePass() {
 
+  const { user } = useUserContext();
   let password = '';
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(null);
   const [confirm, setConfirm] = useState(null);
   const navigate = useNavigate();
-  const { token } = useParams();
   const [passwordObj, setPassword] = useState({
     value: '',
     valid: 'error',
@@ -49,10 +50,10 @@ export default function ResetPass() {
     setConfirm(null)
     setError(null)
     const password = passwordObj.value;
-    const passwordInfo = {password, confirmPassword};
+    const email = user.user.email;
+    const passwordInfo = {email ,password, confirmPassword};
 
-    console.log(passwordInfo)
-    const response = await fetch(`http://localhost:5001/api/user/reset-password/?token=${token}`, {
+    const response = await fetch(`http://localhost:5001/api/user/change-password`, {
       method: 'POST',
       body: JSON.stringify(passwordInfo),
       headers: {
@@ -61,7 +62,6 @@ export default function ResetPass() {
     });
 
     const json = await response.json();
-    console.log(json)
 
     if (!response.ok) {
       setError(json.error);
@@ -74,7 +74,9 @@ export default function ResetPass() {
       setError(null);
       setConfirm(json)
       console.log('Password updated', json);
-      navigate('/Login');
+      fetch('http://localhost:5001/api/user/get/' + user.username)
+      .then(response => response.json())
+      .then(data => navigate('/Profile',{state: {user: data}}))
     }
   }
 

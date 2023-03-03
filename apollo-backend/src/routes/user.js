@@ -192,6 +192,7 @@ router.post('/forgot-password', async (req, res) => {
 
 // reset password api
 router.post('/reset-password', async (req, res) => {
+    console.log(req);
     const token = decodeURIComponent(req.query.token);
 
     const salt = await bcrypt.genSalt(10);           //salt adds random string of characters on top of password
@@ -237,6 +238,34 @@ router.post('/reset-password', async (req, res) => {
 
 })
 
+
+// Change password api
+router.post('/change-password', async (req, res) => {
+    const { email, password, confirmPassword } = req.body;
+    const salt = await bcrypt.genSalt(10); 
+    const user = await UserInfo.findOne({ email: email });
+
+    if (password !== confirmPassword) {
+        console.log('Passwords do not match');
+        res.status(400).json({ error: "Passwords do not match" })
+        return;
+    }
+    else {
+        try {
+            const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
+            user.password = hashedPassword;
+            await user.save();
+            res.status(200).json({ message: 'Password changed! Please return to the ' + 'login page'.link('http://localhost:3000/Login')});
+            // res.send('Password changed! Please return to the ' + 'login page'.link('http://localhost:3000/Login'`);
+        } catch (error) {
+            console.log("There was an issue with the data provided");
+            res.status(400).json({ error: "There was an issue with the data provided" })
+        }
+    }
+    
+
+});
+
 //MUST RUN COMMAND "npm install multer"
 router.post("/upload-image", upload.single("image"), async (req, res) => {
     const prof_pic_name = req.file.filename
@@ -247,7 +276,6 @@ router.post("/upload-image", upload.single("image"), async (req, res) => {
     console.log(userReturned)
     res.send("Image uploading")
 });
-
 
 module.exports = router;
 
