@@ -30,7 +30,7 @@ export default function LandingPage() {
                     {user && (
                         <div>
                             <span>Welcome {user.username} </span>
-                            <Avatar onClick={goToProfile} size={50} shape="circle" src="../img/apollo-gray.png" />
+                            <Avatar onClick={goToProfile} size={40} shape="circle" src="../img/apollo-gray.png" />
                             <Button type="primary" onClick={() => logout()} size={size}>
                                 Log Out
                             </Button>
