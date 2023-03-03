@@ -153,7 +153,6 @@ router.post('/forgot-password', async (req, res) => {
 
     res.send('Please check your email to reset your password');
 
-
     //Send reset password email
 
     const smtpConfig = {

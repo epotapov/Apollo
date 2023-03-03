@@ -3,6 +3,7 @@ import { Link , useLocation, useNavigate} from 'react-router-dom'
 import '../ProfilePage.css'
 import '../App.css'
 import Navbar from './Navbar';
+import {LinkedinFilled, InstagramFilled, TwitterCircleFilled} from '@ant-design/icons';
 import { Avatar, Card, Button} from 'antd';
 
 function displayArray(arr) {
@@ -39,6 +40,9 @@ export default function ProfilePage() {
   let gradYear = '';
   let courses = {};
   let planOfStudy = {};
+  let linkedinLink = '';
+  let instagramLink = '';
+  let twitterLink = '';
 
   let gender = '';
   
@@ -63,6 +67,9 @@ export default function ProfilePage() {
         }
         country = user.country;
         gender = user.gender;
+        linkedinLink = user.linkedinLink;
+        instagramLink = user.instagramLink;
+        twitterLink = user.twitterLink;
       }
     }
     return (
@@ -83,6 +90,17 @@ export default function ProfilePage() {
         <p> Graduation year: {gradYear} </p>
         <p> Courses: {displayArray(courses)} </p>
         <p> Plan of Study: {displayArray(planOfStudy)} </p>
+        <Card title="Social media Links" bordered={false} style={{ width: 200 }}>
+          <a href={linkedinLink.toString}> 
+            <LinkedinFilled style={{ fontSize: '30px', color: '#08c' }}/>
+          </a>
+          <a href={instagramLink.toString}>
+            <InstagramFilled style={{ fontSize: '30px', color: '#08c' }}/>
+          </a>
+          <a href={twitterLink.toString}>
+            <TwitterCircleFilled style={{ fontSize: '30px', color: '#08c' }}/>
+          </a>
+        </Card>
         <Button type="primary" shape="round" size="large" onClick={editProfile}>
           Edit Profile
         </Button>
@@ -92,4 +110,3 @@ export default function ProfilePage() {
       </div>  
     );
 }
-
