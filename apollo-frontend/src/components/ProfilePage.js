@@ -5,6 +5,19 @@ import '../App.css'
 import Navbar from './Navbar';
 import { Avatar, Card, Button} from 'antd';
 
+function displayArray(arr) {
+  let str = '';
+  for (let i = 0; i < arr.length; i++) {
+    if (i != arr.length - 1) {
+      str += arr[i] + ', ';
+    }
+    else {
+      str += arr[i];
+    }
+  }
+  return str;
+}
+
 export default function ProfilePage() {
 
   const navigate = useNavigate();
@@ -68,8 +81,8 @@ export default function ProfilePage() {
         <p> Country: {country} </p>
         <p> Gender: {gender} </p>
         <p> Graduation year: {gradYear} </p>
-        <p> Courses: {courses} </p>
-        <p> Plan of Study: {planOfStudy} </p>
+        <p> Courses: {displayArray(courses)} </p>
+        <p> Plan of Study: {displayArray(planOfStudy)} </p>
         <Button type="primary" shape="round" size="large" onClick={editProfile}>
           Edit Profile
         </Button>
