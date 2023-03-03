@@ -78,11 +78,11 @@ export default function ProfilePage() {
         else {
           role = "Student";
         }
-        country = user.country;
-        gender = user.gender;
-        linkedinLink = user.linkedinLink;
-        instagramLink = user.instagramLink;
-        twitterLink = user.twitterLink;
+        country = userFound.country;
+        gender = userFound.gender;
+        linkedinLink = userFound.linkedinLink;
+        instagramLink = userFound.instagramLink;
+        twitterLink = userFound.twitterLink;
       }
     }
     let courseItems = null;
