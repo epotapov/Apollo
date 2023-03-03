@@ -53,7 +53,7 @@ var userSchema = new Schema({
     profilePicture: {
         type: String,
         required: false,
-        default: "../../apollo-backend/profile_pictures/defaultpfp.png"
+        default: "defaultpfp.png"
     },
 
     friendsList: {

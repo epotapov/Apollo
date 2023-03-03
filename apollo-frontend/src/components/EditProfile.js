@@ -1,10 +1,11 @@
 import { React, useState } from 'react';
 import { Link } from 'react-router-dom'
-import { Button, Checkbox, Form, Input, Select, DatePicker, InputNumber, message, Switch } from 'antd';
+import { Button, Checkbox, Form, Input, Select, DatePicker, InputNumber, message, Switch, Upload } from 'antd';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {LinkedinFilled, InstagramFilled, TwitterCircleFilled} from '@ant-design/icons';
+import {LinkedinFilled, InstagramFilled, TwitterCircleFilled, PlusOutlined } from '@ant-design/icons';
+
 
 let user = null;
 let username = '';
@@ -23,6 +24,8 @@ let planOfStudy = {};
 let instagramLink = '';
 let linkedinLink = '';
 let twitterLink = '';
+let profilePic = '';
+let profilePicFile = null;
 
 const countryList = [
     "Afghanistan",
@@ -322,7 +325,8 @@ export default function EditProfile() {
 		linkedinLink = values.linkedin ? values.linkedin : linkedinLink;
 		twitterLink = values.twitter ? values.twitter : twitterLink;
 
-		const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
+		console.log(profilePicFile);
+		/*const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
 			country, gender, planOfStudy, dob, year, isPrivate, instagramLink, linkedinLink, twitterLink};
 		
 		const response = await fetch('http://localhost:5001/api/user/edit', {
@@ -335,7 +339,7 @@ export default function EditProfile() {
 		<success message="Profile updated successfully!"/>
 		fetch('http://localhost:5001/api/user/get/' + user.username)
 		.then(response => response.json())
-		.then(data => navigate('/Profile',{state: {user: data}}))
+		.then(data => navigate('/Profile',{state: {user: data}})) */
 	}
 
 	const data = useLocation();
@@ -364,10 +368,32 @@ export default function EditProfile() {
 		  instagramLink = user.instagramLink;
 		  twitterLink = user.twitterLink;
 		  linkedinLink = user.linkedinLink;
+		  profilePic = user.profilePic;
 		}
 	}
     const [size, setSize] = useState('large');
 
+	// Profile picture stuff
+
+	const beforeUpload = (file) => {
+		const isPng = file.type === 'image/png';
+		if (!isPng) {
+		  message.error('You can only upload PNG file!');
+		}
+
+		return isPng;
+	}
+
+	const handleChange = info => {
+		if (info.file.status === "uploading") {
+			console.log(info.file, info.fileList);
+		}
+		if (info.file.status === "done") {
+			console.log(info.file, info.fileList);
+		}
+	};
+
+	
     return (
         <div className="container">
             <Form 
@@ -398,7 +424,20 @@ export default function EditProfile() {
                 autoComplete="off"
             >
                 <h2> Tell Us More </h2>
+				<Form.Item> 
+					<Upload
+						name="profilepic"
+						beforeUpload={beforeUpload}
+						onChange={handleChange}
+						showUploadList={false}
+						action='http://localhost:5001/api/user/upload-image'
+						headers= {{'username': username}}
+					>
+						<Button type="Primary"> Upload </Button>
+					</Upload>
+				</Form.Item>
 				<Form.Item
+					
 					name="aboutme"
 					label="About Me"
 					value="aboutMe"

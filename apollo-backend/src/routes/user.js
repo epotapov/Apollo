@@ -267,12 +267,11 @@ router.post('/change-password', async (req, res) => {
 });
 
 //MUST RUN COMMAND "npm install multer"
-router.post("/upload-image", upload.single("image"), async (req, res) => {
+router.post("/upload-image", upload.single("profilepic"), async (req, res) => {
     const prof_pic_name = req.file.filename
-    const the_username = req.body.username
+    const the_username = req.headers.username
     const userReturned = await UserInfo.findOne({username: the_username})
-    console.log(userReturned)
-    userReturned.profilePicture  = prof_pic_name;
+    userReturned.profilePicture = prof_pic_name;
     console.log(userReturned)
     res.send("Image uploading")
 });
