@@ -36,7 +36,7 @@ var userSchema = new Schema({
     major: {
         type: String,
         required: false, 
-        default: ""
+        default: "Undecied"
     },
 
     gradYear: {

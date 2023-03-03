@@ -9,8 +9,6 @@ import { useUserContext } from '../hooks/useUserContext';
 
 import { Button, Avatar} from 'antd';
 
-
-
 export default function LandingPage() {
     const [size, setSize] = useState('large');
     const { logout } = useLogout();
