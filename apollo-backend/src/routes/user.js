@@ -98,9 +98,9 @@ router.get('/verify', async (req, res) => {
 router.post('/edit', async (req, res) => {
     // const salt = await bcrypt.genSalt(10);
 
-    const {username, email, major, gradYear, role, 
+    const {username, email, major, gradYear, profilePicture, role, 
         isVerified, courses, aboutMe, country, gender, planOfStudy, 
-        dob, isPrivate, year, profilePicture, instagramLink, twitterLink, linkedinLink} = req.body;
+        dob, isPrivate, year, instagramLink, twitterLink, linkedinLink} = req.body;
 
     const user = await UserInfo.findOne({ email: email });
 
@@ -112,6 +112,7 @@ router.post('/edit', async (req, res) => {
     user.gradYear = gradYear;
     user.aboutMe = aboutMe;
     user.planOfStudy = planOfStudy;
+    this.profilePicture = profilePicture;
     user.currentYear = year;
     user.courses = courses;
     user.gender = gender;
@@ -238,7 +239,7 @@ router.post('/reset-password', async (req, res) => {
 //MUST RUN COMMAND "npm install multer"
 router.post("/upload-image", upload.single("image"), async (req, res) => {
     const prof_pic_name = req.file.filename
-    console.log(prof_pic_name)
+    const the_user = req.body.username
     res.send("Image uploading")
 });
 
