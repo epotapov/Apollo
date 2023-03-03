@@ -26,8 +26,6 @@ export default function ProfilePage() {
   const { logout } = useLogout();
   const { user } = useUserContext();
 
-  console.log("asdfasdfsd",user)
-
   const editProfile = () => {
     fetch('http://localhost:5001/api/user/get/' + user.username)
     .then(response => response.json())

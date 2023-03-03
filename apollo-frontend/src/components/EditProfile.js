@@ -317,14 +317,18 @@ export default function TellUsMore() {
 		gender = values.gender ? values.gender : gender;
 		planOfStudy = values.planofstudy ? values.planofstudy : planOfStudy;
 		courses = values.courses ? values.courses : courses;
-		isPrivate = values.isprivate ? values.isprivate : isPrivate;
+		isPrivate = (values.privateprofile !== "undefined") ? values.privateprofile : isPrivate;
 		instagramLink = values.instagram ? values.instagram : instagramLink;
 		linkedinLink = values.linkedin ? values.linkedin : linkedinLink;
 		twitterLink = values.twitter ? values.twitter : twitterLink;
 
 		const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
-			country, gender, planOfStudy, dob, year, isPrivate};
+			country, gender, planOfStudy, dob, year, isPrivate, instagramLink, linkedinLink, twitterLink};
 		
+		console.log(values.privateprofile);
+		console.log(isPrivate);
+		console.log(updated_user);
+		/*
 		const response = await fetch('http://localhost:5001/api/user/edit', {
 			method: 'POST',
 			body: JSON.stringify(updated_user),
@@ -336,7 +340,7 @@ export default function TellUsMore() {
 		console.log(updated_user);
 		fetch('http://localhost:5001/api/user/get/' + user.username)
 		.then(response => response.json())
-		.then(data => navigate('/Profile',{state: {user: data}}))
+		.then(data => navigate('/Profile',{state: {user: data}}))*/
 	}
 
 	const data = useLocation();
@@ -498,7 +502,7 @@ export default function TellUsMore() {
    					/>
 				</Form.Item>
 				<Form.Item
-					name="isprivate"
+					name="privateprofile"
 					label="Private Profile"
 				>
 					<Switch defaultChecked={isPrivate} />
