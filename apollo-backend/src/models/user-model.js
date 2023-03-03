@@ -144,7 +144,7 @@ var userSchema = new Schema({
 
 // static signup method
 userSchema.statics.signup = async function(username, email, password, major, 
-    gradYear, role, isVerified, courses, aboutMe, country, gender, 
+    gradYear, role, isVerified, profilePicture, courses, aboutMe, country, gender, 
     planOfStudy, DOB, isPrivate, currentYear, 
     instagramLink, linkedinLink, twitterLink, profilePicture) {
 
@@ -201,7 +201,7 @@ userSchema.statics.signup = async function(username, email, password, major,
         profilePicture = "../../profile_pictures/defaultpfp.png"
     }*/
 
-    const user = await this.create({username, email, password: hashedPassword, major, gradYear, role, courses, aboutMe, country, gender, planOfStudy, DOB, isPrivate});
+    const user = await this.create({username, email, password: hashedPassword, major, gradYear, profilePicture, role, courses, aboutMe, country, gender, planOfStudy, DOB, isPrivate});
 
     // User Verification method
 
