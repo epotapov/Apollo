@@ -43,6 +43,7 @@ export default function DiningHall(props) {
                 <h2>Description:</h2>
                 {description}
                 <h2><a href={link}>Menu</a></h2>
+                <h2>User Reviews:</h2>
                 {/*<Row>
                     <Col span={8}>
                     <Card>
