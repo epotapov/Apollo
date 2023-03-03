@@ -279,7 +279,7 @@ const countryList = [
 
 const {Option} = Select;
 
-export default function TellUsMore() { 
+export default function EditProfile() { 
 
 	const [messageApi, contextHolder] = message.useMessage();
 	const success = (message) => {

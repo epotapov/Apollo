@@ -120,13 +120,13 @@ export default function ProfilePage() {
               <p> Courses: {displayArray(courses)} </p>
               <p> Plan of Study: {displayArray(planOfStudy)} </p>
               <Card title="Social media Links" bordered={false} style={{ width: 200 }}>
-              <a href={linkedinLink}> 
-                <LinkedinFilled style={{ fontSize: '30px', color: '#08c' }}/>
-              </a>
-              <a href={instagramLink}>
+              <a target="_blank" href={instagramLink}>
                 <InstagramFilled style={{ fontSize: '30px', color: '#08c' }}/>
               </a>
-              <a href={twitterLink}>
+              <a target="_blank" href={linkedinLink}> 
+                <LinkedinFilled style={{ fontSize: '30px', color: '#08c' }}/>
+              </a>
+              <a target="_blank" href={twitterLink}>
                 <TwitterCircleFilled style={{ fontSize: '30px', color: '#08c' }}/>
               </a>
             </Card>
