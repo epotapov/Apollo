@@ -8,6 +8,9 @@ import { useLogout } from '../hooks/useLogout';
 import { useUserContext } from '../hooks/useUserContext';
 
 function displayArray(arr) {
+  if (arr == null) {
+    return '';
+  }
   let str = '';
   for (let i = 0; i < arr.length; i++) {
     if (i != arr.length - 1) {
