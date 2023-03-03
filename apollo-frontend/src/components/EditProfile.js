@@ -325,10 +325,6 @@ export default function TellUsMore() {
 		const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
 			country, gender, planOfStudy, dob, year, isPrivate, instagramLink, linkedinLink, twitterLink};
 		
-		console.log(values.privateprofile);
-		console.log(isPrivate);
-		console.log(updated_user);
-		/*
 		const response = await fetch('http://localhost:5001/api/user/edit', {
 			method: 'POST',
 			body: JSON.stringify(updated_user),
@@ -337,10 +333,9 @@ export default function TellUsMore() {
 			}
 		});
 		<success message="Profile updated successfully!"/>
-		console.log(updated_user);
 		fetch('http://localhost:5001/api/user/get/' + user.username)
 		.then(response => response.json())
-		.then(data => navigate('/Profile',{state: {user: data}}))*/
+		.then(data => navigate('/Profile',{state: {user: data}}))
 	}
 
 	const data = useLocation();
