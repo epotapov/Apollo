@@ -277,9 +277,12 @@ router.get('/reset-password', async (req, res) => {
 // })
 
 //MUST RUN COMMAND "npm install multer"
-router.post("/upload-image", upload.single("image"), (req, res) => {
+router.post("/upload-image", upload.single("image"), async (req, res) => {
+    const prof_pic_name = req.file.filename
+    console.log(prof_pic_name)
     res.send("Image uploading")
 });
+
 
 module.exports = router;
 
