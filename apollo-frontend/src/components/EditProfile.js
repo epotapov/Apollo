@@ -1,9 +1,10 @@
 import { React, useState } from 'react';
 import { Link } from 'react-router-dom'
-import {Button, Checkbox, Form, Input, Select, DatePicker, InputNumber, message, Switch} from 'antd';
-import {useLocation} from 'react-router-dom';
+import { Button, Checkbox, Form, Input, Select, DatePicker, InputNumber, message, Switch } from 'antd';
+import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {LinkedinFilled, InstagramFilled, TwitterCircleFilled} from '@ant-design/icons';
 
 let user = null;
 let username = '';
@@ -19,6 +20,9 @@ let gender = '';
 let gradYear = '';
 let courses = {};
 let planOfStudy = {};
+let instagramLink = '';
+let linkedinLink = '';
+let twitterLink = '';
 
 const countryList = [
     "Afghanistan",
@@ -313,10 +317,13 @@ export default function TellUsMore() {
 		gender = values.gender ? values.gender : gender;
 		planOfStudy = values.planofstudy ? values.planofstudy : planOfStudy;
 		courses = values.courses ? values.courses : courses;
-		isPrivate = values.isprivate ? values.isprivate : isPrivate;
+		isPrivate = (values.privateprofile !== "undefined") ? values.privateprofile : isPrivate;
+		instagramLink = values.instagram ? values.instagram : instagramLink;
+		linkedinLink = values.linkedin ? values.linkedin : linkedinLink;
+		twitterLink = values.twitter ? values.twitter : twitterLink;
 
 		const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
-			country, gender, planOfStudy, dob, year, isPrivate};
+			country, gender, planOfStudy, dob, year, isPrivate, instagramLink, linkedinLink, twitterLink};
 		
 		const response = await fetch('http://localhost:5001/api/user/edit', {
 			method: 'POST',
@@ -326,7 +333,6 @@ export default function TellUsMore() {
 			}
 		});
 		<success message="Profile updated successfully!"/>
-		console.log(updated_user);
 		fetch('http://localhost:5001/api/user/get/' + user.username)
 		.then(response => response.json())
 		.then(data => navigate('/Profile',{state: {user: data}}))
@@ -355,6 +361,9 @@ export default function TellUsMore() {
 		  planOfStudy = user.planOfStudy;
 		  courses = user.courses;
 		  isPrivate = user.isPrivate;
+		  instagramLink = user.instagramLink;
+		  twitterLink = user.twitterLink;
+		  linkedinLink = user.linkedinLink;
 		}
 	}
     const [size, setSize] = useState('large');
@@ -488,11 +497,29 @@ export default function TellUsMore() {
    					/>
 				</Form.Item>
 				<Form.Item
-					name="isprivate"
+					name="privateprofile"
 					label="Private Profile"
-					
 				>
 					<Switch defaultChecked={isPrivate} />
+				</Form.Item>
+				<h3> Social Media Links </h3>
+				<Form.Item
+					name="instagram"
+					label="Instagram"
+				>
+					<Input prefix={<InstagramFilled />} placeholder="Instagram" defaultValue={instagramLink} allowClear/>
+				</Form.Item>
+				<Form.Item
+					name="twitter"
+					label="Twitter"
+				>
+					<Input prefix={<TwitterCircleFilled />} placeholder="Twitter" defaultValue={twitterLink} allowClear/>
+				</Form.Item>
+				<Form.Item
+					name="linkedin"
+					label="LinkedIn"
+				>
+					<Input prefix={<LinkedinFilled />} placeholder="LinkedIn" defaultValue={linkedinLink} allowClear/>
 				</Form.Item>
                 <Form.Item
                 wrapperCol={{

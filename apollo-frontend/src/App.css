@@ -179,3 +179,10 @@ h1 {
 #course_cont {
   align-items: center;
 }
+
+#ProfilePage {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
