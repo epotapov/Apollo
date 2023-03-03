@@ -1,7 +1,7 @@
 import { React, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../App.css';
-
+import { useParams } from 'react-router-dom'
 import { Button, Form, Input } from 'antd';
 
 export default function ResetPass() {
@@ -10,8 +10,46 @@ export default function ResetPass() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(null);
   const [confirm, setConfirm] = useState(null);
+  const navigate = useNavigate();
+  const { token } = useParams();
+  console.log(token);
 
-  return  (
+  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
+
+  const handleSubmit = async (e) => {
+    setConfirm(null)
+    setError(null)
+    const passwordInfo = {password, confirmPassword};
+
+    const response = await fetch(`http://localhost:5001/api/user/reset-password/?token=${token}`, {
+      method: 'POST',
+      body: JSON.stringify(passwordInfo),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const json = await response.json();
+    console.log(json)
+
+    if (!response.ok) {
+      setError(json.error);
+      return;
+    }
+
+    if (response.ok) {
+      setPassword('');
+      setConfirmPassword('');
+      setError(null);
+      setConfirm(json)
+      console.log('Password updated', json);
+      navigate('/Login');
+    }
+  }
+
+  return(
     <div className='Container'>
        <Form
           name="basic"
@@ -27,8 +65,8 @@ export default function ResetPass() {
           initialValues={{
           remember: true,
           }}
-          // onFinish={handleResetSubmit}
-          // onFinishFailed={onFinishFailed}
+          onFinish={handleSubmit}
+          onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
 

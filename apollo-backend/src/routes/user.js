@@ -170,7 +170,7 @@ router.post('/forgot-password', async (req, res) => {
         from: 'TestDummy2199@gmail.com',
         to: email,
         subject: 'Apollo Password Reset',
-        text: `Reset Password Link: http://localhost:3000/reset-password/${token}`
+        text: `Reset Password Link: http://localhost:3000/ResetPass/${token}`
     };
 
     transporter.sendMail(mailOptions, (error) => {
@@ -186,20 +186,16 @@ router.post('/forgot-password', async (req, res) => {
 
 });
 
-//reset password route
-
-router.get('/reset-password', async (req, res) => {
+// reset password api
+router.post('/reset-password', async (req, res) => {
     const token = decodeURIComponent(req.query.token);
-    const salt = await bcrypt.genSalt(10);
 
-    const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
-
+    const salt = await bcrypt.genSalt(10);           //salt adds random string of characters on top of password
 
     decoded = jwt.verify(token, 'secretKey', async function (error, decoded) {
         if (error) {
             console.log(error);
-            // res.send('Link has failed or expired');
+            // res.send('Link expired or failed');
             res.status(400).json({ error: "Link has failed or expired'" })
             return;
         }
@@ -211,6 +207,10 @@ router.get('/reset-password', async (req, res) => {
                 res.status(400).json({ error: "User does not exist" })
                 return;
             }
+
+            const password = req.body.password;
+            const confirmPassword = req.body.confirmPassword;
+
             if (password !== confirmPassword) {
                 console.log('Passwords do not match');
                 res.status(400).json({ error: "Passwords do not match" })
@@ -218,64 +218,19 @@ router.get('/reset-password', async (req, res) => {
             }
             else {
                 try {
-                    const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
-                    user.password = hashedPassword;
-                    await user.save();
-                    res.send(`Password changed!`);
+                  const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
+                  user.password = hashedPassword;
+                  await user.save();
+                  res.send(`Password changed! Please click the link to return to login page: http://localhost:5001/api/user/login`);
                 } catch (error) {
-                    console.log("There was an issue with the data provided");
-                    res.status(400).json({ error: "There was an issue with the data provided" })
+                  console.log("There was an issue with the data provided");
+                  res.status(400).json({ error: "There was an issue with the data provided" })
                 }
             }
-
         }
     });
+
 })
-
-// router.post('/reset-password', async (req, res) => {
-//     const token = decodeURIComponent(req.query.token);
-
-//     const salt = await bcrypt.genSalt(10);           //salt adds random string of characters on top of password
-
-//     decoded = jwt.verify(token, 'secretKey', async function (error, decoded) {
-//         if (error) {
-//             console.log(error);
-//             // res.send('Link expired or failed');
-//             res.status(400).json({ error: "Link has failed or expired'" })
-//             return;
-//         }
-//         else {
-//             const user = await UserInfo.findOne({ username: decoded.user.username });
-
-//             if (!user) {
-//                 // res.send('User does not exist');
-//                 res.status(400).json({ error: "User does not exist" })
-//                 return;
-//             }
-
-//             const password = req.body.password;
-//             const confirmPassword = req.body.confirmPassword;
-
-//             if (password !== confirmPassword) {
-//                 console.log('Passwords do not match');
-//                 res.status(400).json({ error: "Passwords do not match" })
-//                 return;
-//             }
-//             else {
-//                 try {
-//                   const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
-//                   user.password = hashedPassword;
-//                   await user.save();
-//                   res.send(`Password changed! Please click the link to return to login page: http://localhost:5001/api/user/login`);
-//                 } catch (error) {
-//                   console.log("There was an issue with the data provided");
-//                   res.status(400).json({ error: "There was an issue with the data provided" })
-//                 }
-//             }
-//         }
-//     });
-
-// })
 
 //MUST RUN COMMAND "npm install multer"
 router.post("/upload-image", upload.single("image"), async (req, res) => {
