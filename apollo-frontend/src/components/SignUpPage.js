@@ -84,6 +84,9 @@ export default function SignUpPage() {
   const [DOB, setDOB] = useState(null);
   const [currentYear, setcurrentYear] = useState(null);
   const [profilePicture, setProfilePicture] = useState(null);
+  const [instagramLink, setInstagramLink] = useState(null);
+  const [linkedinLink, setLinkedInLink] = useState(null);
+  const [twitterLink, setTwitterLink] = useState(null);
 
   const onFinish = (values) => {
     console.log('Success:', values);
