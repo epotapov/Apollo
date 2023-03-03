@@ -98,7 +98,7 @@ router.get('/verify', async (req, res) => {
 router.post('/edit', async (req, res) => {
     // const salt = await bcrypt.genSalt(10);
 
-    const {username, email, major, gradYear, role, isVerified, courses, aboutMe, country, gender, planOfStudy, dob, isPrivate, year} = req.body;
+    const {username, email, major, gradYear, role, isVerified, courses, aboutMe, country, gender, planOfStudy, dob, isPrivate, year, profilePicture} = req.body;
 
     const user = await UserInfo.findOne({ email: email });
 
@@ -116,6 +116,7 @@ router.post('/edit', async (req, res) => {
     user.DOB = dob;
     user.country = country;
     user.isPrivate = isPrivate;
+    user.profilePicture = profilePicture;
 
     /*
     const changePassword = req.body;
