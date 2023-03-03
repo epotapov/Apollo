@@ -21,7 +21,6 @@ const storage = multer.diskStorage({
     },
 
     filename: (req, file, cb) => {
-        console.log(file);
         cb(null, Date.now() + path.extname(file.originalname))
     }
 });
@@ -112,7 +111,6 @@ router.post('/edit', async (req, res) => {
     user.gradYear = gradYear;
     user.aboutMe = aboutMe;
     user.planOfStudy = planOfStudy;
-    this.profilePicture = profilePicture;
     user.currentYear = year;
     user.courses = courses;
     user.gender = gender;

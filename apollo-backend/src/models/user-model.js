@@ -53,7 +53,7 @@ var userSchema = new Schema({
     profilePicture: {
         type: String,
         required: false,
-        default: "defaultpfp.png"
+        default: "default"
     },
 
     friendsList: {

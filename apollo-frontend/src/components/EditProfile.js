@@ -24,8 +24,7 @@ let planOfStudy = {};
 let instagramLink = '';
 let linkedinLink = '';
 let twitterLink = '';
-let profilePic = '';
-let profilePicFile = null;
+let profilePicture = '';
 
 const countryList = [
     "Afghanistan",
@@ -324,10 +323,11 @@ export default function EditProfile() {
 		instagramLink = values.instagram ? values.instagram : instagramLink;
 		linkedinLink = values.linkedin ? values.linkedin : linkedinLink;
 		twitterLink = values.twitter ? values.twitter : twitterLink;
+		profilePicture = values.profilepic ? values.profilepic : profilePicture;
 
-		console.log(profilePicFile);
-		/*const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
-			country, gender, planOfStudy, dob, year, isPrivate, instagramLink, linkedinLink, twitterLink};
+		const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
+			country, gender, planOfStudy, dob, year, isPrivate, 
+			profilePicture, instagramLink, linkedinLink, twitterLink};
 		
 		const response = await fetch('http://localhost:5001/api/user/edit', {
 			method: 'POST',
@@ -339,7 +339,7 @@ export default function EditProfile() {
 		<success message="Profile updated successfully!"/>
 		fetch('http://localhost:5001/api/user/get/' + user.username)
 		.then(response => response.json())
-		.then(data => navigate('/Profile',{state: {user: data}})) */
+		.then(data => navigate('/Profile',{state: {user: data}}))
 	}
 
 	const data = useLocation();
@@ -368,12 +368,12 @@ export default function EditProfile() {
 		  instagramLink = user.instagramLink;
 		  twitterLink = user.twitterLink;
 		  linkedinLink = user.linkedinLink;
-		  profilePic = user.profilePic;
+		  profilePicture = user.profilePicture;
 		}
 	}
     const [size, setSize] = useState('large');
 
-	// Profile picture stuff
+	/* Profile picture stuff
 
 	const beforeUpload = (file) => {
 		const isPng = file.type === 'image/png';
@@ -391,8 +391,7 @@ export default function EditProfile() {
 		if (info.file.status === "done") {
 			console.log(info.file, info.fileList);
 		}
-	};
-
+	}; */
 	
     return (
         <div className="container">
@@ -424,7 +423,7 @@ export default function EditProfile() {
                 autoComplete="off"
             >
                 <h2> Tell Us More </h2>
-				<Form.Item> 
+{/*				<Form.Item> 
 					<Upload
 						name="profilepic"
 						beforeUpload={beforeUpload}
@@ -435,7 +434,7 @@ export default function EditProfile() {
 					>
 						<Button type="Primary"> Upload </Button>
 					</Upload>
-				</Form.Item>
+				</Form.Item> */}
 				<Form.Item
 					
 					name="aboutme"
@@ -462,6 +461,21 @@ export default function EditProfile() {
                         <Option value="other">Other</Option>
                     </Select>
                 </Form.Item>
+				<Form.Item
+					name="profilepic"
+					label="Select profile picture color!"
+				> 
+				<Select 
+						placeholder="Select the color of your profile picture!" 
+						defaultValue={profilePicture}
+				>
+						<Option value="default"> Default </Option>
+                        <Option value="blue">Blue</Option>
+                        <Option value="green">Green</Option>
+                        <Option value="red">Red</Option>
+						<Option value="yellow">Yellow</Option>
+                    </Select>
+				</Form.Item>
                 <Form.Item
                     name="country"
                     label="Country"

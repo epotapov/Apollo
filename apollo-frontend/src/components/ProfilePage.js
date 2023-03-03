@@ -3,6 +3,11 @@ import { Link , useLocation, useNavigate} from 'react-router-dom'
 import Navbar from './Navbar';
 import {LinkedinFilled, InstagramFilled, TwitterCircleFilled} from '@ant-design/icons';
 import { Avatar, Card, Button} from 'antd';
+import bluepfp from '../img/bluepfp.png';
+import redpfp from '../img/redpfp.png';
+import greenpfp from '../img/greenpfp.png';
+import yellowpfp from '../img/yellowpfp.png';
+import defpfp from '../img/defaultpfp.png';
 
 import { useLogout } from '../hooks/useLogout';
 import { useUserContext } from '../hooks/useUserContext';
@@ -54,6 +59,7 @@ export default function ProfilePage() {
   let linkedinLink = '';
   let instagramLink = '';
   let twitterLink = '';
+  let pfp = null;
 
 
   let gender = '';
@@ -64,7 +70,6 @@ export default function ProfilePage() {
       if (user && userFound.username === user.username) {
         sameAccount = true;
       }
-      console.log("user found", userFound)
       if (userFound != null) {
         username = userFound.username;
         aboutMe = userFound.aboutMe;
@@ -87,8 +92,25 @@ export default function ProfilePage() {
         linkedinLink = userFound.linkedinLink;
         instagramLink = userFound.instagramLink;
         twitterLink = userFound.twitterLink;
+        console.log(userFound);
+        if (userFound.profilePicture == 'red') {
+          pfp = redpfp;
+        }
+        else if (userFound.profilePicture == 'blue') {
+          pfp = bluepfp;
+        }
+        else if (userFound.profilePicture == 'green') {
+          pfp = greenpfp;
+        }
+        else if (userFound.profilePicture == 'yellow') {
+          pfp = yellowpfp;
+        }
+        else {
+          pfp = defpfp;
+        }
       }
     }
+
     /*
     let courseItems = null;
     let planofstudyItems = null;
@@ -96,12 +118,15 @@ export default function ProfilePage() {
       courseItems = courses.map((course) => <p key={course.toString()}>{course} </p>);
     if (!planOfStudy)
       planofstudyItems = planOfStudy.map((course) => <p key={course.toString()}>{course} </p>);*/
+
+
+
     return (
       <div>
         <Navbar/>
         <div id="ProfilePage">
           <Card id="ProfileCard" title="Profile" bordered={true}>
-            <Avatar size={100} shape="circle" src="../img/apollo-gray.png" />
+            <Avatar src={pfp} size={150} shape="circle" alt="Profile Picture" />
             <h3> Username: {username}</h3>
           </Card>
           {

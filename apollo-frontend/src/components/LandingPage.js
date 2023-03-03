@@ -8,30 +8,47 @@ import { useLogout } from '../hooks/useLogout';
 import { useUserContext } from '../hooks/useUserContext';
 
 import { Button, Avatar} from 'antd';
+import bluepfp from '../img/bluepfp.png';
+import redpfp from '../img/redpfp.png';
+import greenpfp from '../img/greenpfp.png';
+import yellowpfp from '../img/yellowpfp.png';
+import defpfp from '../img/defaultpfp.png';
 
 export default function LandingPage() {
     const [size, setSize] = useState('large');
     const { logout } = useLogout();
     const { user } = useUserContext();
     const navigate = useNavigate();
-    let profilePicture = '';
+
+    function getpfp() {
+        if (user) {
+            let pfpColor = user.user.profilePicture;
+            console.log("asd" + pfpColor);
+            if (pfpColor == 'blue') {
+                return bluepfp;
+            }
+            else if (pfpColor == 'red') {
+                return redpfp;
+            }
+            else if (pfpColor == 'green') {
+                return greenpfp;
+            }
+            else if (pfpColor == 'yellow') {
+                return yellowpfp;
+            }
+            else {
+                return defpfp;
+            }
+        }
+    }
+
+    const pfp = getpfp();
 
     const goToProfile = () => {
 		fetch('http://localhost:5001/api/user/get/' + user.username)
 		.then(response => response.json())
 		.then(data => navigate('/Profile',{state: {user: data}}))
     }
-
-    useEffect(() => {
-        if (user) {
-            console.log(user)
-            fetch('http://localhost:5001/api/user/get/' + user.username)
-            .then(response => response.json())
-            .then(data => {
-                profilePicture = data.profilePicture;
-            })
-        }
-    }, []);
 
     return(
         <div className='Container'>
@@ -40,7 +57,7 @@ export default function LandingPage() {
                     {user && (
                         <div>
                             <span>Welcome {user.username} </span>
-                            <Avatar onClick={goToProfile} size={40} shape="circle" src={profilePicture} />
+                            <Avatar onClick={goToProfile} size={40} shape="circle" src={pfp} />
                             <Button type="primary" onClick={() => logout()} size={size}>
                                 Log Out
                             </Button>

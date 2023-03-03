@@ -40,6 +40,7 @@ app.use((req, res, next) => {
 app.use('/api/user', userRoutes); // when we fire request to /api/user then check userRoutes for the route
 app.use('/api/course', courseRoutes);
 app.use('/api/dining', diningHallRoutes);
+app.use(express.static('./profile_pictures'));
 
 // connect to MongoDB
 mongoose.connect(process.env.ATLAS_URI)
