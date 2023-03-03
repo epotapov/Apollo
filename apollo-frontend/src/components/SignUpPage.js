@@ -98,8 +98,9 @@ export default function SignUpPage() {
     if (!submitStatus) {
       return
     }
-    const user = {username, email, password, major, gradYear, role, courses, aboutMe, country, gender, planOfStudy, DOB, currentYear, profilePicture};
-    console.log('hello');
+    const user = {username, email, password, major, gradYear, role, 
+      courses, aboutMe, country, gender, planOfStudy, DOB, 
+      currentYear, profilePicture, instagramLink, linkedinLink, twitterLink};
     console.log(user)
 
     // TODO this URL will need to change eventually (once we have the server on another machine)
