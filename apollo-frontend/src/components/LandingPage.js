@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import logo from '../img/apollo-gray.png';
 import { Link, useNavigate} from 'react-router-dom';
 
@@ -14,12 +14,24 @@ export default function LandingPage() {
     const { logout } = useLogout();
     const { user } = useUserContext();
     const navigate = useNavigate();
+    let profilePicture = '';
 
     const goToProfile = () => {
 		fetch('http://localhost:5001/api/user/get/' + user.username)
 		.then(response => response.json())
 		.then(data => navigate('/Profile',{state: {user: data}}))
     }
+
+    useEffect(() => {
+        if (user) {
+            console.log(user)
+            fetch('http://localhost:5001/api/user/get/' + user.username)
+            .then(response => response.json())
+            .then(data => {
+                profilePicture = data.profilePicture;
+            })
+        }
+    }, []);
 
     return(
         <div className='Container'>
@@ -28,7 +40,7 @@ export default function LandingPage() {
                     {user && (
                         <div>
                             <span>Welcome {user.username} </span>
-                            <Avatar onClick={goToProfile} size={40} shape="circle" src="../img/apollo-gray.png" />
+                            <Avatar onClick={goToProfile} size={40} shape="circle" src={profilePicture} />
                             <Button type="primary" onClick={() => logout()} size={size}>
                                 Log Out
                             </Button>
