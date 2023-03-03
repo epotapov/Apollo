@@ -100,7 +100,10 @@ export default function ProfilePage() {
           </Card>
           {
             privateAccount && !sameAccount &&
-            <h4>Is a Private Account</h4>
+            <div>
+              <p> Major: {major} </p>
+              <h4>Is a Private Account</h4>
+            </div>
           }
           {
             (!privateAccount || sameAccount) &&
