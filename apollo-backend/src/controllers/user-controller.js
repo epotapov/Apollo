@@ -21,10 +21,17 @@ const loginUser = async (req, res) => {
 //signup user
 
 const signupUser = async (req, res) => {
-    const {username, email, password, major, gradYear, role, isVerified, courses, aboutMe, country, gender, planOfStudy, DOB, isPrivate, currentYear} = req.body;
+    const {username, email, password, major, 
+     gradYear, role, isVerified, courses, aboutMe, country, 
+     gender, planOfStudy, DOB, isPrivate, currentYear, 
+     profilePicture, instagramLink, twitterLink, linkedinLink} = req.body;
 
      try {
-        const user = await UserInfo.signup(username, email, password, major, gradYear, role, isVerified, courses, aboutMe, country, gender, planOfStudy, DOB, isPrivate, currentYear);
+        const user = await UserInfo.signup(username, email, password, 
+          major, gradYear, role, isVerified, courses, aboutMe, 
+          country, gender, planOfStudy, DOB, isPrivate, currentYear, 
+          profilePicture, twitterLink, instagramLink, linkedinLink);
+     
 
           //    res.status(200).json({email, user});
           res.redirect('http://localhost:5001/api/user/send');

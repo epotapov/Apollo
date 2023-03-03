@@ -1,10 +1,24 @@
 import { React, useState, Component} from 'react';
 import { Link , useLocation, useNavigate} from 'react-router-dom'
 import Navbar from './Navbar';
+import {LinkedinFilled, InstagramFilled, TwitterCircleFilled} from '@ant-design/icons';
 import { Avatar, Card, Button} from 'antd';
 
 import { useLogout } from '../hooks/useLogout';
 import { useUserContext } from '../hooks/useUserContext';
+
+function displayArray(arr) {
+  let str = '';
+  for (let i = 0; i < arr.length; i++) {
+    if (i != arr.length - 1) {
+      str += arr[i] + ', ';
+    }
+    else {
+      str += arr[i];
+    }
+  }
+  return str;
+}
 
 export default function ProfilePage() {
 
@@ -34,6 +48,9 @@ export default function ProfilePage() {
   let gradYear = '';
   let courses = {};
   let planOfStudy = {};
+  let linkedinLink = '';
+  let instagramLink = '';
+  let twitterLink = '';
 
   let gender = '';
   
@@ -61,8 +78,11 @@ export default function ProfilePage() {
         else {
           role = "Student";
         }
-        country = userFound.country;
-        gender = userFound.gender;
+        country = user.country;
+        gender = user.gender;
+        linkedinLink = user.linkedinLink;
+        instagramLink = user.instagramLink;
+        twitterLink = user.twitterLink;
       }
     }
     let courseItems = null;
@@ -99,6 +119,17 @@ export default function ProfilePage() {
               {courseItems}
               <p> Plan of Study: </p>
               {planofstudyItems}
+              <Card title="Social media Links" bordered={false} style={{ width: 200 }}>
+              <a href={linkedinLink.toString}> 
+                <LinkedinFilled style={{ fontSize: '30px', color: '#08c' }}/>
+              </a>
+              <a href={instagramLink.toString}>
+                <InstagramFilled style={{ fontSize: '30px', color: '#08c' }}/>
+              </a>
+              <a href={twitterLink.toString}>
+                <TwitterCircleFilled style={{ fontSize: '30px', color: '#08c' }}/>
+              </a>
+            </Card>
             </div>
           }
           {user && sameAccount &&
@@ -115,4 +146,3 @@ export default function ProfilePage() {
       </div>
     );
 }
-

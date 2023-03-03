@@ -119,14 +119,34 @@ var userSchema = new Schema({
         type: String,
         required: false,
         default: ""
-    }
+    },
 
+    instagramLink: {
+        type: String,
+        required: false,
+        default: ""
+    },
+
+    twitterLink: {
+        type: String,
+        required: false,
+        default: ""
+    },
+
+    linkedinLink: {
+        type: String,
+        required: false,
+        default: ""
+    }
 
 }, { timestamps: true});
 
 
 // static signup method
-userSchema.statics.signup = async function(username, email, password, major, gradYear, role, isVerified, courses, aboutMe, country, gender, planOfStudy, DOB, isPrivate, currentYear) {
+userSchema.statics.signup = async function(username, email, password, major, 
+    gradYear, role, isVerified, courses, aboutMe, country, gender, 
+    planOfStudy, DOB, isPrivate, currentYear, 
+    instagramLink, linkedinLink, twitterLink, profilePicture) {
 
    
     //validation
