@@ -1,13 +1,15 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import logo from '../img/apollo-gray.png';
-import { Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import SearchBar from './SearchBar';
 import { useLogout } from '../hooks/useLogout';
 import { useUserContext } from '../hooks/useUserContext';
+import { useTheme } from '../hooks/useTheme';
+import { useThemeContext } from '../hooks/useThemeContext';
 
-import { Button, Avatar} from 'antd';
+import { Button, Avatar, Switch, theme } from 'antd';
 import bluepfp from '../img/bluepfp.png';
 import redpfp from '../img/redpfp.png';
 import greenpfp from '../img/greenpfp.png';
@@ -18,7 +20,11 @@ export default function LandingPage() {
     const [size, setSize] = useState('large');
     const { logout } = useLogout();
     const { user } = useUserContext();
+    const { theme } = useThemeContext();
+    const { changeTheme } = useTheme();
+    const [ darkButton, setDarkButton ] = useState(false);
     const navigate = useNavigate();
+    let buttonEnable = false;
 
     function getpfp() {
         if (user) {
@@ -49,11 +55,18 @@ export default function LandingPage() {
 		.then(response => response.json())
 		.then(data => navigate('/Profile',{state: {user: data}}))
     }
-
     return(
         <div className='Container'>
             <div className='Corner'>
                 <div className='CornerButtons'>
+                    {  // I need to fix this, this is atrocious
+                        theme && theme === "dark"
+                        && <Switch defaultChecked={true} onChange={() => changeTheme()} />
+                    }
+                    {
+                        theme && theme === "light"
+                        && <Switch defaultChecked={false} onChange={() => changeTheme()} />
+                    }
                     {user && (
                         <div>
                             <span>Welcome {user.username} </span>

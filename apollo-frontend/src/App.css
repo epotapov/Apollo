@@ -159,11 +159,13 @@ h1 {
 #name {
   text-align: center;
 }
+
 #menu {
   width: 50%;
   margin: auto; 
   align-items: center;
 }
+
 #cont {
   align-items: center;
 }
@@ -185,4 +187,12 @@ h1 {
   width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+#dark {
+  background-color: #424244;
+}
+
+#light {
+  background-color: white;
 }
