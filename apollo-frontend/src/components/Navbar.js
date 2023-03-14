@@ -1,11 +1,13 @@
 import { React, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../img/apollo-gray.png';
+import darklogo from '../img/apollo-orange.png';
 import { Button, Avatar } from 'antd';
 import SearchBar from './SearchBar';
 import { useLogout } from '../hooks/useLogout';
 import { useUserContext } from '../hooks/useUserContext';
 import { useNavigate } from 'react-router-dom';
+import { useThemeContext } from '../hooks/useThemeContext';
 import bluepfp from '../img/bluepfp.png';
 import redpfp from '../img/redpfp.png';
 import greenpfp from '../img/greenpfp.png';
@@ -17,6 +19,7 @@ export default function Navbar() {
     const { logout } = useLogout();
     const { user } = useUserContext();
     const navigate = useNavigate(); 
+    const { theme } = useThemeContext();
     
     function getpfp() {
         if (user) {
@@ -50,7 +53,8 @@ export default function Navbar() {
     return(
         <div id='Navbar'>
             <Link to='/'>
-                <img src={logo} alt="logo" />
+                {theme === "light" && <img src={logo} alt="logo" />}
+                {theme === "dark" && <img src={darklogo} alt="logo" />}
             </Link>
             <SearchBar/>
             <div className='CornerButtons'>

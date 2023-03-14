@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import logo from '../img/apollo-gray.png';
+import darklogo from '../img/apollo-orange.png';
 import { Link, useNavigate } from 'react-router-dom';
 
 import SearchBar from './SearchBar';
@@ -59,18 +60,13 @@ export default function LandingPage() {
         <div className='Container'>
             <div className='Corner'>
                 <div className='CornerButtons'>
-                    {  // I need to fix this, this is atrocious
-                        theme && theme === "dark"
-                        && <Switch defaultChecked={true} onChange={() => changeTheme()} />
-                    }
-                    {
-                        theme && theme === "light"
-                        && <Switch defaultChecked={false} onChange={() => changeTheme()} />
-                    }
+                    <div id='ThemeButtonContainer'>
+                        <Switch checked={theme === "dark"} id="themeSwitch" onChange={() => changeTheme()} />
+                    </div>
                     {user && (
                         <div>
                             <span>Welcome {user.username} </span>
-                            <Avatar onClick={goToProfile} size={40} shape="circle" src={pfp} />
+                            <Avatar onClick={goToProfile} size={40} className="avatar" shape="circle" src={pfp} />
                             <Button type="primary" onClick={() => logout()} size={size}>
                                 Log Out
                             </Button>
@@ -87,7 +83,8 @@ export default function LandingPage() {
             </div>
             <section className='Search'>
                 <div id='LogoHolderLanding'>
-                    <img src={logo} alt="logo" />
+                    {theme === "light" && <img src={logo} alt="logo" />}
+                    {theme === "dark" && <img src={darklogo} alt="logo" />}
                     <h1>Apollo</h1>
                 </div>
                 <section id="SearchLandingHolder">

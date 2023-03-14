@@ -33,7 +33,7 @@ h1 {
 }
 
 #Navbar {
-  background-color: #b4b8bb;
+  background-color: #dae2eb;
   display: flex;
   justify-content: space-between;
   padding: 10px;
@@ -53,21 +53,6 @@ h1 {
   align-items: center;
 }
 
-/*.SignIn {
-  position: fixed;
-  background-color: #353744;
-  font-size: 1.5rem;
-  cursor: pointer;
-  top: 5px;
-  right: 5px;
-  color: white;
-  width: 100px;
-  height: 40px;
-  border: 2px solid white;
-  border-radius: 20px;
-  color: white;
-}*/
-
 .SignIn {
   position: fixed;
   top: 5px;
@@ -84,6 +69,19 @@ h1 {
   display: flex;
   justify-content: center;
   flex-direction: row;
+}
+
+#ThemeButtonContainer {
+  display: flex;
+  align-items: center;
+}
+
+#themeSwitch {
+  margin-right: 20px;
+}
+
+.avatar {
+  margin-right: 20px;
 }
 
 #LoginForm button {
@@ -107,19 +105,6 @@ h1 {
   justify-content: center;
   align-items: center;
 }
-
-/*#InputHolder input {
-  border: 2px solid #353744;
-  border-radius: 10px;
-  box-sizing: border-box;
-  font-family: open;
-  font-size: 1.5rem;
-  margin-top: 10px;
-  padding: 10px 20px;
-  color: #353744;
-  width: 500px;
-  outline: none;
-}*/
 
 #SearchLandingHolder input {
   width: 500px;
@@ -173,11 +158,13 @@ h1 {
 #course_name {
   text-align: center;
 }
+
 #course_page {
   width: 50%;
   margin: auto; 
   align-items: center;
 }
+
 #course_cont {
   align-items: center;
 }
@@ -190,7 +177,28 @@ h1 {
 }
 
 #dark {
-  background-color: #424244;
+  background-color: #1f2937;
+}
+
+#dark button {
+  background-color: #f59e0b;
+  color: white;
+}
+
+#dark h1, h2, h3 {
+  color: #f59e0b;
+}
+
+#dark p {
+  color: white;
+}
+
+#dark span {
+  color: white;
+}
+
+#dark #Navbar {
+  background-color: #353744;
 }
 
 #light {
