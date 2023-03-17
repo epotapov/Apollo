@@ -30,12 +30,12 @@ export default function DiningHall(props) {
     return( 
         <div id='cont'>
             <Navbar/>
-            <div id='name'>
+            <div className='namePage'>
                 <h1 > {name} </h1>
             </div>
-            <div id='menu'>
+            <div className='bodyPage'>
                 <h2>Address: </h2> 
-                {address}
+                <p>{address}</p>
                 <h2>Meal Swipes:</h2>
                 {mealSwipe && <p>Yes</p>}
                 {!mealSwipe && <p>No</p>}
@@ -43,40 +43,11 @@ export default function DiningHall(props) {
                 {mealSwipe && <p>Yes</p>}
                 {!mealSwipe && <p>No</p>}
                 <h2>Description:</h2>
-                {description}
+                <p>{description}</p>
                 <h2>Hours</h2>
-                {hours}
+                <p>{hours}</p>
                 <h2><a href={link}>Menu</a></h2>
                 <h2>User Reviews:</h2>
-                {/*<Row>
-                    <Col span={8}>
-                    <Card>
-                        <h2> Breakfast </h2>
-                        <p> Eggs </p>
-                        <p> Bacon </p>
-                        <p> Pancakes </p>
-                        <p> Waffles </p>
-                    </Card>
-                    </Col>
-                    <Col span={8}>
-                    <Card>
-                        <h2> Lunch </h2>
-                        <p> Chicken </p>
-                        <p> Rice </p>
-                        <p> Salad </p>
-                        <p> Soup </p>
-                    </Card>
-                    </Col>
-                    <Col span={8}>
-                    <Card>
-                        <h2> Dinner </h2>
-                        <p> Steak </p>
-                        <p> Potatoes </p>
-                        <p> Salad </p>
-                        <p> Soup </p>
-                    </Card>
-                    </Col>
-                </Row>*/}
             </div>
         </div>
     );

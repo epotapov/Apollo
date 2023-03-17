@@ -128,42 +128,50 @@ export default function ProfilePage() {
           <Card id="ProfileCard" title="Profile" bordered={true}>
             <Avatar src={pfp} size={150} shape="circle" alt="Profile Picture" />
             <h3> Username: {username}</h3>
-          </Card>
-          {
-            privateAccount && !sameAccount &&
-            <div>
-              <p> Major: {major} </p>
-              <h4>Is a Private Account</h4>
-            </div>
-          }
-          {
-            (!privateAccount || sameAccount) &&
-            <div>
-              <p> About me: {aboutMe} </p>
-              <p> Email: {email} </p>
-              <p> Date of Birth: {dob} </p>
-              <p> Major: {major} </p>
-              <p> Year: {year} </p>
-              <p> Role: {role} </p>
-              <p> Country: {country} </p>
-              <p> Gender: {gender} </p>
-              <p> Graduation year: {gradYear} </p>
-              <p> Courses: {displayArray(courses)} </p>
-              <p> Plan of Study: {displayArray(planOfStudy)} </p>
-              <Card title="Social media Links" bordered={false} style={{ width: 200 }}>
-              <a target="_blank" href={instagramLink}>
-                <InstagramFilled style={{ fontSize: '30px', color: '#08c' }}/>
-              </a>
-              <a target="_blank" href={linkedinLink}> 
-                <LinkedinFilled style={{ fontSize: '30px', color: '#08c' }}/>
-              </a>
-              <a target="_blank" href={twitterLink}>
-                <TwitterCircleFilled style={{ fontSize: '30px', color: '#08c' }}/>
-              </a>
-            </Card>
-            </div>
-          }
-          {user && sameAccount &&
+            {
+              privateAccount && !sameAccount &&
+              <div>
+                <p> Major: {major} </p>
+                <h4>Is a Private Account</h4>
+              </div>
+            }
+            {
+              (!privateAccount || sameAccount) &&
+              <div>
+                <p> About me: {aboutMe} </p>
+                <p> Email: {email} </p>
+                <p> Date of Birth: {dob} </p>
+                <p> Major: {major} </p>
+                <p> Year: {year} </p>
+                <p> Role: {role} </p>
+                <p> Country: {country} </p>
+                <p> Gender: {gender} </p>
+                <p> Graduation year: {gradYear} </p>
+                <p> Courses: {displayArray(courses)} </p>
+                <p> Plan of Study: {displayArray(planOfStudy)} </p>
+                <Card title="Social media Links" bordered={false} style={{ width: 200 }}>
+                {
+                  instagramLink.length != 0 &&
+                  <a target="_blank" href={instagramLink}>
+                    <InstagramFilled style={{ fontSize: '30px', color: '#08c' }}/>
+                  </a>
+                }
+                {
+                  linkedinLink.length != 0 &&
+                  <a target="_blank" href={linkedinLink}> 
+                    <LinkedinFilled style={{ fontSize: '30px', color: '#08c' }}/>
+                  </a>
+                }  
+                {
+                  twitterLink.length != 0 &&
+                  <a target="_blank" href={twitterLink}>
+                    <TwitterCircleFilled style={{ fontSize: '30px', color: '#08c' }}/>
+                  </a>
+                }     
+              </Card>
+              </div>
+            }
+            {user && sameAccount &&
               <div>
                 <Button type="primary" shape="round" size="large" onClick={editProfile}>
                   Edit Profile
@@ -176,6 +184,7 @@ export default function ProfilePage() {
                 </Button>
               </div>
             }
+          </Card>
         </div>  
       </div>
     );

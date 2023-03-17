@@ -1,13 +1,11 @@
 h1 {
   font-size: 3em;
   margin: 20px;
-  color: #353744;
 }
 
 #LoginForm h2 {
   font-size: 2em;
   margin: 20px;
-  color: #353744;
 }
 
 #LoginForm h3 {
@@ -141,12 +139,12 @@ h1 {
   outline: none;
 }
 
-#name {
+.namePage {
   text-align: center;
 }
 
-#menu {
-  width: 50%;
+.bodyPage {
+  width: 80%;
   margin: auto; 
   align-items: center;
 }
@@ -170,14 +168,29 @@ h1 {
 }
 
 #ProfilePage {
-  height: 100%;
-  width: 100%;
   display: flex;
+  align-items: center;
   flex-direction: column;
+}
+
+#ProfileCard {
+  margin-top: 40px;
+  width: 90%;
+}
+
+@media screen and (min-width: 950px) {
+  #ProfileCard {
+    width: 900px;
+  }
+  #bodyPage {
+    width: 800px;
+  }
 }
 
 #dark {
   background-color: #1f2937;
+  height: 100vh;
+  width: 100vw;
 }
 
 #dark button {
@@ -185,7 +198,19 @@ h1 {
   color: white;
 }
 
-#dark h1, h2, h3 {
+#dark h1 {
+  color: #f59e0b;
+}
+
+#dark h2 {
+  color: #f59e0b;
+}
+
+#dark h3 {
+  color: #f59e0b;
+}
+
+#dark .WelcomeTag {
   color: #f59e0b;
 }
 
@@ -193,8 +218,12 @@ h1 {
   color: white;
 }
 
-#dark span {
+/* #dark span {
   color: white;
+}*/
+
+#dark #ProfileCard {
+  background-color: #353744;
 }
 
 #dark #Navbar {
@@ -203,4 +232,18 @@ h1 {
 
 #light {
   background-color: white;
+  height: 100%;
+  width: 100%;
+}
+
+#light h1 {
+  color: #353744;
+}
+
+#light h2 {
+  color: #353744;
+}
+
+#light h3 {
+  color: #353744;
 }

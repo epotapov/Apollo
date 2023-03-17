@@ -60,7 +60,7 @@ export default function Navbar() {
             <div className='CornerButtons'>
                 {user && (
                     <div>
-                        <span>Welcome {user.username} </span>
+                        <span className='WelcomeTag'>Welcome {user.username} </span>
                         <Avatar onClick={goToProfile} size={40} shape="circle" src={pfp} />
                         <Button type="primary" onClick={() => logout()} size={size}>
                             Log Out

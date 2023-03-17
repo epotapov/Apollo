@@ -13,7 +13,7 @@ export default function CoursePage() {
     const [size, setSize] = useState('large');
     const data = useLocation();
     console.log(data)
-    if (data != null) {
+    if (data.state != null) {
         const hall = data.state.course;
         Course = hall.Course;
         Title = hall.Title;
@@ -23,14 +23,14 @@ export default function CoursePage() {
     return( 
         <div id='cont'>
             <Navbar/>
-            <div id='name'>
-                <h1 > {Course} </h1>
+            <div className='namePage'>
+                <h1> {Course} </h1>
             </div>
-            <div id='menu'>
+            <div className='bodyPage'>
                 <h2>Title: </h2> 
-                {Title}
+                <p>{Title}</p>
                 <h2>Credit Hours:</h2>
-                {CreditHours}
+                <p>{CreditHours}</p>
                 {
                     Description.length != 0 && <div><h2>Description: </h2><p>{Description}</p></div>
                 }
