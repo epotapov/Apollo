@@ -138,8 +138,12 @@ var userSchema = new Schema({
         type: String,
         required: false,
         default: ""
-    }
+    },
 
+    favCourses: {
+        type: Array,
+        required: false
+    }
 }, { timestamps: true});
 
 
@@ -147,7 +151,7 @@ var userSchema = new Schema({
 userSchema.statics.signup = async function(username, email, password, major, 
     gradYear, role, isVerified, profilePicture, courses, aboutMe, country, gender, 
     planOfStudy, DOB, isPrivate, currentYear, 
-    instagramLink, linkedinLink, twitterLink, profilePicture) {
+    instagramLink, linkedinLink, twitterLink, profilePicture, favCourses) {
 
    
     //validation

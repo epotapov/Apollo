@@ -24,13 +24,13 @@ const signupUser = async (req, res) => {
     const {username, email, password, major, 
      gradYear, role, isVerified, courses, aboutMe, country, 
      gender, planOfStudy, DOB, isPrivate, currentYear, 
-     profilePicture, instagramLink, twitterLink, linkedinLink} = req.body;
+     profilePicture, instagramLink, twitterLink, linkedinLink, favCourses} = req.body;
 
      try {
         const user = await UserInfo.signup(username, email, password, 
           major, gradYear, role, isVerified, courses, aboutMe, 
           country, gender, planOfStudy, DOB, isPrivate, currentYear, 
-          profilePicture, twitterLink, instagramLink, linkedinLink);
+          profilePicture, twitterLink, instagramLink, linkedinLink, favCourses);
      
 
           //    res.status(200).json({email, user});
