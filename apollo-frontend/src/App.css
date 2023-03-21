@@ -51,6 +51,39 @@ h1 {
   align-items: center;
 }
 
+.grid-container {
+  display: grid;
+  width: 100%;
+  grid-template-columns: auto auto auto;
+  padding: 10px;
+}
+
+.grid-item {
+  font-size: 1em;
+  user-select: none;
+  padding: 20px;
+  border-radius: 25px;
+  margin: 20px;
+  text-align: center;
+}
+
+#light .grid-item {
+  background-color: #dae2eb;
+}
+
+#light .grid-item:hover {
+  background-color: #1677ff;
+}
+
+#dark .grid-item {
+  color: white;
+  background-color: #353744;
+}
+
+#dark .grid-item:hover {
+  background-color: #f59e0b;
+}
+
 .SignIn {
   position: fixed;
   top: 5px;
@@ -177,6 +210,8 @@ h1 {
   margin-top: 40px;
   width: 90%;
 }
+
+
 
 @media screen and (min-width: 950px) {
   #ProfileCard {

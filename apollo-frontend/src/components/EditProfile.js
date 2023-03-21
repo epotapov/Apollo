@@ -25,6 +25,7 @@ let instagramLink = '';
 let linkedinLink = '';
 let twitterLink = '';
 let profilePicture = '';
+let favCourses = ""
 
 const countryList = [
     "Afghanistan",
@@ -327,7 +328,7 @@ export default function EditProfile() {
 
 		const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
 			country, gender, planOfStudy, dob, year, isPrivate, 
-			profilePicture, instagramLink, linkedinLink, twitterLink};
+			profilePicture, instagramLink, linkedinLink, twitterLink, favCourses};
 		
 		const response = await fetch('http://localhost:5001/api/user/edit', {
 			method: 'POST',
@@ -369,6 +370,7 @@ export default function EditProfile() {
 		  twitterLink = user.twitterLink;
 		  linkedinLink = user.linkedinLink;
 		  profilePicture = user.profilePicture;
+		  favCourses = user.favCourses;
 		}
 	}
     const [size, setSize] = useState('large');

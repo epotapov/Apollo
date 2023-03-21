@@ -90,6 +90,13 @@ export default function LandingPage() {
                 <section id="SearchLandingHolder">
                     <SearchBar/>
                 </section>
+                {user && (
+                    <section className='grid-container'>
+                        <div className='grid-item'>CS 240</div>
+                        <div className='grid-item'>CS 240</div>
+                        <div className='grid-item'>CS 240</div>
+                    </section>
+                )}
             </section>
         </div>
     );
