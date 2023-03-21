@@ -274,5 +274,9 @@ router.post("/upload-image", upload.single("profilepic"), async (req, res) => {
     res.send("Image uploading")
 });
 
+router.post("/add-favCourse", async (req, res) => {
+    console.log("IMplement adding new fav course");
+});
+
 module.exports = router;
 
