@@ -9,6 +9,11 @@
 const mongoose = require("mongoose");
 
 const threadSchema = mongoose.Schema({
+    courseName: {
+      type: String,
+      required: true,
+    },
+
     username: {
       type: String,
       required: true,

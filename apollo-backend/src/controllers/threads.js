@@ -19,8 +19,8 @@ const Thread = require("../models/thread-model");
 const createThread = async (req, res) => {
   try {
     const { courseName, username, title, description } = req.body;
-    const user = await UserInfo.findById(username);
     const newThread = new Thread({
+      courseName,
       username,
       title,
       description,
@@ -32,7 +32,7 @@ const createThread = async (req, res) => {
 
     // returns all the threads
     // TODO change this to make more sense later
-    const thread = await Thread.find();
+    const thread = await Thread.find({ courseName });
 
     res.status(201).json(thread);
 
@@ -50,7 +50,7 @@ const createThread = async (req, res) => {
  * res.body returns all threads that contain the given courseName
  */
 const getCourseThreads = async(req, res) => {
-  const { courseName } = req.body;
+  const { courseName } = req.params;
 
   try {
     const courseThreads = await Thread.find({ courseName });

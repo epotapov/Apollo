@@ -15,6 +15,9 @@ const { createThread, getCourseThreads, upvoteThread, downvoteThread } = require
 
 const router = express.Router();
 
+/* CREATE / POST */
+router.post("/create", createThread);
+
 /* READ */
 router.get("/:courseName", getCourseThreads);
 // router.get("/:username/threads", verifyToken, getUserThreads);
