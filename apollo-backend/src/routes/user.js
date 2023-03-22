@@ -282,7 +282,7 @@ router.post("/add-favCourse", async (req, res) => {
 });
 
 router.get("/get-favCourses", async (req, res) => {
-        const username = req.body;post
+        const username = req.body;
         const user = await UserInfo.findone({username: username});
         const arr = user.favCourses;
         res.json(arr);
