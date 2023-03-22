@@ -275,7 +275,10 @@ router.post("/upload-image", upload.single("profilepic"), async (req, res) => {
 });
 
 router.post("/add-favCourse", async (req, res) => {
-    console.log("IMplement adding new fav course");
+    const {username, course_name} = req.body;
+    const user = await UserInfo.findOne({ username: username });
+    user.favCourses.push(course_name);
+    await user.save();
 });
 
 module.exports = router;
