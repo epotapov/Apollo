@@ -9,6 +9,12 @@
 // imports thread model
 const Thread = require("../models/thread-model");
 
+// imports user model - used for user verification
+const User = require("../models/user-model");
+
+// imports course model - used for course verification
+const Course = require("../models/course-model");
+
 /* CREATE */
 
 /* createThread
@@ -24,6 +30,17 @@ const Thread = require("../models/thread-model");
 const createThread = async (req, res) => {
   try {
     const { courseName, username, title, description } = req.body;
+
+    const userExist = await User.findOne({ username });
+    if (!userExist) {
+      throw Error(username + " is not a registered user!");
+    }
+
+    const courseExist = await Course.findOne({ Course: courseName });
+    if (!courseExist) {
+      throw Error(courseName + " does not exist!");
+    }
+
     const newThread = new Thread({
       courseName,
       username,
@@ -90,6 +107,11 @@ const upvoteThread = async(req, res) => {
     const { id } = req.params;
     const { username } = req.body;
 
+    const userExist = await User.findOne({ username });
+    if (!userExist) {
+      throw Error(username + " is not a registered user!");
+    }
+
     const thread = await Thread.findById(id);
     const isUpvoted = thread.upvotes.get(username);
     const isDownvoted = thread.downvotes.get(username);
@@ -139,6 +161,11 @@ const downvoteThread = async(req, res) => {
   try {
     const { id } = req.params;
     const { username } = req.body;
+
+    const userExist = await User.findOne({ username });
+    if (!userExist) {
+      throw Error(username + " is not a registered user!");
+    }
 
     const thread = await Thread.findById(id);
     const isDownvoted = thread.downvotes.get(username);
