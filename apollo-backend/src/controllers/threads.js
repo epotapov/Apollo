@@ -1,20 +1,25 @@
 /**
  * thread.js
  *
- * Thread controller
+ * Thread controller. API details are listed in comments above each request.
  *
  * @author jebeene
  */
 
+// imports thread model
 const Thread = require("../models/thread-model");
 
 /* CREATE */
 
 /* createThread
  *
- * req.body should contain courseName, username, title, description
+ * API Requ: /api/thread/create
+ * Req Body: courseName, username, title, description
+ * Response: all threads for courseName or JSON error message
  *
- * res.body returns all threads
+ * Status Codes:
+ *   CREATED = 201
+ *   CONFLICT = 409
  */
 const createThread = async (req, res) => {
   try {
@@ -30,8 +35,7 @@ const createThread = async (req, res) => {
     })
     await newThread.save();
 
-    // returns all the threads
-    // TODO change this to make more sense later
+    // returns courseName threads
     const thread = await Thread.find({ courseName });
 
     res.status(201).json(thread);
@@ -45,9 +49,13 @@ const createThread = async (req, res) => {
 
 /* getCourseThreads
  *
- * req.body should only contain the courseName
+ * API Requ: /api/thread/:courseName
+ * Req Body: courseName
+ * Response: all threads for courseName or JSON error message
  *
- * res.body returns all threads that contain the given courseName
+ * Status Codes:
+ *   OK = 200
+ *   NOT FOUND = 404
  */
 const getCourseThreads = async(req, res) => {
   const { courseName } = req.params;
@@ -64,8 +72,13 @@ const getCourseThreads = async(req, res) => {
 
 /* upvoteThread
  *
- * req.body should contain 
+ * API Requ: /api/thread/:threadId/upvote
+ * Req Body: username
+ * Response: updated thread object or JSON error message
  *
+ * Status Codes:
+ *   OK = 200
+ *   NOT FOUND = 404
  */
 const upvoteThread = async(req, res) => {
 
@@ -97,8 +110,13 @@ const upvoteThread = async(req, res) => {
 
 /* downvoteThread
  *
- * req.body should contain 
+ * API Requ: /api/thread/:threadId/downvote
+ * Req Body: username
+ * Response: updated thread object or JSON error message
  *
+ * Status Codes:
+ *   OK = 200
+ *   NOT FOUND = 404
  */
 const downvoteThread = async(req, res) => {
 
@@ -128,4 +146,5 @@ const downvoteThread = async(req, res) => {
   }
 }
 
+// export functions so they can be imported & used elsewhere
 module.exports = { createThread, getCourseThreads, upvoteThread, downvoteThread };
