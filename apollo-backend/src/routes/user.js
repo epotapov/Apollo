@@ -285,7 +285,7 @@ router.get("/get-favCourses", async (req, res) => {
         const username = req.body;post
         const user = await UserInfo.findone({username: username});
         const arr = user.favCourses;
-        res.status(200).json(arr);
+        res.json(arr);
 });
 
 module.exports = router;
