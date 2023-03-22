@@ -1,4 +1,4 @@
-import { React, useState} from 'react';
+import { React, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom'
 
 import Navbar from './Navbar';
@@ -6,26 +6,97 @@ import { useUserContext } from '../hooks/useUserContext';
 import { Button, Checkbox, Form, Input, Radio, Switch } from 'antd';
 
 export default function CoursePage() {
-    let Course = '';
-    let Title  = '';
-    let CreditHours = '';
-    let Description = '';
-    let favorite = false;
+    const [Course, setCourse] = useState('');
+    const [Title, setTitle] = useState('');
+    const [CreditHours, setCreditHours] = useState('');
+    const [Description, setDescription] = useState('');
+    const [favorite, setFavorite] = useState(false);
+    const [checkedFavorite, setCheckedFavorite] = useState(false);
+    const [favCourses, setFavCourses] = useState([]);
     
     const [size, setSize] = useState('large');
     const data = useLocation();
     const { user } = useUserContext();
+    let username = '';
+    if (user) 
+        username = user.username;
     console.log(data)
-    if (data.state != null) {
-        const hall = data.state.course;
-        Course = hall.Course;
-        Title = hall.Title;
-        CreditHours = hall.CreditHours;
-        Description = hall.Description;
+
+    useEffect(() => {
+        if (data.state != null) {
+            const hall = data.state.course;
+            setCourse(hall.Course);
+            setTitle(hall.Title)
+            setCreditHours(hall.CreditHours);
+            setDescription(hall.Description);
+        }
+        if (user != null && user.favCourses) {
+            setFavorite(true);
+        }
+    }, [data])
+
+    useEffect(() => {
+        console.log("run useeffect")
+        fetch('http://localhost:5001/api/user/get-favCourses/' + username)
+        .then(response => response.json())
+        .then(data => {
+            setFavCourses(data);
+            console.log("favorite courses: ", favCourses)
+        })
+        console.log("hello")
+    }, [Course]);
+
+    useEffect(() => {
+        let found = false;
+        for (let i = 0; i < favCourses.length; i++) {
+            if (favCourses[i] === Course) {
+                setCheckedFavorite(true);
+                found = true;
+            }
+        }
+        if (!found)
+            setCheckedFavorite(false);
+    }, [favCourses]);
+
+    /*const checkClass = () => {
+        console.log("hello")
+        for (let i = 0; i < favCourses.length; i++) {
+            if (favCourses[i] === Course)
+                return true;
+        }
+        return false;
+    }*/
+
+    const favClass = async () => {
+        console.log("run favClass")
+        let found = false;
+        for (let i = 0; i < favCourses.length; i++) {
+            if (favCourses[i] === Course) {
+                favCourses.splice(i, 1);
+                found = true;
+            }
+        }
+        if (!found) {
+            favCourses.push(Course)
+        }
+        const newFavCourse = {username, favCourses};
+        const response = await fetch('http://localhost:5001/api/user/add-favCourse', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username, favCourses})
+        });
+        
+        const json = await response.json();
+
+        if (!response.ok) {
+            console.log("successful switch for user")
+        }
+        else {
+            console.log("not successful switch for user course")
+        }
     }
-    if (user != null && user.favCourses) {
-        favorite = true;
-    }
+
+
     return( 
         <div id='cont'>
             <Navbar/>
@@ -39,7 +110,7 @@ export default function CoursePage() {
                     user != null &&
                     <section>
                         <h2>Favorite Class:</h2>
-                        <Switch />
+                        <Switch checked={checkedFavorite} onChange={() => favClass()}/>
                     </section>
                 }
                 <h2>Credit Hours:</h2>

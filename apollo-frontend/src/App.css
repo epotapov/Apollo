@@ -65,6 +65,7 @@ h1 {
   border-radius: 25px;
   margin: 20px;
   text-align: center;
+  cursor: pointer;
 }
 
 #light .grid-item {

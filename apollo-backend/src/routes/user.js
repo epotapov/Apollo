@@ -276,12 +276,13 @@ router.post("/upload-image", upload.single("profilepic"), async (req, res) => {
 
 router.post("/add-favCourse", async (req, res) => {
     const {username, favCourses} = req.body;
+    console.log({username, favCourses});
     const user = await UserInfo.findOne({ username: username });
     user.favCourses = favCourses;
     await user.save();
 });
 
-router.get("/get-favCourses", async (req, res) => {
+router.get("/get-favCourses/:username", async (req, res) => {
     const param = req.params.username;
     const userReturned = await UserInfo.findOne({ username: param });
     res.json(userReturned.favCourses);
