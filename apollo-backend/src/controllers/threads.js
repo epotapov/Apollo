@@ -79,6 +79,10 @@ const getCourseThreads = async(req, res) => {
  * Status Codes:
  *   OK = 200
  *   NOT FOUND = 404
+ *
+ * Other:
+ *   How to access # of upvotes?
+ *      {thread object}.upvotes.size
  */
 const upvoteThread = async(req, res) => {
 
@@ -88,19 +92,27 @@ const upvoteThread = async(req, res) => {
 
     const thread = await Thread.findById(id);
     const isUpvoted = thread.upvotes.get(username);
+    const isDownvoted = thread.downvotes.get(username);
 
     if (isUpvoted) {
+      console.log(username + " removed their upvote from this thread!");
       thread.upvotes.delete(username);
+    } else if (isDownvoted) {
+      console.log(username + " changed their downvote to an upvote!");
+      thread.downvotes.delete(username);
+      thread.upvotes.set(username, true);
     } else {
+      console.log(username + " upvoted this thread!");
       thread.upvotes.set(username, true);
     }
 
     const updatedThread = await Thread.findByIdAndUpdate(
       id,
-      { upvotes: thread.upvotes },
+      { upvotes: thread.upvotes, downvotes: thread.downvotes },
       { new: true }
     );
 
+    console.log("upvotes: " + updatedThread.upvotes.size);
     res.status(200).json(updatedThread);
 
   } catch (err) {
@@ -117,6 +129,10 @@ const upvoteThread = async(req, res) => {
  * Status Codes:
  *   OK = 200
  *   NOT FOUND = 404
+ *
+ * Other:
+ *   How to access # of downvotes?
+ *      {thread object}.downvotes.size
  */
 const downvoteThread = async(req, res) => {
 
@@ -126,19 +142,27 @@ const downvoteThread = async(req, res) => {
 
     const thread = await Thread.findById(id);
     const isDownvoted = thread.downvotes.get(username);
+    const isUpvoted = thread.upvotes.get(username);
 
     if (isDownvoted) {
+      console.log(username + " removed their downvote from this thread!");
       thread.downvotes.delete(username);
+    } else if (isUpvoted) {
+      console.log(username + " changed their upvote to a downvote!");
+      thread.upvotes.delete(username);
+      thread.downvotes.set(username, true);
     } else {
+      console.log(username + " downvoted this thread!");
       thread.downvotes.set(username, true);
     }
 
     const updatedThread = await Thread.findByIdAndUpdate(
       id,
-      { downvotes: thread.downvotes },
+      { upvotes: thread.upvotes, downvotes: thread.downvotes },
       { new: true }
     );
 
+    console.log("downvotes: " + updatedThread.downvotes.size);
     res.status(200).json(updatedThread);
 
   } catch (err) {
