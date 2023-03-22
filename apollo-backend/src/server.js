@@ -22,6 +22,7 @@ require('dotenv').config();
 const userRoutes = require('./routes/user');
 const courseRoutes = require('./routes/course');
 const diningHallRoutes = require('./routes/dining');
+const threadRoutes = require('./routes/thread');
 
 // express app
 const app = express();
@@ -41,6 +42,7 @@ app.use('/api/user', userRoutes); // when we fire request to /api/user then chec
 app.use('/api/course', courseRoutes);
 app.use('/api/dining', diningHallRoutes);
 app.use(express.static('./profile_pictures'));
+app.use("/api/thread", threadRoutes);
 
 // connect to MongoDB
 mongoose.connect(process.env.ATLAS_URI)
