@@ -26,21 +26,22 @@ export default function LandingPage() {
     const [ darkButton, setDarkButton ] = useState(false);
     const navigate = useNavigate();
     let buttonEnable = false;
+    const [favCourses, setFavCourses] = useState([]);
 
     function getpfp() {
         if (user) {
             let pfpColor = user.user.profilePicture;
             console.log("asd" + pfpColor);
-            if (pfpColor == 'blue') {
+            if (pfpColor === 'blue') {
                 return bluepfp;
             }
-            else if (pfpColor == 'red') {
+            else if (pfpColor === 'red') {
                 return redpfp;
             }
-            else if (pfpColor == 'green') {
+            else if (pfpColor === 'green') {
                 return greenpfp;
             }
-            else if (pfpColor == 'yellow') {
+            else if (pfpColor === 'yellow') {
                 return yellowpfp;
             }
             else {
@@ -49,7 +50,36 @@ export default function LandingPage() {
         }
     }
 
+    useEffect(() => {
+        if (user) {
+            console.log("run useeffect")
+            fetch('http://localhost:5001/api/user/get-favCourses/' + user.username)
+            .then(response => response.json())
+            .then(data => {
+                setFavCourses(data);
+                console.log("favorite courses: ", favCourses)
+            }) 
+        } 
+    }, [user])
+
     const pfp = getpfp();
+
+
+    function FavoriteCourse(props) {
+        const onPress = () => {
+            console.log(props.course)
+            fetch('http://localhost:5001/api/course/get/' + props.course)
+            .then(response => response.json())
+            .then(data => navigate('/Course',{state: {course: data}}))
+        }
+        return(
+            <div className='grid-item' onClick={() => onPress()}>{props.course}</div>
+        )
+    }
+
+    const listFavorites = favCourses.map((favorite) =>
+        <FavoriteCourse key={favorite.toString()} course={favorite}/>
+    );
 
     const goToProfile = () => {
 		fetch('http://localhost:5001/api/user/get/' + user.username)
@@ -92,9 +122,7 @@ export default function LandingPage() {
                 </section>
                 {user && (
                     <section className='grid-container'>
-                        <div className='grid-item'>CS 240</div>
-                        <div className='grid-item'>CS 240</div>
-                        <div className='grid-item'>CS 240</div>
+                        {listFavorites}
                     </section>
                 )}
             </section>
