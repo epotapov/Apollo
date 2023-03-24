@@ -9,6 +9,9 @@
 // imports thread model
 const Thread = require("../models/thread-model");
 
+// imports comments (yes it's inside thread-model)
+const Comment = require("../models/thread-model");
+
 // imports user model - used for user verification
 const User = require("../models/user-model");
 
@@ -60,6 +63,7 @@ const createThread = async (req, res) => {
     res.status(201).json(thread);
 
   } catch (err) {
+    console.log(err.message);
     res.status(409).json({ message: err.message });
   }
 }
@@ -90,6 +94,7 @@ const getCourseThreads = async(req, res) => {
 
     res.status(200).json(courseThreads);
   } catch (err) {
+    console.log(err.message);
     res.status(404).json({ message: err.message });
   }
 }
@@ -147,6 +152,7 @@ const upvoteThread = async(req, res) => {
     res.status(200).json(updatedThread);
 
   } catch (err) {
+    console.log(err.message);
     res.status(404).json({ message: err.message });
   }
 }
@@ -202,9 +208,49 @@ const downvoteThread = async(req, res) => {
     res.status(200).json(updatedThread);
 
   } catch (err) {
+    console.log(err.message);
     res.status(404).json({ message: err.message });
   }
 }
 
+/* comment
+ *
+ *
+ */
+const createComment = async(req, res) => {
+
+  try {
+    const { id } = req.params;
+    const { username, description } = req.body;
+
+    const userExist = await User.findOne({ username });
+    if (!userExist) {
+      throw Error(username + " is not a registered user!");
+    }
+
+    const thread = await Thread.findById(id);
+    const newComment = new Comment({
+      username,
+      description,
+    })
+
+    // add comment to thread obj
+    thread.comments.push(newComment);
+
+    const updatedThread = await Thread.findByIdAndUpdate(
+      id,
+      { comments: thread.comments },
+      { new: true }
+    );
+
+    console.log(username + " commented on thread " + thread.title + "!");
+    res.status(201).json(updatedThread);
+
+  } catch (err) {
+    console.log(err.message);
+    res.status(409).json({ message: err.message });
+  }
+}
+
 // export functions so they can be imported & used elsewhere
-module.exports = { createThread, getCourseThreads, upvoteThread, downvoteThread };
+module.exports = { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment };
