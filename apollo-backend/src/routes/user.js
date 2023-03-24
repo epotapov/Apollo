@@ -280,12 +280,13 @@ router.post("/add-favCourse", async (req, res) => {
     const user = await UserInfo.findOne({ username: username });
     user.favCourses = favCourses;
     await user.save();
+    res.status(200).json({ message: 'Success!'});
 });
 
 router.get("/get-favCourses/:username", async (req, res) => {
     const param = req.params.username;
     const userReturned = await UserInfo.findOne({ username: param });
-    res.json(userReturned.favCourses);
+    res.status(200).json(userReturned.favCourses);
 });
 
 module.exports = router;
