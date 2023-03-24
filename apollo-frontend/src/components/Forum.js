@@ -7,18 +7,42 @@ const { Title } = Typography;
 
 const Forum = ( {courseName} ) => {
     const {user} = useUserContext();
-    let threads = [];
+    const [threads, setThreads] = useState([]);
+
+    const formatThreads = (data) => {
+        for (let i = 0; i < data.length; i++) {
+            const _id = data[i]._id;
+            const title = data[i].title;
+            const description = data[i].description;
+            const upvotes = data[i].upvotes;
+            const downvotes = data[i].downvotes;
+            const comments = data[i].comments;
+            const username = data[i].username;
+            console.log(_id, title, description, upvotes, downvotes, comments);
+            const thread = {
+                id: _id,
+                title: title,
+                description: description,
+                upvotes : upvotes ? upvotes.size : 0,
+                downvotes: downvotes ? downvotes.size : 0,
+                comments: comments,
+                username: username
+            }
+            setThreads(threads => [...threads, thread]);
+        }
+    }   
 
     useEffect(() => {
-        const fetchThreads = async () => {
-            const url = `http://localhost:5001/api/thread/${courseName}`
-            fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                threads = data;
-            }) 
-        };
-    fetchThreads();
+        if (courseName.length !== 0) {
+            const fetchThreads = async () => {
+                fetch("http://localhost:5001/api/thread/" + courseName)
+                .then(response => response.json())
+                .then(data => {
+                    formatThreads(data);
+                }) 
+            };
+            fetchThreads();
+        }
     }, [courseName]);
 
     const form = Form.useForm();
@@ -28,7 +52,6 @@ const Forum = ( {courseName} ) => {
         const content = values.content;
         const course = courseName;
         const username = user.username;
-        console.log(title, content, course, username);
         const body = {
             title: title,
             description: content,
@@ -45,7 +68,7 @@ const Forum = ( {courseName} ) => {
         })
 
         const data = await response.json();
-        threads = data; 
+        formatThreads(data);
     }
 
     const handleAddComment = async (values, threadId) => {
@@ -54,13 +77,13 @@ const Forum = ( {courseName} ) => {
 
     const handleUpVote = async (threadId) => {
         const updatedThreads = threads.map((thread) => {
-            if (thread.id === threadId) {
+            if (thread._id === threadId) {
                 return { ...thread, upvotes: thread.upvotes + 1}
             }
             return thread;
         });
 
-        threads = updatedThreads;
+        setThreads(updatedThreads);
         fetch(`http://localhost:5001/api/thread/${threadId}/upvote`, {
             method: 'POST',
             headers: {
@@ -72,13 +95,13 @@ const Forum = ( {courseName} ) => {
 
     const handleDownVote = async (threadId) => {
         const updatedThreads = threads.map((thread) => {
-            if (thread.id === threadId) {
+            if (thread._id === threadId) {
                 thread.downvotes += 1;
             }
             return thread;
         });
 
-        threads = updatedThreads;
+        setThreads(updatedThreads);
         fetch(`http://localhost:5001/api/thread/${threadId}/downvote`, {
             method: 'POST',
             headers: {
@@ -88,6 +111,7 @@ const Forum = ( {courseName} ) => {
         })
     }
 
+    console.log(threads);
     return (
         <div>
             <Title level={2}> Forum for {courseName} </Title>

@@ -184,6 +184,7 @@ const downvoteThread = async(req, res) => {
     }
 
     const thread = await Thread.findById(id);
+    console.log(thread);
     const isDownvoted = thread.downvotes.get(username);
     const isUpvoted = thread.upvotes.get(username);
 
