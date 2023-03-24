@@ -22,10 +22,13 @@ export default function SearchBar() {
         console.log(courseData.length)
         for (let i = 0; i < courseData.length; i++) {
             if (courseData[i].value === val) {
-                console.log(val)
+                /*
                 fetch('http://localhost:5001/api/course/get/' + val.substring(0, val.indexOf(":")))
                 .then(response => response.json())
                 .then(data => navigate('/Course',{state: {course: data}}))
+                */
+                let path = '/Course/' + val.substring(0, val.indexOf(":"));
+                navigate(path)
                 return;
             }
         }

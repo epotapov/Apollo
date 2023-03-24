@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom'
+import { useParams } from "react-router-dom";
 import Forum from './Forum';
 
 import Navbar from './Navbar';
@@ -7,7 +7,7 @@ import { useUserContext } from '../hooks/useUserContext';
 import { Button, Checkbox, Form, Input, Radio, Switch } from 'antd';
 
 export default function CoursePage() {
-    const [Course, setCourse] = useState('');
+    const {courseName} = useParams();
     const [Title, setTitle] = useState('');
     const [CreditHours, setCreditHours] = useState('');
     const [Description, setDescription] = useState('');
@@ -16,23 +16,27 @@ export default function CoursePage() {
     const [favCourses, setFavCourses] = useState([]);
     
     const [size, setSize] = useState('large');
-    const data = useLocation();
     const { user } = useUserContext();
     let username = '';
 
     useEffect(() => {
-        if (data.state != null) {
-            const hall = data.state.course;
-            setCourse(hall.Course);
-            setTitle(hall.Title)
-            setCreditHours(hall.CreditHours);
-            setDescription(hall.Description);
+        const fetchCourse = async () => {
+            fetch('http://localhost:5001/api/course/get/' + courseName)
+            .then(response => response.json())
+            .then(data => {
+                setTitle(data.Title);
+                setCreditHours(data.CreditHours);
+                setDescription(data.Description);
+            })
         }
+        fetchCourse();
+
         if (user != null && user.favCourses) {
             setFavorite(true);
         }
-    }, [data])
+    }, [courseName]);
 
+    /*
     useEffect(() => {
         fetch('http://localhost:5001/api/user/get-favCourses/' + username)
         .then(response => response.json())
@@ -40,12 +44,12 @@ export default function CoursePage() {
             setFavCourses(data);
             console.log("favorite courses: ", favCourses)
         })
-    }, [Course]); 
+    }, [courseName]); */
 
     useEffect(() => {
         let found = false;
         for (let i = 0; i < favCourses.length; i++) {
-            if (favCourses[i] === Course) {
+            if (favCourses[i] === courseName) {
                 setCheckedFavorite(true);
                 found = true;
             }
@@ -57,7 +61,7 @@ export default function CoursePage() {
     const checkClass = () => {
         console.log("hello")
         for (let i = 0; i < favCourses.length; i++) {
-            if (favCourses[i] === Course)
+            if (favCourses[i] === courseName)
                 return true;
         }
         return false;
@@ -67,13 +71,13 @@ export default function CoursePage() {
         console.log("run favClass")
         let found = false;
         for (let i = 0; i < favCourses.length; i++) {
-            if (favCourses[i] === Course) {
+            if (favCourses[i] === courseName) {
                 favCourses.splice(i, 1);
                 found = true;
             }
         }
         if (!found) {
-            favCourses.push(Course)
+            favCourses.push(courseName)
         }
         const newFavCourse = {username, favCourses};
         const response = await fetch('http://localhost:5001/api/user/add-favCourse', {
@@ -97,7 +101,7 @@ export default function CoursePage() {
         <div id='cont'>
             <Navbar/>
             <div className='namePage'>
-                <h1> {Course} </h1>
+                <h1> {courseName} </h1>
             </div>
             <div className='bodyPage'>
                 <h2>Title: </h2> 
@@ -117,7 +121,7 @@ export default function CoursePage() {
                 {
                     Description.length != 0 && <div><h2>Description: </h2><p>{Description}</p></div>
                 }
-                <Forum courseName={Course}/>
+                <Forum courseName={courseName}/>
             </div>
         </div>
     )

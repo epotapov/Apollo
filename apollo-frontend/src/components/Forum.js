@@ -18,7 +18,6 @@ const Forum = ( {courseName} ) => {
             const downvotes = data[i].downvotes;
             const comments = data[i].comments;
             const username = data[i].username;
-            console.log(_id, title, description, upvotes, downvotes, comments);
             const thread = {
                 id: _id,
                 title: title,
@@ -111,7 +110,6 @@ const Forum = ( {courseName} ) => {
         })
     }
 
-    console.log(threads);
     return (
         <div>
             <Title level={2}> Forum for {courseName} </Title>
