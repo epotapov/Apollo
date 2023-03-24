@@ -6,6 +6,9 @@
  * @author jebeene
  */
 
+// import mongoose - in this case, we use it for error handling
+const mongoose = require("mongoose");
+
 // imports thread model
 const Thread = require("../models/thread-model");
 
@@ -127,6 +130,10 @@ const upvoteThread = async(req, res) => {
     }
 
     const thread = await Thread.findById(id);
+    if (!thread) {
+      throw Error("Thread " + id + " was not found! Check that the ID provided is correct.");
+    }
+
     const isUpvoted = thread.upvotes.get(username);
     const isDownvoted = thread.downvotes.get(username);
 
@@ -152,8 +159,13 @@ const upvoteThread = async(req, res) => {
     res.status(200).json(updatedThread);
 
   } catch (err) {
-    console.log(err.message);
-    res.status(404).json({ message: err.message });
+    if (err instanceof mongoose.Error.CastError) {
+      console.log("Check that the ID provided is correct.");
+      res.status(400).json({ message: "Check that the ID provided is correct." });
+    } else {
+      console.log(err.message);
+      res.status(404).json({ message: err.message });
+    }
   }
 }
 
@@ -183,6 +195,10 @@ const downvoteThread = async(req, res) => {
     }
 
     const thread = await Thread.findById(id);
+    if (!thread) {
+      throw Error("Thread " + id + " was not found! Check that the ID provided is correct.");
+    }
+
     const isDownvoted = thread.downvotes.get(username);
     const isUpvoted = thread.upvotes.get(username);
 
@@ -208,8 +224,13 @@ const downvoteThread = async(req, res) => {
     res.status(200).json(updatedThread);
 
   } catch (err) {
-    console.log(err.message);
-    res.status(404).json({ message: err.message });
+    if (err instanceof mongoose.Error.CastError) {
+      console.log("Check that the ID provided is correct.");
+      res.status(400).json({ message: "Check that the ID provided is correct." });
+    } else {
+      console.log(err.message);
+      res.status(404).json({ message: err.message });
+    }
   }
 }
 
@@ -238,6 +259,10 @@ const createComment = async(req, res) => {
 
     // find thread by id provided and create new comment obj
     const thread = await Thread.findById(id);
+    console.log(thread);
+    if (!thread) {
+      throw Error("Thread " + id + " was not found! Check that the ID provided is correct.");
+    }
     const newComment = new Comment({
       username,
       description,
@@ -258,8 +283,13 @@ const createComment = async(req, res) => {
     res.status(201).json(updatedThread);
 
   } catch (err) {
-    console.log(err.message);
-    res.status(409).json({ message: err.message });
+    if (err instanceof mongoose.Error.CastError) {
+      console.log("Check that the ID provided is correct.");
+      res.status(400).json({ message: "Check that the ID provided is correct." });
+    } else {
+      console.log(err.message);
+      res.status(409).json({ message: err.message });
+    }
   }
 }
 
