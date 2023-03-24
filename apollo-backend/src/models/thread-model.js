@@ -8,6 +8,21 @@
 
 const mongoose = require("mongoose");
 
+// schema for comments. comments are within threads.
+const commentSchema = mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+  },
+
+  description: {
+    type: String,
+    required: true,
+  },
+
+}, { timestamps: true });
+
+// schema for threads
 const threadSchema = mongoose.Schema({
     courseName: {
       type: String,
@@ -40,7 +55,7 @@ const threadSchema = mongoose.Schema({
     },
 
     comments: {
-      type: Array,
+      type: [commentSchema],
       default: [],
     },
   },
