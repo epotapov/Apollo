@@ -110,7 +110,10 @@ export default function CoursePage() {
                     user != null &&
                     <section>
                         <h2>Favorite Class:</h2>
-                        <Switch checked={checkedFavorite} onChange={() => favClass()}/>
+                        <Switch checked={checkedFavorite} onChange={() => {
+                            favClass();
+                            setCheckedFavorite(!checkedFavorite);
+                        }}/>
                     </section>
                 }
                 <h2>Credit Hours:</h2>
