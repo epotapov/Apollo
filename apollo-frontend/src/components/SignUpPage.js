@@ -17,7 +17,6 @@ function validatePassword(value) {
     errorMsg: null,
   };
   if (pattern.test(value) === false) {
-    console.log(value);
     return_msg = {
       validateStatus: 'error',
       errorMsg: 'Password must contain: at least 8 characters, 1 lowercase, 1 uppercase, 1 number and 1 special character',
@@ -90,10 +89,8 @@ export default function SignUpPage() {
   const [favCourses, setfavCourses] = useState(null);
 
   const onFinish = (values) => {
-    console.log('Success:', values);
   };
   const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
   };
 
   const handleSubmit = async (e) => {

@@ -1,5 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom'
+import Forum from './Forum';
 
 import Navbar from './Navbar';
 import { useUserContext } from '../hooks/useUserContext';
@@ -18,9 +19,6 @@ export default function CoursePage() {
     const data = useLocation();
     const { user } = useUserContext();
     let username = '';
-    if (user) 
-        username = user.username;
-    console.log(data)
 
     useEffect(() => {
         if (data.state != null) {
@@ -36,15 +34,13 @@ export default function CoursePage() {
     }, [data])
 
     useEffect(() => {
-        console.log("run useeffect")
         fetch('http://localhost:5001/api/user/get-favCourses/' + username)
         .then(response => response.json())
         .then(data => {
             setFavCourses(data);
             console.log("favorite courses: ", favCourses)
         })
-        console.log("hello")
-    }, [Course]);
+    }, [Course]); 
 
     useEffect(() => {
         let found = false;
@@ -58,14 +54,14 @@ export default function CoursePage() {
             setCheckedFavorite(false);
     }, [favCourses]);
 
-    /*const checkClass = () => {
+    const checkClass = () => {
         console.log("hello")
         for (let i = 0; i < favCourses.length; i++) {
             if (favCourses[i] === Course)
                 return true;
         }
         return false;
-    }*/
+    }
 
     const favClass = async () => {
         console.log("run favClass")
@@ -92,9 +88,9 @@ export default function CoursePage() {
             console.log("successful switch for user")
         }
         else {
-            console.log("not successful switch for user course")
+          console.log("not successful switch for user course")
         }
-    }
+    } 
 
 
     return( 
@@ -121,6 +117,7 @@ export default function CoursePage() {
                 {
                     Description.length != 0 && <div><h2>Description: </h2><p>{Description}</p></div>
                 }
+                <Forum courseName={Course}/>
             </div>
         </div>
     )

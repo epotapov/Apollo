@@ -31,6 +31,7 @@ const Course = require("../models/course-model");
  *   CONFLICT = 409
  */
 const createThread = async (req, res) => {
+  console.log(req.body);
   try {
     const { courseName, username, title, description } = req.body;
 
