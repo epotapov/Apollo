@@ -213,21 +213,30 @@ const downvoteThread = async(req, res) => {
   }
 }
 
-/* comment
+/* createComment
  *
+ * API Requ: /api/thread/:threadId/createComment
+ * Req Body: username, description
+ * Response: updated thread object or JSON error message
  *
+ * Status Codes:
+ *   CREATED = 201
+ *   CONFLICT = 409
  */
 const createComment = async(req, res) => {
 
   try {
+    // grab request param & json body
     const { id } = req.params;
     const { username, description } = req.body;
 
+    // does user exist
     const userExist = await User.findOne({ username });
     if (!userExist) {
       throw Error(username + " is not a registered user!");
     }
 
+    // find thread by id provided and create new comment obj
     const thread = await Thread.findById(id);
     const newComment = new Comment({
       username,
@@ -237,12 +246,14 @@ const createComment = async(req, res) => {
     // add comment to thread obj
     thread.comments.push(newComment);
 
+    // update thread with new comment
     const updatedThread = await Thread.findByIdAndUpdate(
       id,
       { comments: thread.comments },
       { new: true }
     );
 
+    // success
     console.log(username + " commented on thread " + thread.title + "!");
     res.status(201).json(updatedThread);
 
