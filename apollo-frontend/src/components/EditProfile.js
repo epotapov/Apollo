@@ -1,5 +1,6 @@
 import { React, useState } from 'react';
 import { Link } from 'react-router-dom'
+import { UploadOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Select, DatePicker, InputNumber, message, Switch, Upload } from 'antd';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -375,25 +376,27 @@ export default function EditProfile() {
 	}
     const [size, setSize] = useState('large');
 
-	/* Profile picture stuff
 
 	const beforeUpload = (file) => {
 		const isPng = file.type === 'image/png';
-		if (!isPng) {
-		  message.error('You can only upload PNG file!');
+		const isJpg = file.type === 'image/jpeg';
+		if (!isPng && !isJpg) {
+		  message.error('You can only upload PNG/JPEG file!');
 		}
 
-		return isPng;
+		return isPng || isJpg;
 	}
 
 	const handleChange = info => {
-		if (info.file.status === "uploading") {
+		if (info.file.status !== 'uploading') {
 			console.log(info.file, info.fileList);
 		}
-		if (info.file.status === "done") {
-			console.log(info.file, info.fileList);
+		if (info.file.status === 'done') {
+			message.success(`${info.file.name} file uploaded successfully`);
+		} else if (info.file.status === 'error') {
+			message.error(`${info.file.name} file upload failed.`);
 		}
-	}; */
+	};
 	
     return (
         <div className="container">
@@ -425,18 +428,20 @@ export default function EditProfile() {
                 autoComplete="off"
             >
                 <h2> Tell Us More </h2>
-{/*				<Form.Item> 
+				<Form.Item
+					label="Upload Profile Picture"
+				>
 					<Upload
 						name="profilepic"
 						beforeUpload={beforeUpload}
 						onChange={handleChange}
 						showUploadList={false}
-						action='http://localhost:5001/api/user/upload-image'
+						action={`http://localhost:5001/api/user/upload-image/${username}`}
 						headers= {{'username': username}}
 					>
-						<Button type="Primary"> Upload </Button>
+						<Button icon={<UploadOutlined />} type="Primary"> Upload </Button>
 					</Upload>
-				</Form.Item> */}
+				</Form.Item>
 				<Form.Item
 					
 					name="aboutme"
