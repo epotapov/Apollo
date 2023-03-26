@@ -68,9 +68,8 @@ export default function LandingPage() {
     function FavoriteCourse(props) {
         const onPress = () => {
             console.log(props.course)
-            fetch('http://localhost:5001/api/course/get/' + props.course)
-            .then(response => response.json())
-            .then(data => navigate('/Course',{state: {course: data}}))
+            let path = '/Course/' + props.course;
+            navigate(path);
         }
         return(
             <div className='grid-item' onClick={() => onPress()}>{props.course}</div>

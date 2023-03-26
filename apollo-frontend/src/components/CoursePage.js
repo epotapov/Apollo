@@ -22,6 +22,8 @@ export default function CoursePage() {
     const [size, setSize] = useState('large');
     const { user } = useUserContext();
     let username = '';
+    if (user) 
+        username = user.username;
 
     useEffect(() => {
         const fetchCourse = async () => {
