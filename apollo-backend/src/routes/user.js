@@ -26,6 +26,20 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage: storage});
 
+//For professor pdf upload
+
+const storage_courseInfo = multer.diskStorage({
+    destination: (req, file, cb) => {
+
+    },
+
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname))
+    }
+});
+
+const_uploadCourseInfo = multer({storage: storage_courseInfo});
+
 //controller functions
 const { signupUser, loginUser } = require('../controllers/user-controller');
 
@@ -273,6 +287,12 @@ router.post("/upload-image", upload.single("profilepic"), async (req, res) => {
     console.log(userReturned)
     res.send("Image uploading")
 });
+
+//Professor upload pdf for course. (Must have isProfessor=true)
+router.post("/upload-pdf", const_uploadCourseInfo("courseinfo"), async (req, res) => {
+    //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
+    res.send("Pdf uploading");
+})
 
 router.post("/add-favCourse", async (req, res) => {
     const {username, favCourses} = req.body;
