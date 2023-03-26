@@ -5,6 +5,8 @@ import Navbar from './Navbar';
 import { useUserContext } from '../hooks/useUserContext';
 import { Button, Checkbox, Form, Input, Radio, Switch } from 'antd';
 
+import Reviews from './Reviews';
+
 export default function CoursePage() {
     const [Course, setCourse] = useState('');
     const [Title, setTitle] = useState('');
@@ -130,6 +132,7 @@ export default function CoursePage() {
                 {
                     Description.length != 0 && <div><h2>Description: </h2><p>{Description}</p></div>
                 }
+                <Reviews name={Course} type={"course"}/>
             </div>
         </div>
     )
