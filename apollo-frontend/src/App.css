@@ -225,8 +225,8 @@ h1 {
 
 #dark {
   background-color: #1f2937;
-  height: 100vh;
-  width: 100vw;
+  min-height: 100%;
+  width: 100%;
 }
 
 #dark button {
@@ -268,7 +268,7 @@ h1 {
 
 #light {
   background-color: white;
-  height: 100%;
+  min-height: 100%;
   width: 100%;
 }
 
