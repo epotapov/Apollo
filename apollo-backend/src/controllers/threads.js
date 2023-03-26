@@ -34,6 +34,7 @@ const Course = require("../models/course-model");
  *   CONFLICT = 409
  */
 const createThread = async (req, res) => {
+  console.log(req.body);
   try {
     const { courseName, username, title, description } = req.body;
 
@@ -195,10 +196,10 @@ const downvoteThread = async(req, res) => {
     }
 
     const thread = await Thread.findById(id);
+    console.log(thread);
     if (!thread) {
       throw Error("Thread " + id + " was not found! Check that the ID provided is correct.");
     }
-
     const isDownvoted = thread.downvotes.get(username);
     const isUpvoted = thread.upvotes.get(username);
 
