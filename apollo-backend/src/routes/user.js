@@ -30,7 +30,7 @@ const upload = multer({storage: storage});
 
 const storage_courseInfo = multer.diskStorage({
     destination: (req, file, cb) => {
-
+        cb(null, 'course_info_docs');
     },
 
     filename: (req, file, cb) => {
