@@ -4,6 +4,7 @@ const mongodb = require('mongodb');
 
 // controller
 const CourseInfo = require('../models/course-model');
+const CourseGrades = require('../models/course-grades');
 
 const router = express.Router();
 
@@ -20,7 +21,9 @@ router.get('/getAll', async function (req, res) {
 router.get('/get/:courseName', async (req, res) => {
   const name = req.params.courseName;
   const courseReturned = await CourseInfo.findOne({ Course: name });
+  const courseReturnedGrades = await CourseGrades.findOne({ Course: name });
   console.log(courseReturned);
+  console.log(courseReturnedGrades);
   res.json(courseReturned);
  });
 

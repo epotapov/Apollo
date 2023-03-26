@@ -6,6 +6,8 @@ import Navbar from './Navbar';
 import { useUserContext } from '../hooks/useUserContext';
 import { Button, Checkbox, Form, Input, Radio, Switch } from 'antd';
 
+import Reviews from './Reviews';
+
 export default function CoursePage() {
     const {courseName} = useParams();
     const [Title, setTitle] = useState('');
@@ -14,6 +16,8 @@ export default function CoursePage() {
     const [favorite, setFavorite] = useState(false);
     const [checkedFavorite, setCheckedFavorite] = useState(false);
     const [favCourses, setFavCourses] = useState([]);
+    const [courseDist, setcourseDist] = useState({});
+
     
     const [size, setSize] = useState('large');
     const { user } = useUserContext();
@@ -36,7 +40,6 @@ export default function CoursePage() {
         }
     }, [courseName]);
 
-    /*
     useEffect(() => {
         fetch('http://localhost:5001/api/user/get-favCourses/' + username)
         .then(response => response.json())
@@ -44,7 +47,14 @@ export default function CoursePage() {
             setFavCourses(data);
             console.log("favorite courses: ", favCourses)
         })
-    }, [courseName]); */
+        fetch('http://localhost:5001/api/course/get/' + courseName)
+        .then(response => response.json())
+        .then(data => {
+            setcourseDist(data);
+            console.log("Grade Dist: ", courseDist)
+        })
+        console.log("hello")
+    }, [courseName]);
 
     useEffect(() => {
         let found = false;
@@ -122,6 +132,7 @@ export default function CoursePage() {
                     Description.length != 0 && <div><h2>Description: </h2><p>{Description}</p></div>
                 }
                 <Forum courseName={courseName}/>
+                <Reviews name={courseName} type={"course"}/>
             </div>
         </div>
     )
