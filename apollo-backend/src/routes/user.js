@@ -289,7 +289,7 @@ router.post("/upload-image", upload.single("profilepic"), async (req, res) => {
 });
 
 //Professor upload pdf for course. (Must have isProfessor=true)
-router.post("/upload-pdf", uploadCourseInfo("courseinfo"), async (req, res) => {
+router.post("/upload-pdf", uploadCourseInfo.single("courseinfo"), async (req, res) => {
     //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
     res.send("Pdf uploading");
 })
