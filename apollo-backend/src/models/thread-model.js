@@ -47,13 +47,13 @@ const threadSchema = mongoose.Schema({
     upvotes: {
       type: Map,
       of: Boolean,
-      default: {},
+      default: new Map(),
     },
 
     downvotes: {
       type: Map,
       of: Boolean,
-      default: {},
+      default: new Map(),
     },
 
     comments: {

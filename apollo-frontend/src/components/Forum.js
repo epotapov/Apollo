@@ -22,8 +22,8 @@ const Forum = ( {courseName} ) => {
                 id: _id,
                 title: title,
                 description: description,
-                upvotes : upvotes ? upvotes.size : 0,
-                downvotes: downvotes ? downvotes.size : 0,
+                upvotes : upvotes ? Object.entries(upvotes).length : 0,
+                downvotes: downvotes ? Object.entries(downvotes).length : 0,
                 comments: comments,
                 username: username
             }
@@ -40,6 +40,7 @@ const Forum = ( {courseName} ) => {
                     formatThreads(data);
                 }) 
             };
+
             fetchThreads();
         }
     }, [courseName]);
@@ -75,16 +76,23 @@ const Forum = ( {courseName} ) => {
     }
 
     const handleUpVote = async (threadId) => {
-        const updatedThreads = threads.map((thread) => {
-            if (thread._id === threadId) {
-                return { ...thread, upvotes: thread.upvotes + 1}
-            }
-            return thread;
-        });
+        const threadIndex = threads.findIndex((thread) => thread.id === threadId);
+        const thread = threads[threadIndex];
+      
+        const updatedThread = {
+          ...thread,
+          upvotes: thread.upvotes + 1,
+        };
+      
+        const updatedThreads = [
+          ...threads.slice(0, threadIndex),
+          updatedThread,
+          ...threads.slice(threadIndex + 1),
+        ];
 
         setThreads(updatedThreads);
         fetch(`http://localhost:5001/api/thread/${threadId}/upvote`, {
-            method: 'POST',
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -93,16 +101,23 @@ const Forum = ( {courseName} ) => {
     }
 
     const handleDownVote = async (threadId) => {
-        const updatedThreads = threads.map((thread) => {
-            if (thread._id === threadId) {
-                thread.downvotes += 1;
-            }
-            return thread;
-        });
+        const threadIndex = threads.findIndex((thread) => thread.id === threadId);
+        const thread = threads[threadIndex];
+      
+        const updatedThread = {
+          ...thread,
+          downvotes: thread.downvotes + 1,
+        };
+      
+        const updatedThreads = [    
+          ...threads.slice(0, threadIndex),
+          updatedThread,
+          ...threads.slice(threadIndex + 1),
+        ];
 
         setThreads(updatedThreads);
         fetch(`http://localhost:5001/api/thread/${threadId}/downvote`, {
-            method: 'POST',
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },
