@@ -13,6 +13,8 @@ export default function CoursePage() {
     const [favorite, setFavorite] = useState(false);
     const [checkedFavorite, setCheckedFavorite] = useState(false);
     const [favCourses, setFavCourses] = useState([]);
+    const [courseDist, setcourseDist] = useState({});
+
     
     const [size, setSize] = useState('large');
     const data = useLocation();
@@ -42,6 +44,13 @@ export default function CoursePage() {
         .then(data => {
             setFavCourses(data);
             console.log("favorite courses: ", favCourses)
+        })
+
+        fetch('http://localhost:5001/api/course/get/' + Course)
+        .then(response => response.json())
+        .then(data => {
+            setcourseDist(data);
+            console.log("Grade Dist: ", courseDist)
         })
         console.log("hello")
     }, [Course]);
