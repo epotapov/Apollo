@@ -114,7 +114,7 @@ router.get('/verify', async (req, res) => {
 router.post('/edit', async (req, res) => {
     // const salt = await bcrypt.genSalt(10);
 
-    const {username, email, major, gradYear, profilePicture, role, 
+    const {username, email, major, gradYear, role, 
         isVerified, courses, aboutMe, country, gender, planOfStudy, 
         dob, isPrivate, year, instagramLink, twitterLink, linkedinLink, favCourses} = req.body;
 
@@ -134,7 +134,6 @@ router.post('/edit', async (req, res) => {
     user.DOB = dob;
     user.country = country;
     user.isPrivate = isPrivate;
-    user.profilePicture = profilePicture;
     user.instagramLink = instagramLink;
     user.twitterLink = twitterLink;
     user.linkedinLink = linkedinLink;
@@ -287,8 +286,14 @@ router.post("/upload-image/:username", upload.single("profilepic"), async (req, 
     const the_username = req.params.username
     const userReturned = await UserInfo.findOne({username: the_username})
     userReturned.profilePicture = prof_pic_name;
-    console.log(prof_pic_name)
-    res.send("Image uploading")
+    await userReturned.save()
+    res.status(200).json(prof_pic_name);
+});
+
+router.get("/get-image/:username", async (req, res) => {
+    const param = req.params.username;
+    const userReturned = await UserInfo.findOne({ username: param });
+    res.status(200).json(userReturned.profilePicture);
 });
 
 //Professor upload pdf for course. (Must have isProfessor=true)

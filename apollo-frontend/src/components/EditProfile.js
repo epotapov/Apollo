@@ -25,8 +25,9 @@ let planOfStudy = {};
 let instagramLink = '';
 let linkedinLink = '';
 let twitterLink = '';
-let profilePicture = '';
 let favCourses = ""
+
+const picServer = "http://localhost:5001/pictures/"
 
 const countryList = [
     "Afghanistan",
@@ -325,11 +326,10 @@ export default function EditProfile() {
 		instagramLink = values.instagram ? values.instagram : instagramLink;
 		linkedinLink = values.linkedin ? values.linkedin : linkedinLink;
 		twitterLink = values.twitter ? values.twitter : twitterLink;
-		profilePicture = values.profilepic ? values.profilepic : profilePicture;
 
 		const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
 			country, gender, planOfStudy, dob, year, isPrivate, 
-			profilePicture, instagramLink, linkedinLink, twitterLink, favCourses};
+			instagramLink, linkedinLink, twitterLink, favCourses};
 		
 		const response = await fetch('http://localhost:5001/api/user/edit', {
 			method: 'POST',
@@ -370,7 +370,6 @@ export default function EditProfile() {
 		  instagramLink = user.instagramLink;
 		  twitterLink = user.twitterLink;
 		  linkedinLink = user.linkedinLink;
-		  profilePicture = user.profilePicture;
 		  favCourses = user.favCourses;
 		}
 	}
@@ -468,21 +467,6 @@ export default function EditProfile() {
                         <Option value="other">Other</Option>
                     </Select>
                 </Form.Item>
-				<Form.Item
-					name="profilepic"
-					label="Select profile picture color!"
-				> 
-				<Select 
-						placeholder="Select the color of your profile picture!" 
-						defaultValue={profilePicture}
-				>
-						<Option value="default"> Default </Option>
-                        <Option value="blue">Blue</Option>
-                        <Option value="green">Green</Option>
-                        <Option value="red">Red</Option>
-						<Option value="yellow">Yellow</Option>
-                    </Select>
-				</Form.Item>
                 <Form.Item
                     name="country"
                     label="Country"

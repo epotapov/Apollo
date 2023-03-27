@@ -8,6 +8,10 @@ export const userReducer = (state, action) => {
             return {
                 user: action.payload
             }
+        case 'UPDATE':
+            return {
+                user: action.payload
+            }
         case 'LOGOUT':
             return {
                 user: null

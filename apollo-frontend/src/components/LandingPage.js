@@ -11,11 +11,9 @@ import { useTheme } from '../hooks/useTheme';
 import { useThemeContext } from '../hooks/useThemeContext';
 
 import { Button, Avatar, Switch, theme } from 'antd';
-import bluepfp from '../img/bluepfp.png';
-import redpfp from '../img/redpfp.png';
-import greenpfp from '../img/greenpfp.png';
-import yellowpfp from '../img/yellowpfp.png';
 import defpfp from '../img/defaultpfp.png';
+
+const picServer = "http://localhost:5001/pictures/"
 
 export default function LandingPage() {
     const [size, setSize] = useState('large');
@@ -27,25 +25,16 @@ export default function LandingPage() {
     const navigate = useNavigate();
     let buttonEnable = false;
     const [favCourses, setFavCourses] = useState([]);
+    const [profilePic, setProfilePic] = useState("");
 
     function getpfp() {
         if (user) {
-            let pfpColor = user.user.profilePicture;
-            console.log("asd" + pfpColor);
-            if (pfpColor === 'blue') {
-                return bluepfp;
-            }
-            else if (pfpColor === 'red') {
-                return redpfp;
-            }
-            else if (pfpColor === 'green') {
-                return greenpfp;
-            }
-            else if (pfpColor === 'yellow') {
-                return yellowpfp;
+            console.log("asd" + profilePic);
+            if (profilePic === 'default' || profilePic === "" || profilePic === null) {
+                return defpfp;
             }
             else {
-                return defpfp;
+                return picServer + profilePic;
             }
         }
     }
@@ -58,7 +47,12 @@ export default function LandingPage() {
             .then(data => {
                 setFavCourses(data);
                 console.log("favorite courses: ", favCourses)
-            }) 
+            })
+            fetch('http://localhost:5001/api/user/get-image/' + user.username)
+            .then(response => response.json())
+            .then(data => {
+                setProfilePic(data);
+            })  
         } 
     }, [user])
 
