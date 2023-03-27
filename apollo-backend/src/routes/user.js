@@ -12,6 +12,9 @@ const fs = require('fs');
 
 const validator = require('validator'); // helps validate user input
 
+const CourseInfo = require('../models/course-model');
+
+
 //Need for file upload
 const path = require('path')
 const multer = require('multer');
@@ -289,8 +292,13 @@ router.post("/upload-image/:username", upload.single("profilepic"), async (req, 
 });
 
 //Professor upload pdf for course. (Must have isProfessor=true)
-router.post("/upload-pdf", uploadCourseInfo.single("courseinfo"), async (req, res) => {
+router.post("/upload-pdf/:Course", uploadCourseInfo.single("courseinfo"), async (req, res) => {
     //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
+    const doc_name = req.file.filename;
+    const course_name = req.params.Course
+    const courseReturned = await CourseInfo.findOne({Course: course_name})
+    courseReturned.Information_Document = doc_name;
+    console.log(doc_name)
     res.send("Pdf uploading");
 })
 
