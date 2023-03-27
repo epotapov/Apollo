@@ -17,6 +17,10 @@ const courseSchema = new mongoose.Schema({
 
   Description: {
     type: String
+  },
+
+  Information_Document: {
+    type: String
   }
 });
 
