@@ -287,6 +287,12 @@ router.post("/upload-image/:username", upload.single("profilepic"), async (req, 
     res.status(200).json(prof_pic_name);
 });
 
+router.get("/get-image/:username", async (req, res) => {
+    const param = req.params.username;
+    const userReturned = await UserInfo.findOne({ username: param });
+    res.status(200).json(userReturned.profilePicture);
+});
+
 //Professor upload pdf for course. (Must have isProfessor=true)
 router.post("/upload-pdf", uploadCourseInfo.single("courseinfo"), async (req, res) => {
     //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.

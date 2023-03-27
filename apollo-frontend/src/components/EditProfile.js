@@ -7,7 +7,6 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {LinkedinFilled, InstagramFilled, TwitterCircleFilled, PlusOutlined } from '@ant-design/icons';
 
-import { useProfilePic } from '../hooks/useProfilePic';
 
 let user = null;
 let username = '';
@@ -288,7 +287,6 @@ const {Option} = Select;
 export default function EditProfile() { 
 
 	const [messageApi, contextHolder] = message.useMessage();
-	const { updatePic } = useProfilePic();
 	const success = (message) => {
 		messageApi.open({
 			type: 'success',
@@ -389,13 +387,10 @@ export default function EditProfile() {
 	}
 
 	const handleChange = info => {
-		console.log(info)
 		if (info.file.status !== 'uploading') {
 			console.log(info.file, info.fileList);
 		}
 		if (info.file.status === 'done') {
-			console.log("profile asdfasdfdasf" + info.response)
-			updatePic(info.response)
 			message.success(`${info.file.name} file uploaded successfully`);
 		} else if (info.file.status === 'error') {
 			message.error(`${info.file.name} file upload failed.`);

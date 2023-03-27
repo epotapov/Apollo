@@ -18,11 +18,10 @@ export default function Navbar() {
     const { user } = useUserContext();
     const navigate = useNavigate(); 
     const { theme } = useThemeContext();
+    const [profilePic, setProfilePic] = useState("");
     
     function getpfp() {
         if (user) {
-            let profilePic = user.user.profilePicture;
-            console.log("asd" + profilePic);
             if (profilePic === 'default' || profilePic === "" || profilePic === null) {
                 return defpfp;
             }
@@ -31,6 +30,16 @@ export default function Navbar() {
             }
         }
     }
+
+    useEffect(() => {
+        if (user) {
+            fetch('http://localhost:5001/api/user/get-image/' + user.username)
+            .then(response => response.json())
+            .then(data => {
+                setProfilePic(data);
+            })  
+        } 
+    }, [user])
 
     const pfp = getpfp();
 

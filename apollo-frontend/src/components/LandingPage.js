@@ -25,11 +25,10 @@ export default function LandingPage() {
     const navigate = useNavigate();
     let buttonEnable = false;
     const [favCourses, setFavCourses] = useState([]);
+    const [profilePic, setProfilePic] = useState("");
 
     function getpfp() {
         if (user) {
-            let profilePic = user.user.profilePicture;
-            console.log("profile pic " + profilePic)
             console.log("asd" + profilePic);
             if (profilePic === 'default' || profilePic === "" || profilePic === null) {
                 return defpfp;
@@ -48,7 +47,12 @@ export default function LandingPage() {
             .then(data => {
                 setFavCourses(data);
                 console.log("favorite courses: ", favCourses)
-            }) 
+            })
+            fetch('http://localhost:5001/api/user/get-image/' + user.username)
+            .then(response => response.json())
+            .then(data => {
+                setProfilePic(data);
+            })  
         } 
     }, [user])
 
