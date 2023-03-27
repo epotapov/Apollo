@@ -21,10 +21,15 @@ router.get('/getAll', async function (req, res) {
 router.get('/get/:courseName', async (req, res) => {
   const name = req.params.courseName;
   const courseReturned = await CourseInfo.findOne({ Course: name });
-  const courseReturnedGrades = await CourseGrades.findOne({ Course: name });
   console.log(courseReturned);
-  console.log(courseReturnedGrades);
   res.json(courseReturned);
+ });
+
+ router.get('/get/grades/:courseName', async (req, res) => {
+  const name = req.params.courseName;
+  const courseReturnedGrades = await CourseGrades.findOne({ CourseID: name });
+  console.log(courseReturnedGrades);
+  res.json(courseReturnedGrades);
  });
 
 module.exports = router;

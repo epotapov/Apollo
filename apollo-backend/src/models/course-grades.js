@@ -3,57 +3,61 @@ const Schema = mongoose.Schema;
 
 const courseGradesSchema = new mongoose.Schema({
 
-  'A+': {
-    type: Number
-  },
+    'CourseID': {
+        type: String
+    },
 
-  'A': {
-    type: Number
-  },
+    'A+': {
+        type: Number
+    },
 
-  'A-': {
-    type: Number
-  },
+    'A': {
+        type: Number
+    },
 
-  'B+': {
-    type: Number
-  },
+    'A-': {
+        type: Number
+    },
 
-  'B': {
-    type: Number
-  },
+    'B+': {
+        type: Number
+    },
 
-  'B-': {
-    type: Number
-  },
+    'B': {
+        type: Number
+    },
 
-  'C+': {
-    type: Number
-  },
+    'B-': {
+        type: Number
+    },
 
-  'C': {
-    type: Number
-  },
+    'C+': {
+        type: Number
+    },
 
-  'C-': {
-    type: Number
-  },
+    'C': {
+        type: Number
+    },
 
-  'D+': {
-    type: Number
-  },
+    'C-': {
+        type: Number
+    },
 
-  'D': {
-    type: Number
-  },
+    'D+': {
+        type: Number
+    },
 
-  'D-': {
-    type: Number
-  },
+    'D': {
+        type: Number
+    },
 
-  'F': {
-    type: Number
-  }
+    'D-': {
+        type: Number
+    },
+
+    'F': {
+        type: Number
+    }
 
 });
 
