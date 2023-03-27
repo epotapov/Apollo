@@ -8,11 +8,9 @@ import { useLogout } from '../hooks/useLogout';
 import { useUserContext } from '../hooks/useUserContext';
 import { useNavigate } from 'react-router-dom';
 import { useThemeContext } from '../hooks/useThemeContext';
-import bluepfp from '../img/bluepfp.png';
-import redpfp from '../img/redpfp.png';
-import greenpfp from '../img/greenpfp.png';
-import yellowpfp from '../img/yellowpfp.png';
 import defpfp from '../img/defaultpfp.png';
+
+const picServer = "http://localhost:5001/pictures/"
 
 export default function Navbar() {
     const [size, setSize] = useState('large');
@@ -20,27 +18,28 @@ export default function Navbar() {
     const { user } = useUserContext();
     const navigate = useNavigate(); 
     const { theme } = useThemeContext();
+    const [profilePic, setProfilePic] = useState("");
     
     function getpfp() {
         if (user) {
-            let pfpColor = user.user.profilePicture;
-            if (pfpColor == 'blue') {
-                return bluepfp;
-            }
-            else if (pfpColor == 'red') {
-                return redpfp;
-            }
-            else if (pfpColor == 'green') {
-                return greenpfp;
-            }
-            else if (pfpColor == 'yellow') {
-                return yellowpfp;
+            if (profilePic === 'default' || profilePic === "" || profilePic === null) {
+                return defpfp;
             }
             else {
-                return defpfp;
+                return picServer + profilePic;
             }
         }
     }
+
+    useEffect(() => {
+        if (user) {
+            fetch('http://localhost:5001/api/user/get-image/' + user.username)
+            .then(response => response.json())
+            .then(data => {
+                setProfilePic(data);
+            })  
+        } 
+    }, [user])
 
     const pfp = getpfp();
 
@@ -61,7 +60,7 @@ export default function Navbar() {
                 {user && (
                     <div>
                         <span className='WelcomeTag'>Welcome {user.username} </span>
-                        <Avatar onClick={goToProfile} size={40} shape="circle" src={pfp} />
+                        <Avatar onClick={goToProfile} size={40} className="avatar" shape="circle" src={pfp} />
                         <Button type="primary" onClick={() => logout()} size={size}>
                             Log Out
                         </Button>

@@ -12,6 +12,9 @@ const fs = require('fs');
 
 const validator = require('validator'); // helps validate user input
 
+const CourseInfo = require('../models/course-model');
+
+
 //Need for file upload
 const path = require('path')
 const multer = require('multer');
@@ -111,7 +114,7 @@ router.get('/verify', async (req, res) => {
 router.post('/edit', async (req, res) => {
     // const salt = await bcrypt.genSalt(10);
 
-    const {username, email, major, gradYear, profilePicture, role, 
+    const {username, email, major, gradYear, role, 
         isVerified, courses, aboutMe, country, gender, planOfStudy, 
         dob, isPrivate, year, instagramLink, twitterLink, linkedinLink, favCourses} = req.body;
 
@@ -131,7 +134,6 @@ router.post('/edit', async (req, res) => {
     user.DOB = dob;
     user.country = country;
     user.isPrivate = isPrivate;
-    user.profilePicture = profilePicture;
     user.instagramLink = instagramLink;
     user.twitterLink = twitterLink;
     user.linkedinLink = linkedinLink;
@@ -279,18 +281,29 @@ router.post('/change-password', async (req, res) => {
 });
 
 //MUST RUN COMMAND "npm install multer"
-router.post("/upload-image", upload.single("profilepic"), async (req, res) => {
+router.post("/upload-image/:username", upload.single("profilepic"), async (req, res) => {
     const prof_pic_name = req.file.filename
-    const the_username = req.headers.username
+    const the_username = req.params.username
     const userReturned = await UserInfo.findOne({username: the_username})
     userReturned.profilePicture = prof_pic_name;
-    console.log(userReturned)
-    res.send("Image uploading")
+    await userReturned.save()
+    res.status(200).json(prof_pic_name);
+});
+
+router.get("/get-image/:username", async (req, res) => {
+    const param = req.params.username;
+    const userReturned = await UserInfo.findOne({ username: param });
+    res.status(200).json(userReturned.profilePicture);
 });
 
 //Professor upload pdf for course. (Must have isProfessor=true)
-router.post("/upload-pdf", uploadCourseInfo.single("courseinfo"), async (req, res) => {
+router.post("/upload-pdf/:Course", uploadCourseInfo.single("courseinfo"), async (req, res) => {
     //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
+    const doc_name = req.file.filename;
+    const course_name = req.params.Course
+    const courseReturned = await CourseInfo.findOne({Course: course_name})
+    courseReturned.Information_Document = doc_name;
+    console.log(doc_name)
     res.send("Pdf uploading");
 })
 

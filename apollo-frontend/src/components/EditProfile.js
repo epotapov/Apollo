@@ -1,5 +1,6 @@
 import { React, useState } from 'react';
 import { Link } from 'react-router-dom'
+import { UploadOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input, Select, DatePicker, InputNumber, message, Switch, Upload } from 'antd';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -24,8 +25,9 @@ let planOfStudy = {};
 let instagramLink = '';
 let linkedinLink = '';
 let twitterLink = '';
-let profilePicture = '';
 let favCourses = ""
+
+const picServer = "http://localhost:5001/pictures/"
 
 const countryList = [
     "Afghanistan",
@@ -324,11 +326,10 @@ export default function EditProfile() {
 		instagramLink = values.instagram ? values.instagram : instagramLink;
 		linkedinLink = values.linkedin ? values.linkedin : linkedinLink;
 		twitterLink = values.twitter ? values.twitter : twitterLink;
-		profilePicture = values.profilepic ? values.profilepic : profilePicture;
 
 		const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
 			country, gender, planOfStudy, dob, year, isPrivate, 
-			profilePicture, instagramLink, linkedinLink, twitterLink, favCourses};
+			instagramLink, linkedinLink, twitterLink, favCourses};
 		
 		const response = await fetch('http://localhost:5001/api/user/edit', {
 			method: 'POST',
@@ -369,31 +370,32 @@ export default function EditProfile() {
 		  instagramLink = user.instagramLink;
 		  twitterLink = user.twitterLink;
 		  linkedinLink = user.linkedinLink;
-		  profilePicture = user.profilePicture;
 		  favCourses = user.favCourses;
 		}
 	}
     const [size, setSize] = useState('large');
 
-	/* Profile picture stuff
 
 	const beforeUpload = (file) => {
 		const isPng = file.type === 'image/png';
-		if (!isPng) {
-		  message.error('You can only upload PNG file!');
+		const isJpg = file.type === 'image/jpeg';
+		if (!isPng && !isJpg) {
+		  message.error('You can only upload PNG/JPEG file!');
 		}
 
-		return isPng;
+		return isPng || isJpg;
 	}
 
 	const handleChange = info => {
-		if (info.file.status === "uploading") {
+		if (info.file.status !== 'uploading') {
 			console.log(info.file, info.fileList);
 		}
-		if (info.file.status === "done") {
-			console.log(info.file, info.fileList);
+		if (info.file.status === 'done') {
+			message.success(`${info.file.name} file uploaded successfully`);
+		} else if (info.file.status === 'error') {
+			message.error(`${info.file.name} file upload failed.`);
 		}
-	}; */
+	};
 	
     return (
         <div className="container">
@@ -425,18 +427,20 @@ export default function EditProfile() {
                 autoComplete="off"
             >
                 <h2> Tell Us More </h2>
-{/*				<Form.Item> 
+				<Form.Item
+					label="Upload Profile Picture"
+				>
 					<Upload
 						name="profilepic"
 						beforeUpload={beforeUpload}
 						onChange={handleChange}
 						showUploadList={false}
-						action='http://localhost:5001/api/user/upload-image'
+						action={`http://localhost:5001/api/user/upload-image/${username}`}
 						headers= {{'username': username}}
 					>
-						<Button type="Primary"> Upload </Button>
+						<Button icon={<UploadOutlined />} type="Primary"> Upload </Button>
 					</Upload>
-				</Form.Item> */}
+				</Form.Item>
 				<Form.Item
 					
 					name="aboutme"
@@ -463,21 +467,6 @@ export default function EditProfile() {
                         <Option value="other">Other</Option>
                     </Select>
                 </Form.Item>
-				<Form.Item
-					name="profilepic"
-					label="Select profile picture color!"
-				> 
-				<Select 
-						placeholder="Select the color of your profile picture!" 
-						defaultValue={profilePicture}
-				>
-						<Option value="default"> Default </Option>
-                        <Option value="blue">Blue</Option>
-                        <Option value="green">Green</Option>
-                        <Option value="red">Red</Option>
-						<Option value="yellow">Yellow</Option>
-                    </Select>
-				</Form.Item>
                 <Form.Item
                     name="country"
                     label="Country"

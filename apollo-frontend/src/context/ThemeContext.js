@@ -26,8 +26,6 @@ export const ThemeContextProvider = ({ children }) => {
     useEffect(() => {
         const theme = JSON.parse(localStorage.getItem('theme'));
 
-        console.log(theme)
-
         if (theme) {
             console.log("sotarge theme", theme)
             dispatch({type: theme.theme.toUpperCase()});
@@ -37,10 +35,6 @@ export const ThemeContextProvider = ({ children }) => {
             dispatch({type: 'LIGHT'});
         }
     }, []);
-    
-    console.log('Theme State: ', state)
-    console.log("idk")
-    console.log(i)
 
     return (
         <ThemeContext.Provider value={{...state, dispatch}}>
