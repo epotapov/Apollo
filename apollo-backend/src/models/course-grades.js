@@ -3,59 +3,59 @@ const Schema = mongoose.Schema;
 
 const courseGradesSchema = new mongoose.Schema({
 
-    'CourseID': {
+    CourseID: {
         type: String
     },
 
-    'A+': {
+    A_plus: {
         type: Number
     },
 
-    'A': {
+    A: {
         type: Number
     },
 
-    'A-': {
+    A_minus: {
         type: Number
     },
 
-    'B+': {
+    B_plus: {
         type: Number
     },
 
-    'B': {
+    B: {
         type: Number
     },
 
-    'B-': {
+    B_minus: {
         type: Number
     },
 
-    'C+': {
+    C_plus: {
         type: Number
     },
 
-    'C': {
+    C: {
         type: Number
     },
 
-    'C-': {
+    C_minus: {
         type: Number
     },
 
-    'D+': {
+    D_plus: {
         type: Number
     },
 
-    'D': {
+    D: {
         type: Number
     },
 
-    'D-': {
+    D_minus: {
         type: Number
     },
 
-    'F': {
+    F: {
         type: Number
     }
 

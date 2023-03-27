@@ -49,7 +49,7 @@ export default function CoursePage() {
             setFavCourses(data);
             console.log("favorite courses: ", favCourses)
         })
-        fetch('http://localhost:5001/api/course/get/' + courseName)
+        fetch('http://localhost:5001/api/course/get/grades/' + courseName)
         .then(response => response.json())
         .then(data => {
             console.log(data)
