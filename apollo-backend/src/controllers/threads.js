@@ -114,6 +114,7 @@ const getCourseThreads = async(req, res) => {
  * Status Codes:
  *   OK = 200
  *   NOT FOUND = 404
+ *   CONFLICT = 409
  *
  * Other:
  *   How to access # of upvotes?
@@ -137,10 +138,12 @@ const upvoteThread = async(req, res) => {
 
     const isUpvoted = thread.upvotes.get(username);
     const isDownvoted = thread.downvotes.get(username);
+    const doubleUpvoteAttempt = false;
 
     if (isUpvoted) {
       console.log(username + " removed their upvote from this thread!");
       thread.upvotes.delete(username);
+      doubleUpvoteAttempt = true;
     } else if (isDownvoted) {
       console.log(username + " changed their downvote to an upvote!");
       thread.downvotes.delete(username);
@@ -157,7 +160,11 @@ const upvoteThread = async(req, res) => {
     );
 
     console.log("upvotes: " + updatedThread.upvotes.size);
-    res.status(200).json(updatedThread);
+    if (doubleUpvoteAttempt) {
+      res.status(409).json(updatedThread);
+    } else {
+      res.status(200).json(updatedThread);
+    }
 
   } catch (err) {
     if (err instanceof mongoose.Error.CastError) {
@@ -179,6 +186,7 @@ const upvoteThread = async(req, res) => {
  * Status Codes:
  *   OK = 200
  *   NOT FOUND = 404
+ *   CONFLICT = 409
  *
  * Other:
  *   How to access # of downvotes?
@@ -202,10 +210,12 @@ const downvoteThread = async(req, res) => {
     }
     const isDownvoted = thread.downvotes.get(username);
     const isUpvoted = thread.upvotes.get(username);
+    const doubleDownvoteAttempt = false;
 
     if (isDownvoted) {
       console.log(username + " removed their downvote from this thread!");
       thread.downvotes.delete(username);
+      doubleDownvoteAttempt = true;
     } else if (isUpvoted) {
       console.log(username + " changed their upvote to a downvote!");
       thread.upvotes.delete(username);
@@ -222,7 +232,11 @@ const downvoteThread = async(req, res) => {
     );
 
     console.log("downvotes: " + updatedThread.downvotes.size);
-    res.status(200).json(updatedThread);
+    if (doubleDownvoteAttempt) {
+      res.status(409).json(updatedThread);
+    } else {
+      res.status(200).json(updatedThread);
+    }
 
   } catch (err) {
     if (err instanceof mongoose.Error.CastError) {
