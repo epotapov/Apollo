@@ -8,11 +8,9 @@ import { useLogout } from '../hooks/useLogout';
 import { useUserContext } from '../hooks/useUserContext';
 import { useNavigate } from 'react-router-dom';
 import { useThemeContext } from '../hooks/useThemeContext';
-import bluepfp from '../img/bluepfp.png';
-import redpfp from '../img/redpfp.png';
-import greenpfp from '../img/greenpfp.png';
-import yellowpfp from '../img/yellowpfp.png';
 import defpfp from '../img/defaultpfp.png';
+
+const picServer = "http://localhost:5001/pictures/"
 
 export default function Navbar() {
     const [size, setSize] = useState('large');
@@ -23,21 +21,13 @@ export default function Navbar() {
     
     function getpfp() {
         if (user) {
-            let pfpColor = user.user.profilePicture;
-            if (pfpColor == 'blue') {
-                return bluepfp;
-            }
-            else if (pfpColor == 'red') {
-                return redpfp;
-            }
-            else if (pfpColor == 'green') {
-                return greenpfp;
-            }
-            else if (pfpColor == 'yellow') {
-                return yellowpfp;
+            let profilePic = user.user.profilePicture;
+            console.log("asd" + profilePic);
+            if (profilePic === 'default' || profilePic === "" || profilePic === null) {
+                return defpfp;
             }
             else {
-                return defpfp;
+                return picServer + profilePic;
             }
         }
     }

@@ -3,14 +3,12 @@ import { Link , useLocation, useNavigate} from 'react-router-dom'
 import Navbar from './Navbar';
 import {LinkedinFilled, InstagramFilled, TwitterCircleFilled} from '@ant-design/icons';
 import { Avatar, Card, Button} from 'antd';
-import bluepfp from '../img/bluepfp.png';
-import redpfp from '../img/redpfp.png';
-import greenpfp from '../img/greenpfp.png';
-import yellowpfp from '../img/yellowpfp.png';
 import defpfp from '../img/defaultpfp.png';
 
 import { useLogout } from '../hooks/useLogout';
 import { useUserContext } from '../hooks/useUserContext';
+
+const picServer = "http://localhost:5001/pictures/"
 
 function displayArray(arr) {
   if (arr == null) {
@@ -93,20 +91,13 @@ export default function ProfilePage() {
         instagramLink = userFound.instagramLink;
         twitterLink = userFound.twitterLink;
         console.log(userFound);
-        if (userFound.profilePicture == 'red') {
-          pfp = redpfp;
-        }
-        else if (userFound.profilePicture == 'blue') {
-          pfp = bluepfp;
-        }
-        else if (userFound.profilePicture == 'green') {
-          pfp = greenpfp;
-        }
-        else if (userFound.profilePicture == 'yellow') {
-          pfp = yellowpfp;
+        let profilePic = userFound.profilePicture;
+        console.log("asd" + profilePic);
+        if (profilePic === 'default' || profilePic === "" || profilePic === null) {
+          pfp = defpfp;
         }
         else {
-          pfp = defpfp;
+          pfp = picServer + profilePic
         }
       }
     }

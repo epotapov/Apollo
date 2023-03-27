@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {LinkedinFilled, InstagramFilled, TwitterCircleFilled, PlusOutlined } from '@ant-design/icons';
 
+import { useProfilePic } from '../hooks/useProfilePic';
 
 let user = null;
 let username = '';
@@ -25,8 +26,9 @@ let planOfStudy = {};
 let instagramLink = '';
 let linkedinLink = '';
 let twitterLink = '';
-let profilePicture = '';
 let favCourses = ""
+
+const picServer = "http://localhost:5001/pictures/"
 
 const countryList = [
     "Afghanistan",
@@ -286,6 +288,7 @@ const {Option} = Select;
 export default function EditProfile() { 
 
 	const [messageApi, contextHolder] = message.useMessage();
+	const { updatePic } = useProfilePic();
 	const success = (message) => {
 		messageApi.open({
 			type: 'success',
@@ -325,11 +328,10 @@ export default function EditProfile() {
 		instagramLink = values.instagram ? values.instagram : instagramLink;
 		linkedinLink = values.linkedin ? values.linkedin : linkedinLink;
 		twitterLink = values.twitter ? values.twitter : twitterLink;
-		profilePicture = values.profilepic ? values.profilepic : profilePicture;
 
 		const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
 			country, gender, planOfStudy, dob, year, isPrivate, 
-			profilePicture, instagramLink, linkedinLink, twitterLink, favCourses};
+			instagramLink, linkedinLink, twitterLink, favCourses};
 		
 		const response = await fetch('http://localhost:5001/api/user/edit', {
 			method: 'POST',
@@ -370,7 +372,6 @@ export default function EditProfile() {
 		  instagramLink = user.instagramLink;
 		  twitterLink = user.twitterLink;
 		  linkedinLink = user.linkedinLink;
-		  profilePicture = user.profilePicture;
 		  favCourses = user.favCourses;
 		}
 	}
@@ -388,10 +389,13 @@ export default function EditProfile() {
 	}
 
 	const handleChange = info => {
+		console.log(info)
 		if (info.file.status !== 'uploading') {
 			console.log(info.file, info.fileList);
 		}
 		if (info.file.status === 'done') {
+			console.log("profile asdfasdfdasf" + info.response)
+			updatePic(info.response)
 			message.success(`${info.file.name} file uploaded successfully`);
 		} else if (info.file.status === 'error') {
 			message.error(`${info.file.name} file upload failed.`);
@@ -468,21 +472,6 @@ export default function EditProfile() {
                         <Option value="other">Other</Option>
                     </Select>
                 </Form.Item>
-				<Form.Item
-					name="profilepic"
-					label="Select profile picture color!"
-				> 
-				<Select 
-						placeholder="Select the color of your profile picture!" 
-						defaultValue={profilePicture}
-				>
-						<Option value="default"> Default </Option>
-                        <Option value="blue">Blue</Option>
-                        <Option value="green">Green</Option>
-                        <Option value="red">Red</Option>
-						<Option value="yellow">Yellow</Option>
-                    </Select>
-				</Form.Item>
                 <Form.Item
                     name="country"
                     label="Country"
