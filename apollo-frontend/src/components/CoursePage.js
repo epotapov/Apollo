@@ -6,6 +6,9 @@ import Navbar from './Navbar';
 import { useUserContext } from '../hooks/useUserContext';
 import { Button, Checkbox, Form, Input, Radio, Switch } from 'antd';
 
+import BarChart from './BarChart';
+import {courseGradeData} from './CourseGradeData';
+
 import Reviews from './Reviews';
 
 export default function CoursePage() {
@@ -16,9 +19,8 @@ export default function CoursePage() {
     const [favorite, setFavorite] = useState(false);
     const [checkedFavorite, setCheckedFavorite] = useState(false);
     const [favCourses, setFavCourses] = useState([]);
-    let courseDist = null;
+    const [courseGrades, setCourseGrades] = useState({});
 
-    
     const [size, setSize] = useState('large');
     const { user } = useUserContext();
     let username = '';
@@ -52,11 +54,28 @@ export default function CoursePage() {
         fetch('http://localhost:5001/api/course/get/grades/' + courseName)
         .then(response => response.json())
         .then(data => {
-            console.log(data)
-            courseDist = data;
-            console.log("Grade Dist: ", courseDist);
+            var courseDist = [];
+            var json_data = data;
+            for (var i in json_data) {
+                courseDist[i] = json_data[i];
+            }
+            courseDist = Object.values(courseDist)
+        
+            courseDist = courseDist.filter(Number.isFinite)
+        
+            console.log(courseDist)
+
+            setCourseGrades({
+                labels: ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F'],
+                datasets: [{
+                    label: 'Number of Students',
+                    data: [courseDist],
+                    }]
+                })
+
+            console.log(courseGrades)
+        
         })
-        console.log("hello")
     }, [courseName]);
 
     useEffect(() => {
@@ -136,6 +155,7 @@ export default function CoursePage() {
                 }
                 <Forum courseName={courseName}/>
                 <Reviews name={courseName} type={"course"}/>
+                {/* <BarChart chartData={courseGrades}/> */}
             </div>
         </div>
     )
