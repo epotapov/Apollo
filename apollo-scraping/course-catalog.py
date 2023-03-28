@@ -7,7 +7,7 @@ import json
 pattern = r'([A-Z]{2,}\s+\d{5})\s*-\s*(.*?)\s*Credit Hours:\s*([\d.]+)\s*(.*?)\s*(?=\n[A-Z]{2,}\s+\d{5}\s*-|\Z)'
 
 # Define the PDF file path
-pdf_path = os.path.expanduser('~/Downloads/Courses+2022-23.pdf')
+pdf_path = os.path.expanduser('Courses+2022-23.pdf')
 
 # Define a list to store the class data
 classes = []
