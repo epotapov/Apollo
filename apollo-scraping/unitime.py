@@ -3,28 +3,36 @@ import json
 
 csvFilePath = 'events.csv'
 
-# Read the CSV and add the data to a list
-courseData = []
+# Create a dictionary to store course data
+courses = {}
+
+# Read the CSV and add the data to the dictionary
 with open(csvFilePath) as csvFile:
     csvReader = csv.DictReader(csvFile)
     for rows in csvReader:
         if rows['Type'] == 'Lecture':
-            data = {
-                "Course": rows["Name"],
+            course_name = rows['Name']
+            section_data = {
                 "Section": rows["Section"],
-                # "Type": rows["Type"],
                 "Days": rows["Day Of Week"],
                 "StartTime": rows["Published Start"],
                 "EndTime": rows["Published End"],
                 "Location": rows["Location"],
-                "Instructor": rows["Instructor / Organization"],
+                "Instructor": rows["Instructor / Organization"].replace('(Instr)', ''),
                 "InstructorEmail": rows["Email"]
             }
-            data["Course"] = data["Course"].replace(" ", "")
-            data["Instructor"] = data["Instructor"].replace("(Instr)", "").strip()
-            courseData.append(data)
+            # If course already exists, append section data to list
+            if course_name in courses:
+                courses[course_name]['Sections'].append(section_data)
+            # If course doesn't exist, create a new entry with section data
+            else:
+                course_data = {
+                    "Course": course_name,
+                    "Sections": [section_data]
+                }
+                courses[course_name] = course_data
             print("Appending " + rows["Name"])
 
-# Convert the list of dictionaries to JSON format and write it to a file
+# Convert the dictionary of course data to JSON format and write it to a file
 with open("unitime-lectures.json", 'w') as jsonFile:
-    jsonFile.write(json.dumps(courseData, indent=4))
+    jsonFile.write(json.dumps(list(courses.values()), indent=4))
