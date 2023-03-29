@@ -37,6 +37,7 @@ const Forum = ( {courseName} ) => {
                 fetch("http://localhost:5001/api/thread/" + courseName)
                 .then(response => response.json())
                 .then(data => {
+                    setThreads([]);
                     formatThreads(data);
                 }) 
             };
@@ -44,8 +45,6 @@ const Forum = ( {courseName} ) => {
             fetchThreads();
         }
     }, [courseName]);
-
-    const form = Form.useForm();
 
     const handleCreateThread = async (values) => {
         const title = values.title;
@@ -72,7 +71,38 @@ const Forum = ( {courseName} ) => {
     }
 
     const handleAddComment = async (values, threadId) => {
-        // Need to wait for Comment API to be implemented
+        
+        const description = values.content;
+        const username = user.username;
+        const threadIndex = threads.findIndex((thread) => thread.id === threadId);
+        const thread = threads[threadIndex];
+        let newComments;
+
+        const response = await fetch(`http://localhost:5001/api/thread/${threadId}/createComment`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({username: username, description: description})
+        })
+        .then(response => response.json())
+        .then(data => {
+            newComments = data.comments;
+        })
+    
+        const updatedThread = {
+          ...thread,
+          comments: newComments,
+        };
+    
+        const updatedThreads = [
+          ...threads.slice(0, threadIndex),
+          updatedThread,
+          ...threads.slice(threadIndex + 1),
+        ];
+    
+        setThreads(updatedThreads); 
+        console.log(threads);
     }
 
     const handleUpVote = async (threadId) => {
@@ -93,10 +123,17 @@ const Forum = ( {courseName} ) => {
 
         let updatedThread = {}; 
       
-        if (response.status === 409) {
+        if (response.status === 209) {
             updatedThread = {
             ...thread,
             upvotes: thread.upvotes - 1,
+            };
+        }
+        else if (response.status === 210) {
+            updatedThread = {
+            ...thread,
+            upvotes: thread.upvotes + 1,
+            downvotes: thread.downvotes - 1
             };
         }
         else {
@@ -128,32 +165,29 @@ const Forum = ( {courseName} ) => {
             body: JSON.stringify({username: user.username})
         })
 
-        if (response.status === 409) {
-            const threadIndex = threads.findIndex((thread) => thread.id === threadId);
-            const thread = threads[threadIndex];
-          
-            const updatedThread = {
-              ...thread,
-              downvotes: thread.downvotes - 1,
-            };
-          
-            const updatedThreads = [    
-              ...threads.slice(0, threadIndex),
-              updatedThread,
-              ...threads.slice(threadIndex + 1),
-            ];
-    
-            setThreads(updatedThreads);
-            return;
-        }
-
         const threadIndex = threads.findIndex((thread) => thread.id === threadId);
         const thread = threads[threadIndex];
       
-        const updatedThread = {
-          ...thread,
-          downvotes: thread.downvotes + 1,
-        };
+        let updatedThread = {};
+        if (response.status === 209) {
+            updatedThread = {
+            ...thread,
+            downvotes: thread.downvotes - 1,
+            };
+        }
+        else if (response.status === 210) {
+            updatedThread = {
+            ...thread,
+            downvotes: thread.downvotes + 1,
+            upvotes: thread.upvotes - 1
+            };
+        }
+        else {
+            updatedThread = {
+            ...thread,
+            downvotes: thread.downvotes + 1,
+            };
+        }
       
         const updatedThreads = [    
           ...threads.slice(0, threadIndex),
@@ -192,35 +226,36 @@ const Forum = ( {courseName} ) => {
                             key={thread.id}
                         >
                             <p> {thread.description} </p>
-                            {thread.comments === null ? (
-                                <p> No comments yet! </p>
-                            ) : (
-                                <Collapse>
-                                    {thread.comments.map((comment) => (
-                                        <Panel header={<Space> comment.username </Space>} key={comment.id}>
-                                            <p> {comment.description} </p>
-                                        </Panel>
+                            <h3> Comments </h3>
+                            {threads.length !== 0 && (
+                                <ul style={{display: "flex", flexDirection: "column", listStyleType: "none", padding: 0}}>
+                                    {thread.comments.map(comment => (
+                                        <li key={comment._id}>
+                                            <div>
+                                                <span> {comment.username}: </span>
+                                                <span> {comment.description} </span>
+                                            </div>
+                                        </li>
                                     ))}
-                                    {user && (
-                                        <Panel header="Add Comment">
-                                            <Form name="comment" onFinish={(values) => handleAddComment(values, thread.id)} form={form}>
-                                                <Form.Item name="user" rules={[{ required: true, message: "Please enter your name" }]}>
-                                                <Input placeholder="Name" />
-                                                </Form.Item>
-                                                <Form.Item name="content" rules={[{ required: true, message: "Please enter your comment" }]}>
-                                                <Input.TextArea rows={4} placeholder="Comment" />
-                                                </Form.Item>
-                                                <Form.Item>
-                                                <Button type="primary" htmlType="submit">
-                                                    Add Comment
-                                                </Button>
-                                                </Form.Item>
-                                            </Form>
-                                        </Panel>
-                                    )}
-                                </Collapse>
+                                </ul>
                             )}
-                        </Panel>           
+                            <Collapse>
+                                {user && (
+                                    <Panel header="Add Comment">
+                                        <Form name="comment" onFinish={(values) => handleAddComment(values, thread.id)}>
+                                            <Form.Item name="content" rules={[{ required: true, message: "Please enter your comment" }]}>
+                                            <Input.TextArea rows={4} placeholder="Comment" />
+                                            </Form.Item>
+                                            <Form.Item>
+                                            <Button type="primary" htmlType="submit">
+                                                Add Comment
+                                            </Button>
+                                            </Form.Item>
+                                        </Form>
+                                    </Panel>
+                                )}
+                            </Collapse>
+                    </Panel>           
                     ))}
                 </Collapse>
             )}

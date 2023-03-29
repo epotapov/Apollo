@@ -114,7 +114,8 @@ const getCourseThreads = async(req, res) => {
  * Status Codes:
  *   OK = 200
  *   NOT FOUND = 404
- *   CONFLICT = 409
+ *   DOUBLE UPVOTE = 209
+ *   DOWNVOTE UPVOTE = 210
  *
  * Other:
  *   How to access # of upvotes?
@@ -190,7 +191,8 @@ const upvoteThread = async(req, res) => {
  * Status Codes:
  *   OK = 200
  *   NOT FOUND = 404
- *   CONFLICT = 409
+ *   DOUBLE DOWNVOTE = 209
+ *   DOWNVOTE UPVOTE = 210
  *
  * Other:
  *   How to access # of downvotes?
@@ -239,7 +241,7 @@ const downvoteThread = async(req, res) => {
 
     console.log("downvotes: " + updatedThread.downvotes.size);
     if (doubleDownvoteAttempt) {
-      res.status(409).json(updatedThread);
+      res.status(209).json(updatedThread);
     } else if (downvoteUpvoteAttempt) {
       res.status(210).json(updatedThread);
     } else {
