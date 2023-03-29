@@ -396,6 +396,5 @@ const subscribeToThread = async(req, res) => {
   }
 }
 
-
 // export functions so they can be imported & used elsewhere
 module.exports = { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment, subscribeToThread };
