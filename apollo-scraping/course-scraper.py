@@ -62,7 +62,7 @@ if not os.path.isfile(pdf_courses):
                     if find_typically_offered:
                         typically_offered = find_typically_offered.group(1)
                     else:
-                        typically_offered = ""
+                        typically_offered = "Unknown"
                     class_data = {
                         "Course": course.replace(" ", ""),
                         "Title": title,
