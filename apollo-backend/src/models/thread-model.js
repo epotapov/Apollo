@@ -60,6 +60,12 @@ const threadSchema = mongoose.Schema({
       type: [commentSchema],
       default: [],
     },
+
+    subscribed: {
+      type: Map,
+      of: String,
+      default: new Map(),
+    }
   },
   { timestamps: true }
 );

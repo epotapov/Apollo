@@ -17,6 +17,7 @@ let isPrivate = null;
 let year = '';
 let role = '';
 let email = '';
+let emailNotif = null;
 let country = '';
 let gender = '';
 let gradYear = '';
@@ -26,6 +27,7 @@ let instagramLink = '';
 let linkedinLink = '';
 let twitterLink = '';
 let favCourses = ""
+
 
 const picServer = "http://localhost:5001/pictures/"
 
@@ -323,12 +325,13 @@ export default function EditProfile() {
 		planOfStudy = values.planofstudy ? values.planofstudy : planOfStudy;
 		courses = values.courses ? values.courses : courses;
 		isPrivate = (values.privateprofile !== "undefined") ? values.privateprofile : isPrivate;
+		emailNotif = (values.emailnotif !== "undefined") ? values.emailnotif : emailNotif;
 		instagramLink = values.instagram ? values.instagram : instagramLink;
 		linkedinLink = values.linkedin ? values.linkedin : linkedinLink;
 		twitterLink = values.twitter ? values.twitter : twitterLink;
 
 		const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
-			country, gender, planOfStudy, dob, year, isPrivate, 
+			country, gender, planOfStudy, dob, year, isPrivate, emailNotif,
 			instagramLink, linkedinLink, twitterLink, favCourses};
 		
 		const response = await fetch('http://localhost:5001/api/user/edit', {
@@ -339,9 +342,8 @@ export default function EditProfile() {
 			}
 		});
 		<success message="Profile updated successfully!"/>
-		fetch('http://localhost:5001/api/user/get/' + user.username)
-		.then(response => response.json())
-		.then(data => navigate('/Profile',{state: {user: data}}))
+		const path = "/profile/" + username;
+		navigate(path);
 	}
 
 	const data = useLocation();
@@ -367,6 +369,7 @@ export default function EditProfile() {
 		  planOfStudy = user.planOfStudy;
 		  courses = user.courses;
 		  isPrivate = user.isPrivate;
+		  emailNotif = user.emailNotif;
 		  instagramLink = user.instagramLink;
 		  twitterLink = user.twitterLink;
 		  linkedinLink = user.linkedinLink;
@@ -544,7 +547,15 @@ export default function EditProfile() {
 					name="privateprofile"
 					label="Private Profile"
 				>
-					<Switch defaultChecked={isPrivate} />
+					<Switch defaultChecked={isPrivate} onChange={(checked) => {message.success(`Profile is now ${checked ? 'private' : 'public'}`, 1);}}/>
+				</Form.Item> 
+				<Form.Item
+					name="emailNotif"
+					label="Email Notifications"
+				>
+					<Switch defaultChecked={emailNotif} 
+						onChange={(checked) => { message.success(`Email notifications are now ${checked ? 'on' : 'off'}`, 1); }}
+					/>
 				</Form.Item>
 				<h3> Social Media Links </h3>
 				<Form.Item

@@ -27,7 +27,7 @@ function App() {
         <Route exact path='/EditProfile' element={<EditProfile/>}/>
         <Route exact path='/DiningHall' element={<DiningHall/>}/>
         <Route exact path='/Course/:courseName' element={<CoursePage/>}/>
-        <Route exact path='/Profile' element={<ProfilePage />}/>
+        <Route exact path='/Profile/:username' element={<ProfilePage />}/>
         <Route exact path="/ResetPass/:token" element={<ResetPass />}/>
         <Route exact path="/ChangePass" element={<ChangePass />}/>
         <Route exact path='*' element={<Error/>}/>

@@ -22,11 +22,6 @@ export default function SearchBar() {
         console.log(courseData.length)
         for (let i = 0; i < courseData.length; i++) {
             if (courseData[i].value === val) {
-                /*
-                fetch('http://localhost:5001/api/course/get/' + val.substring(0, val.indexOf(":")))
-                .then(response => response.json())
-                .then(data => navigate('/Course',{state: {course: data}}))
-                */
                 let path = '/Course/' + val.substring(0, val.indexOf(":"));
                 navigate(path)
                 return;
@@ -42,9 +37,8 @@ export default function SearchBar() {
         }
         for (let i = 0; i < userData.length; i++) {
             if (userData[i].value === val) {
-                fetch('http://localhost:5001/api/user/get/' + val)
-                .then(response => response.json())
-                .then(data => navigate('/Profile',{state: {user: data}}))
+                let path = '/Profile/' + val;
+                navigate(path)
                 return;
             }
         }

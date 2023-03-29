@@ -58,15 +58,25 @@ if not os.path.isfile(pdf_courses):
                     except ValueError as e:
                         continue
                     description = match[3].strip()
+                    find_typically_offered = re.search(r'Typically offered ([A-Za-z, ]+)', description)
+                    if find_typically_offered:
+                        typically_offered = find_typically_offered.group(1)
+                    else:
+                        typically_offered = ""
                     class_data = {
                         "Course": course.replace(" ", ""),
                         "Title": title,
                         "CreditHours": credit_hours,
-                        "Description": description
+                        "Description": description,
+                        "TypicallyOffered": typically_offered,
                     }
                     # Remove "Credits: " and any float value after it from the description
                     if description:
-                        class_data["Description"] = re.sub(r"Credits:\s*\d+(\.\d+)?", "", description).strip()
+                        class_data["Description"] = re.sub(r'Typically offered .*$','', description).strip()
+                        class_data["Description"] = re.sub(r"Credits:\s*\d+(\.\d+)?", "", class_data["Description"]).strip()
+
+                    if typically_offered:
+                        class_data["TypicallyOffered"] = re.sub(r"Credits:\s*\d+(\.\d+)?", "", typically_offered).strip()
                     classes.append(class_data)
                     # Add the "Sections" key to each course object
 
@@ -135,6 +145,7 @@ for course in raw_course_data:
             "Title": course["Title"],
             "CreditHours": course["CreditHours"],
             "Description": course["Description"],
+            "TypicallyOffered": course["TypicallyOffered"],
             "Sections": []
         })
 

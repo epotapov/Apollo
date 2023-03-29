@@ -334,6 +334,19 @@ router.post("/add-favCourse", async (req, res) => {
     res.status(200).json({ message: 'Success!'});
 });
 
+router.post("/:Course/addProfDescription", async (req, res) => {
+    const {username, description} = req.body;
+    const user = await UserInfo.findOne({username: username});
+    if (user.isProf) {
+        const course = await CourseInfo.findOne({ Course: req.params.Course });
+        course.Professor_Description = description;
+        await course.save();
+        res.status(200).json({ message: 'Success!'});
+    } else {
+        res.status(200).json({ message: 'Fail!'});
+    }
+});
+
 router.get("/get-favCourses/:username", async (req, res) => {
     const param = req.params.username;
     const userReturned = await UserInfo.findOne({ username: param });

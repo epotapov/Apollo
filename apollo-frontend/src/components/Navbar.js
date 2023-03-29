@@ -45,9 +45,8 @@ export default function Navbar() {
 
 
     const goToProfile = () => {
-		fetch('http://localhost:5001/api/user/get/' + user.username)
-		.then(response => response.json())
-		.then(data => navigate('/Profile',{state: {user: data}}))
+        let path = '/Profile/' + user.username;
+        navigate(path);
     }
     return(
         <div id='Navbar'>
