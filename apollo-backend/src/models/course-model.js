@@ -1,6 +1,38 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+// schema for section. sections are within courses
+const sectionSchema = mongoose.Schema({
+  Section: {
+    type: String
+  },
+
+  Days: {
+    type: String
+  },
+
+  StartTime: {
+    type: String
+  },
+
+  EndTime: {
+    type: String
+  },
+
+  Location: {
+    type: String
+  },
+
+  Instructor: {
+    type: String
+  },
+
+  InstructorEmail: {
+    type: String
+  }
+
+}, { timestamps: true });
+
 const courseSchema = new mongoose.Schema({
 
   Course: {
@@ -25,7 +57,23 @@ const courseSchema = new mongoose.Schema({
   
   Information_Document: [{
     type: String
-  }]
+  }],
+
+  Sections: {
+    type: [sectionSchema],
+    default: [],
+  }
 });
 
-module.exports = mongoose.model('CourseInfo', courseSchema);
+const courseSearchSchema = new mongoose.Schema({
+  Course: {
+    type: String
+  },
+
+  Title: {
+    type: String
+  }, 
+}, { timestamps: true });
+
+module.exports = mongoose.model('CourseSearch', courseSearchSchema)
+module.exports = mongoose.model('Course', courseSchema);
