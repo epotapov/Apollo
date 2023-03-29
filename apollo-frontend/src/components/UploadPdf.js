@@ -82,7 +82,7 @@ export default function UploadPdf(props) {
                                 beforeUpload={beforeUpload}
                                 onChange={handleChange}
                                 showUploadList={false}
-                                action={`http://localhost:5001/api/user/upload-pdf/${user.username}/${pdfTitle}`}
+                                action={`http://localhost:5001/api/user/upload-pdf/${name}/${pdfTitle}`}
                             >
                                 <Button icon={<UploadOutlined />} disabled type="Primary" htmlType="submit"> Upload </Button>
                             </Upload>

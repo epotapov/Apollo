@@ -314,7 +314,7 @@ router.get("/get-pdf/:Course", async (req, res) => {
 router.post("/upload-pdf/:Course/:PdfTitle", uploadCourseInfo.single("courseinfo"), async (req, res) => {
     //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
     const doc_name = req.file.filename;
-    const ui_name = req.body.PdfTitle;
+    const ui_name = req.params.PdfTitle;
     const pdf = {doc_name, ui_name};
     console.log("pdf stuff: " + pdf)
     const course_name = req.params.Course

@@ -8,6 +8,7 @@ import Navbar from './Navbar';
 import { useUserContext } from '../hooks/useUserContext';
 import { Button, Checkbox, Form, Input, Radio, Switch } from 'antd';
 import Reviews from './Reviews';
+import UploadPdf from './UploadPdf';
 
 
 ChartJS.register(
