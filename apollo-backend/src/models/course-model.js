@@ -19,6 +19,10 @@ const courseSchema = new mongoose.Schema({
     type: String
   },
 
+  Avarage_Rating: {
+    type: Number
+  },
+  
   Information_Document: [{
     type: String
   }]
