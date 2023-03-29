@@ -8,36 +8,39 @@ import { useUserContext } from '../hooks/useUserContext';
 export default function UploadPdf(props) {
     const name = props.name;
     const { user } = useUserContext();
-    const [ links, setLinks ] = useState();
-    const [ isProf, setIsProf ] = useState();
+    const [ links, setLinks ] = useState([]);
+    const [ isProf, setIsProf ] = useState(false);
+    const [ pdfTitle, setPdfTitle ] = useState("");
  
     useEffect(() => {
-        fetch('http://localhost:5001/api/user/get-pdf/' + name)
-        .then(response => response.json())
-        .then(data => {
-            setLinks(data);
-            console.log("data for pdf" + data)
-            console.log("prof: " + user)
-        })
-        if (user) {
+        if (user && !isProf) {
             fetch('http://localhost:5001/api/user/getIsProf/' + user.username)
             .then(response => response.json())
             .then(data => {
                 setIsProf(data);
                 console.log("prof: " + isProf)
             })
-            console.log("prof: " + user.isProf)
+            console.log("prof: " + isProf)
         }
-	}, [name]);
+	});
+
+    useEffect(() => {
+        fetch('http://localhost:5001/api/user/get-pdf/' + name)
+        .then(response => response.json())
+        .then(data => {
+            setLinks(data);
+            console.log("data for pdf" + data)
+        })
+    }, [name])
 
     const beforeUpload = (file) => {
-		const isPng = file.type === 'image/png';
-		const isJpg = file.type === 'image/jpeg';
-		if (!isPng && !isJpg) {
-		  message.error('You can only upload PNG/JPEG file!');
+        console.log("file type " + file.type)
+		const isPdf = file.type === "application/pdf";
+		if (!isPdf) {
+		  message.error('You can only upload PDF file!');
 		}
 
-		return isPng || isJpg;
+		return isPdf;
 	}
 
 	const handleChange = info => {
@@ -54,33 +57,35 @@ export default function UploadPdf(props) {
     return(
         <section>
             <h2> PDFs for {name}: </h2>
-
+            <div>
+                {
+                    links.length !== 0 &&
+                    links.map((link) => <a key={link.toString()}>aaa</a>)
+                }
+            </div>
             {
                 user && isProf &&
                 <>  
                     <h2>Upload Pdf</h2>     
                     <Form name="review">
-                        <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
+                        <Form.Item name="title" 
+                            rules={[{ required: true, message: "Please enter a title" }]}
+                            onChange={(e) => setPdfTitle(e.target.value)}
+                        >
                             <Input placeholder="Title" />
                         </Form.Item>
                         <Form.Item
-                            label="Upload Profile Picture"
+                            label="PDF File:"
                         >
                             <Upload
                                 name="profilepic"
                                 beforeUpload={beforeUpload}
                                 onChange={handleChange}
                                 showUploadList={false}
-                                action={`http://localhost:5001/api/user/upload-pdf/${user.username}`}
-                                headers= {{'username': username}}
+                                action={`http://localhost:5001/api/user/upload-pdf/${user.username}/${pdfTitle}`}
                             >
-                                <Button icon={<UploadOutlined />} type="Primary"> Upload </Button>
+                                <Button icon={<UploadOutlined />} disabled type="Primary" htmlType="submit"> Upload </Button>
                             </Upload>
-                        </Form.Item>
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit">
-                                Create Review
-                            </Button>
                         </Form.Item>
                     </Form>
                 </>

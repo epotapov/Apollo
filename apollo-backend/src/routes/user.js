@@ -311,15 +311,18 @@ router.get("/get-pdf/:Course", async (req, res) => {
 });
 
 //Professor upload pdf for course. (Must have isProfessor=true)
-router.post("/upload-pdf/:Course", uploadCourseInfo.single("courseinfo"), async (req, res) => {
+router.post("/upload-pdf/:Course/:PdfTitle", uploadCourseInfo.single("courseinfo"), async (req, res) => {
     //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
     const doc_name = req.file.filename;
+    const ui_name = req.body.PdfTitle;
+    const pdf = {doc_name, ui_name};
+    console.log("pdf stuff: " + pdf)
     const course_name = req.params.Course
     const courseReturned = await CourseInfo.findOne({Course: course_name})
-    courseReturned.Information_Document.push(doc_name);
+    courseReturned.Information_Document.push(pdf);
     console.log(courseReturned.Information_Document[0])
     await courseReturned.save();
-    res.status(200).json(doc_name);
+    res.status(200).json({ message: 'Success!'});
 });
 
 router.post("/add-favCourse", async (req, res) => {

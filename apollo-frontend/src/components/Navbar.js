@@ -59,7 +59,6 @@ export default function Navbar() {
             <div className='CornerButtons'>
                 {user && (
                     <div>
-                        <span className='WelcomeTag'>Welcome {user.username} </span>
                         <Avatar onClick={goToProfile} size={35} className="avatar" shape="circle" src={pfp} />
                         <Button type="primary" onClick={() => logout()} size={size}>
                             Log Out
