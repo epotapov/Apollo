@@ -60,7 +60,7 @@ export default function Navbar() {
                 {user && (
                     <div>
                         <span className='WelcomeTag'>Welcome {user.username} </span>
-                        <Avatar onClick={goToProfile} size={40} className="avatar" shape="circle" src={pfp} />
+                        <Avatar onClick={goToProfile} size={35} className="avatar" shape="circle" src={pfp} />
                         <Button type="primary" onClick={() => logout()} size={size}>
                             Log Out
                         </Button>

@@ -73,6 +73,14 @@ router.get('/get/:username', async (req, res) => {
     res.json(userReturned);
 });
 
+// get is professor accoutn
+router.get('/getIsProf/:username', async (req, res) => {
+    const param = req.params.username;
+    const userReturned = await UserInfo.findOne({ username: param });
+    console.log(userReturned);
+    res.send(userReturned.isProf);
+});
+
 router.get('/send', function (req, res) {
 
     return res.status(200).json({ message: 'Please verify your email' });
