@@ -308,7 +308,8 @@ router.post("/upload-pdf/:Course", uploadCourseInfo.single("courseinfo"), async 
     const doc_name = req.file.filename;
     const course_name = req.params.Course
     const courseReturned = await CourseInfo.findOne({Course: course_name})
-    courseReturned.Information_Document = doc_name;
+    courseReturned.Information_Document.push(doc_name);
+    console.log(courseReturned.Information_Document[0])
     await courseReturned.save();
     res.status(200).json(doc_name);
 });
