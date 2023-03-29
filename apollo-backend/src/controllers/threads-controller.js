@@ -139,6 +139,7 @@ const upvoteThread = async(req, res) => {
     const isUpvoted = thread.upvotes.get(username);
     const isDownvoted = thread.downvotes.get(username);
     var doubleUpvoteAttempt = false;
+    var downvoteUpvoteAttempt = false;
 
     if (isUpvoted) {
       console.log(username + " removed their upvote from this thread!");
@@ -148,6 +149,7 @@ const upvoteThread = async(req, res) => {
       console.log(username + " changed their downvote to an upvote!");
       thread.downvotes.delete(username);
       thread.upvotes.set(username, true);
+      downvoteUpvoteAttempt = true;
     } else {
       console.log(username + " upvoted this thread!");
       thread.upvotes.set(username, true);
@@ -161,7 +163,9 @@ const upvoteThread = async(req, res) => {
 
     console.log("upvotes: " + updatedThread.upvotes.size);
     if (doubleUpvoteAttempt) {
-      res.status(409).json(updatedThread);
+      res.status(209).json(updatedThread);
+    } else if (downvoteUpvoteAttempt) {
+      res.status(210).json(updatedThread);
     } else {
       res.status(200).json(updatedThread);
     }
@@ -211,6 +215,7 @@ const downvoteThread = async(req, res) => {
     const isDownvoted = thread.downvotes.get(username);
     const isUpvoted = thread.upvotes.get(username);
     var doubleDownvoteAttempt = false;
+    var downvoteUpvoteAttempt = false;
 
     if (isDownvoted) {
       console.log(username + " removed their downvote from this thread!");
@@ -220,6 +225,7 @@ const downvoteThread = async(req, res) => {
       console.log(username + " changed their upvote to a downvote!");
       thread.upvotes.delete(username);
       thread.downvotes.set(username, true);
+      downvoteUpvoteAttempt = true;
     } else {
       console.log(username + " downvoted this thread!");
       thread.downvotes.set(username, true);
@@ -234,6 +240,8 @@ const downvoteThread = async(req, res) => {
     console.log("downvotes: " + updatedThread.downvotes.size);
     if (doubleDownvoteAttempt) {
       res.status(409).json(updatedThread);
+    } else if (downvoteUpvoteAttempt) {
+      res.status(210).json(updatedThread);
     } else {
       res.status(200).json(updatedThread);
     }
