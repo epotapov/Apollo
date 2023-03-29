@@ -10,6 +10,8 @@ import BarChart from './Barchart';
 import {courseGradeData} from './CourseGradeData';
 
 import Reviews from './Reviews';
+import UploadPdf from './UploadPdf'
+
 
 export default function CoursePage() {
     const {courseName} = useParams();
@@ -153,6 +155,7 @@ export default function CoursePage() {
                 {
                     Description.length != 0 && <div><h2>Description: </h2><p>{Description}</p></div>
                 }
+                <UploadPdf name={courseName}/>
                 <Forum courseName={courseName}/>
                 <Reviews name={courseName} type={"course"}/>
                 {/* <BarChart chartData={courseGrades}/> */}
