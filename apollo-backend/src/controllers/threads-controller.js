@@ -39,10 +39,12 @@ const createThread = async (req, res) => {
     const { courseName, username, title, description } = req.body;
 
     // verify user exists before we let them create a thread
-    const userExist = await User.findOne({ username });
-    if (!userExist) {
+    const user = await User.findOne({ username });
+    if (!user) {
       throw Error(username + " is not a registered user!");
     }
+
+    const userEmail = user.email;
 
     // verify course exists before creating thread
     const courseExist = await Course.findOne({ Course: courseName });
@@ -57,7 +59,10 @@ const createThread = async (req, res) => {
       description,
       upvotes: {},
       downvotes: {},
-      comments: []
+      comments: [],
+      subscribed: {
+        [username]: userEmail
+      },
     })
     await newThread.save();
 
@@ -296,15 +301,23 @@ const createComment = async(req, res) => {
     // add comment to thread obj
     thread.comments.push(newComment);
 
+    // subscribe user to thread
+    thread.subscribed.set(username, userExist.email);
+
     // update thread with new comment
     const updatedThread = await Thread.findByIdAndUpdate(
       id,
-      { comments: thread.comments },
+      { comments: thread.comments, subscribed: thread.subscribed },
       { new: true }
     );
 
+
+    // TODO @brandon can you add email stuff here? you'll have to access thread.subscribed which is a map in the form of username: email (ex: jebeene: jebeene@purdue.edu)
+    // so you'll have to access all the emails in the subscribed list. i think the .values() method is the way to do this but yeah i'll let you figure it out https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/values
+
+
     // success
-    console.log(username + " commented on thread " + thread.title + "!");
+    console.log(username + " commented and subscribed to thread " + thread.title + "!");
     res.status(201).json(updatedThread);
 
   } catch (err) {
@@ -318,5 +331,72 @@ const createComment = async(req, res) => {
   }
 }
 
+/* subscribeToThread
+ *
+ * THIS HANDLES UNSUBSCRIBING TOO
+ *
+ * API Requ: /api/thread/:threadId/subscribeToThread
+ * Req Body: username
+ * Response: updated thread object or JSON error message
+ *
+ * Status Codes:
+ *   OK = 200
+ *   NOT FOUND = 404
+ *   CONFLICT = 409
+ */
+const subscribeToThread = async(req, res) => {
+
+  try {
+    const { id } = req.params;
+    const { username } = req.body;
+
+    const userExist = await User.findOne({ username });
+    if (!userExist) {
+      throw Error(username + " is not a registered user!");
+    }
+
+    const thread = await Thread.findById(id);
+    console.log(thread);
+    if (!thread) {
+      throw Error("Thread " + id + " was not found! Check that the ID provided is correct.");
+    }
+
+    const isSubscribed = thread.subscribed.get(username);
+    const doubleSubscribe = false;
+
+    if (isSubscribed) {
+      console.log(username + " unsubscribed from this thread!");
+      thread.subscribed.delete(username);
+      doubleSubscribe = true;
+    } else {
+      console.log(username + " subscribed to this thread!");
+      thread.subscribed.set(username, userExist.email);
+    }
+
+    // update thread
+    thread.subscribed.set(username, userExist.email);
+    const updatedThread = await Thread.findByIdAndUpdate(
+      id,
+      { subscribed: thread.subscribed },
+      { new: true }
+    );
+
+    if (doubleSubscribe) {
+      res.status(409).json(updatedThread);
+    } else {
+      res.status(200).json(updatedThread);
+    }
+
+  } catch (err) {
+    if (err instanceof mongoose.Error.CastError) {
+      console.log("Check that the ID provided is correct.");
+      res.status(400).json({ message: "Check that the ID provided is correct." });
+    } else {
+      console.log(err.message);
+      res.status(404).json({ message: err.message });
+    }
+  }
+}
+
 // export functions so they can be imported & used elsewhere
-module.exports = { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment };
+module.exports = { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment, subscribeToThread };

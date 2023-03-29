@@ -9,9 +9,7 @@
 // requires
 const express = require('express');
 const ThreadInfo = require('../models/thread-model');
-const { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment } = require('../controllers/threads-controller');
-// TODO add method imports
-
+const { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment, subscribeToThread } = require('../controllers/threads-controller');
 
 const router = express.Router();
 
@@ -20,12 +18,11 @@ router.post("/create", createThread);
 
 /* READ */
 router.get("/:courseName", getCourseThreads);
-// router.get("/:username/threads", verifyToken, getUserThreads);
-
 
 /* UPDATE */
 router.patch("/:id/upvote", upvoteThread);
 router.patch("/:id/downvote", downvoteThread);
 router.patch("/:id/createComment", createComment);
+router.patch("/:id/subscribeToThread", subscribeToThread);
 
 module.exports = router;
