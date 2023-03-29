@@ -59,6 +59,10 @@ const courseSchema = new mongoose.Schema({
     type: String
   }],
 
+  TypicallyOffered: {
+    type: String
+  },
+
   Sections: {
     type: [sectionSchema],
     default: [],

@@ -10,6 +10,7 @@ const CourseGrades = require('../models/course-grades');
 const router = express.Router();
 
 // ex: /api/course/getAll
+// this only returns the course name and title
 router.get('/getAll', async function (req, res) {
 
   console.time('find');
@@ -21,6 +22,7 @@ router.get('/getAll', async function (req, res) {
 });
 
 // ex: /api/course/get/CS30700
+// this returns the course object
 router.get('/get/:courseName', async (req, res) => {
   const name = req.params.courseName;
   const courseReturned = await Course.findOne({ Course: name });
