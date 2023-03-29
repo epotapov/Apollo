@@ -66,6 +66,16 @@ const getCourseAverageRating = async(req, res) => {
       throw Error(courseName + " does not exist!");
     }
 
+    total = 0;
+
+    for (i of courseReviews) {
+      total += i.stars;
+    }
+
+    total /= courseReviews.length;
+
+    courseExist.Avarage_Rating = total;
+
     res.status(200).json(courseReviews);
   } catch (err) {
     console.log(err.message);
