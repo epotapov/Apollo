@@ -212,7 +212,7 @@ const Forum = ( {courseName} ) => {
                             header={
                                 <Space>
                                     {thread.title}
-                                    <span> by {thread.username} </span>
+                                        <span> by <a href={`/Profile/${thread.username}`}> {thread.username} </a></span>
                                     <span>
                                         <Button shape="Circle" icon={<LikeOutlined />} onClick={() => handleUpVote(thread.id)} />
                                         {thread.upvotes}
@@ -232,7 +232,9 @@ const Forum = ( {courseName} ) => {
                                     {thread.comments.map(comment => (
                                         <li key={comment._id}>
                                             <div>
-                                                <span> {comment.username}: </span>
+                                                <a href={`/Profile/${comment.username}`}> 
+                                                    <span> {comment.username}: </span>
+                                                </a>
                                                 <span> {comment.description} </span>
                                             </div>
                                         </li>

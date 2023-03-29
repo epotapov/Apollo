@@ -1,5 +1,6 @@
-import { React, useState, Component} from 'react';
-import { Link , useLocation, useNavigate} from 'react-router-dom'
+import { React, useEffect, useState, Component} from 'react';
+import { Link , useNavigate} from 'react-router-dom'
+import { useParams } from "react-router-dom";
 import Navbar from './Navbar';
 import {LinkedinFilled, InstagramFilled, TwitterCircleFilled} from '@ant-design/icons';
 import { Avatar, Card, Button} from 'antd';
@@ -40,7 +41,7 @@ export default function ProfilePage() {
     .then(data => navigate('/EditProfile',{state: {user: data}}))
   }
 
-  let userFound = null;
+  const [userFound, setUserFound] = useState(null);
   let sameAccount = false;
   let privateAccount = false;
   let username = '';
@@ -59,58 +60,56 @@ export default function ProfilePage() {
   let twitterLink = '';
   let pfp = null;
 
-
   let gender = '';
   
-  const data = useLocation();
-    if (data.state != null) {
-      userFound = data.state.user;
-      if (user && userFound.username === user.username) {
-        sameAccount = true;
-      }
-      if (userFound != null) {
-        username = userFound.username;
-        aboutMe = userFound.aboutMe;
-        email = userFound.email;
-        dob = userFound.DOB;
-        major = userFound.major;
-        year = userFound.currentYear;
-        gradYear = userFound.gradYear;
-        courses = userFound.courses;
-        planOfStudy = userFound.planOfStudy;
-        privateAccount = userFound.isPrivate;
-        if (userFound.isProf) {
-          role = "Professor";
-        }
-        else {
-          role = "Student";
-        }
-        country = userFound.country;
-        gender = userFound.gender;
-        linkedinLink = userFound.linkedinLink;
-        instagramLink = userFound.instagramLink;
-        twitterLink = userFound.twitterLink;
-        console.log(userFound);
-        let profilePic = userFound.profilePicture;
-        console.log("asd" + profilePic);
-        if (profilePic === 'default' || profilePic === "" || profilePic === null) {
-          pfp = defpfp;
-        }
-        else {
-          pfp = picServer + profilePic
-        }
-      }
+  const usernameParam = useParams().username;
+  useEffect(() => {
+    const fetchUser = async () => {
+      fetch('http://localhost:5001/api/user/get/' + usernameParam)
+      .then(response => response.json())
+      .then(data => setUserFound(data))
     }
 
-    /*
-    let courseItems = null;
-    let planofstudyItems = null;
-    if (!courses)
-      courseItems = courses.map((course) => <p key={course.toString()}>{course} </p>);
-    if (!planOfStudy)
-      planofstudyItems = planOfStudy.map((course) => <p key={course.toString()}>{course} </p>);*/
+    fetchUser();
+  }, [usernameParam]);
 
+  console.log(userFound);
 
+  if (userFound) {
+    if (user && userFound.username === user.username) {
+      sameAccount = true;
+    }
+    if (userFound != null) {
+      username = userFound.username;
+      aboutMe = userFound.aboutMe;
+      email = userFound.email;
+      dob = userFound.DOB;
+      major = userFound.major;
+      year = userFound.currentYear;
+      gradYear = userFound.gradYear;
+      courses = userFound.courses;
+      planOfStudy = userFound.planOfStudy;
+      privateAccount = userFound.isPrivate;
+      if (userFound.isProf) {
+        role = "Professor";
+      }
+      else {
+        role = "Student";
+      }
+      country = userFound.country;
+      gender = userFound.gender;
+      linkedinLink = userFound.linkedinLink;
+      instagramLink = userFound.instagramLink;
+      twitterLink = userFound.twitterLink;
+      let profilePic = userFound.profilePicture;
+      if (profilePic === 'default' || profilePic === "" || profilePic === null) {
+        pfp = defpfp;
+      }
+      else {
+        pfp = picServer + profilePic
+      }
+    }
+  }
 
     return (
       <div>

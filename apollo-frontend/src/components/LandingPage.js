@@ -41,7 +41,6 @@ export default function LandingPage() {
 
     useEffect(() => {
         if (user) {
-            console.log("run useeffect")
             fetch('http://localhost:5001/api/user/get-favCourses/' + user.username)
             .then(response => response.json())
             .then(data => {
@@ -75,9 +74,8 @@ export default function LandingPage() {
     );
 
     const goToProfile = () => {
-		fetch('http://localhost:5001/api/user/get/' + user.username)
-		.then(response => response.json())
-		.then(data => navigate('/Profile',{state: {user: data}}))
+        let path = '/Profile/' + user.username;
+        navigate(path);
     }
     return(
         <div className='Container'>
