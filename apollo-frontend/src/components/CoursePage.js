@@ -1,15 +1,23 @@
 import { React, useState, useEffect } from 'react';
+import { Bar } from "react-chartjs-2";
+import {Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend} from "chart.js"
 import { useParams } from "react-router-dom";
 import Forum from './Forum';
 
 import Navbar from './Navbar';
 import { useUserContext } from '../hooks/useUserContext';
 import { Button, Checkbox, Form, Input, Radio, Switch } from 'antd';
-
-import BarChart from './Barchart';
-import {courseGradeData} from './CourseGradeData';
-
 import Reviews from './Reviews';
+
+
+ChartJS.register(
+    BarElement, 
+    CategoryScale, 
+    LinearScale, 
+    Tooltip, 
+    Legend
+)
+
 
 export default function CoursePage() {
     const {courseName} = useParams();
@@ -19,7 +27,7 @@ export default function CoursePage() {
     const [favorite, setFavorite] = useState(false);
     const [checkedFavorite, setCheckedFavorite] = useState(false);
     const [favCourses, setFavCourses] = useState([]);
-    const [courseGrades, setCourseGrades] = useState({});
+    const [courseDist, setcourseDist] = useState([]);
 
     const [size, setSize] = useState('large');
     const { user } = useUserContext();
@@ -54,29 +62,34 @@ export default function CoursePage() {
         fetch('http://localhost:5001/api/course/get/grades/' + courseName)
         .then(response => response.json())
         .then(data => {
-            var courseDist = [];
+            var gradeArray = [];
             var json_data = data;
             for (var i in json_data) {
-                courseDist[i] = json_data[i];
+                gradeArray[i] = json_data[i];
             }
-            courseDist = Object.values(courseDist)
+            gradeArray = Object.values(gradeArray)
         
-            courseDist = courseDist.filter(Number.isFinite)
-        
-            console.log(courseDist)
+            gradeArray = gradeArray.filter(Number.isFinite)
 
-            setCourseGrades({
-                labels: ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F'],
-                datasets: [{
-                    label: 'Number of Students',
-                    data: [courseDist],
-                    }]
-                })
+            setcourseDist(gradeArray)
 
-            console.log(courseGrades)
         
         })
     }, [courseName]);
+
+    var gradeData = {
+        labels: ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F'],
+        datasets: [{
+            label: 'Number of Students',
+            data: courseDist,
+            backgroundColor: 'orange',
+            bordecolor : 'black',
+            borderwidth: 1,
+            fill: false
+            }]
+
+    } 
+
 
     useEffect(() => {
         let found = false;
@@ -155,8 +168,20 @@ export default function CoursePage() {
                 }
                 <Forum courseName={courseName}/>
                 <Reviews name={courseName} type={"course"}/>
-                {/* <BarChart chartData={courseGrades}/> */}
+                <div style={{width: 700}}>
+                        <Bar 
+                            data  = {gradeData}
+                            options = {{
+                                // maintainAspectRatio: false,
+                                scales: {
+                                    y: {
+                                      beginAtZero: true
+                                    }
+                                  }
+                            }}
+                        ></Bar>
+                </div>
             </div>
         </div>
-    )
+    ) 
 }
