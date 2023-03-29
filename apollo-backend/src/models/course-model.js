@@ -19,9 +19,9 @@ const courseSchema = new mongoose.Schema({
     type: String
   },
 
-  Information_Document: {
+  Information_Document: [{
     type: String
-  }
+  }]
 });
 
 module.exports = mongoose.model('CourseInfo', courseSchema);
