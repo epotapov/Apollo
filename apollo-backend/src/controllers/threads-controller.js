@@ -362,7 +362,7 @@ const subscribeToThread = async(req, res) => {
     }
 
     const isSubscribed = thread.subscribed.get(username);
-    const doubleSubscribe = false;
+    var doubleSubscribe = false;
 
     if (isSubscribed) {
       console.log(username + " unsubscribed from this thread!");
@@ -374,7 +374,6 @@ const subscribeToThread = async(req, res) => {
     }
 
     // update thread
-    thread.subscribed.set(username, userExist.email);
     const updatedThread = await Thread.findByIdAndUpdate(
       id,
       { subscribed: thread.subscribed },
