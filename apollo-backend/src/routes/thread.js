@@ -9,7 +9,7 @@
 // requires
 const express = require('express');
 const ThreadInfo = require('../models/thread-model');
-const { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment } = require('../controllers/threads');
+const { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment } = require('../controllers/threads-controller');
 // TODO add method imports
 
 

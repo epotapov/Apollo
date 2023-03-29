@@ -138,7 +138,7 @@ const upvoteThread = async(req, res) => {
 
     const isUpvoted = thread.upvotes.get(username);
     const isDownvoted = thread.downvotes.get(username);
-    const doubleUpvoteAttempt = false;
+    var doubleUpvoteAttempt = false;
 
     if (isUpvoted) {
       console.log(username + " removed their upvote from this thread!");
@@ -210,7 +210,7 @@ const downvoteThread = async(req, res) => {
     }
     const isDownvoted = thread.downvotes.get(username);
     const isUpvoted = thread.upvotes.get(username);
-    const doubleDownvoteAttempt = false;
+    var doubleDownvoteAttempt = false;
 
     if (isDownvoted) {
       console.log(username + " removed their downvote from this thread!");

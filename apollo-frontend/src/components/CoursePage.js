@@ -6,7 +6,7 @@ import Navbar from './Navbar';
 import { useUserContext } from '../hooks/useUserContext';
 import { Button, Checkbox, Form, Input, Radio, Switch } from 'antd';
 
-import BarChart from './BarChart';
+import BarChart from './Barchart';
 import {courseGradeData} from './CourseGradeData';
 
 import Reviews from './Reviews';

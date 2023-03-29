@@ -76,13 +76,35 @@ const Forum = ( {courseName} ) => {
     }
 
     const handleUpVote = async (threadId) => {
+        if (!user) {
+            alert("Please login to upvote");
+            return;
+        }
+        const response = await fetch(`http://localhost:5001/api/thread/${threadId}/upvote`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({username: user.username})
+        })
+        
         const threadIndex = threads.findIndex((thread) => thread.id === threadId);
         const thread = threads[threadIndex];
+
+        let updatedThread = {}; 
       
-        const updatedThread = {
-          ...thread,
-          upvotes: thread.upvotes + 1,
-        };
+        if (response.status === 409) {
+            updatedThread = {
+            ...thread,
+            upvotes: thread.upvotes - 1,
+            };
+        }
+        else {
+            updatedThread = {
+            ...thread,
+            upvotes: thread.upvotes + 1,
+            };
+        }
       
         const updatedThreads = [
           ...threads.slice(0, threadIndex),
@@ -91,16 +113,40 @@ const Forum = ( {courseName} ) => {
         ];
 
         setThreads(updatedThreads);
-        fetch(`http://localhost:5001/api/thread/${threadId}/upvote`, {
+    }
+
+    const handleDownVote = async (threadId) => {
+        if (!user) {
+            alert("Please login to downvote");
+            return;
+        }
+        const response = await fetch(`http://localhost:5001/api/thread/${threadId}/downvote`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({username: user.username})
         })
-    }
 
-    const handleDownVote = async (threadId) => {
+        if (response.status === 409) {
+            const threadIndex = threads.findIndex((thread) => thread.id === threadId);
+            const thread = threads[threadIndex];
+          
+            const updatedThread = {
+              ...thread,
+              downvotes: thread.downvotes - 1,
+            };
+          
+            const updatedThreads = [    
+              ...threads.slice(0, threadIndex),
+              updatedThread,
+              ...threads.slice(threadIndex + 1),
+            ];
+    
+            setThreads(updatedThreads);
+            return;
+        }
+
         const threadIndex = threads.findIndex((thread) => thread.id === threadId);
         const thread = threads[threadIndex];
       
@@ -116,13 +162,6 @@ const Forum = ( {courseName} ) => {
         ];
 
         setThreads(updatedThreads);
-        fetch(`http://localhost:5001/api/thread/${threadId}/downvote`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({username: user.username})
-        })
     }
 
     return (
