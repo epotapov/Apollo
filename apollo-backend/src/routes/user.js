@@ -296,16 +296,23 @@ router.get("/get-image/:username", async (req, res) => {
     res.status(200).json(userReturned.profilePicture);
 });
 
+router.get("/get-pdf/:Course", async (req, res) => {
+    const param = req.params.Course;
+    const courseReturned = await CourseInfo.findOne({ Course: param });
+    res.status(200).json(courseReturned.Information_Document);
+});
+
 //Professor upload pdf for course. (Must have isProfessor=true)
 router.post("/upload-pdf/:Course", uploadCourseInfo.single("courseinfo"), async (req, res) => {
     //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
     const doc_name = req.file.filename;
     const course_name = req.params.Course
     const courseReturned = await CourseInfo.findOne({Course: course_name})
-    courseReturned.Information_Document = doc_name;
-    console.log(doc_name)
-    res.send("Pdf uploading");
-})
+    courseReturned.Information_Document.push(doc_name);
+    console.log(courseReturned.Information_Document[0])
+    await courseReturned.save();
+    res.status(200).json(doc_name);
+});
 
 router.post("/add-favCourse", async (req, res) => {
     const {username, favCourses} = req.body;
