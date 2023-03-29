@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react';
-import { Collapse, Form, Input, Button, Typography, Space } from "antd";
-import { LikeOutlined, DislikeOutlined } from '@ant-design/icons';
+import { Collapse, Form, Input, Button, Typography, Space, message} from "antd";
+import { LikeOutlined, DislikeOutlined, PlusOutlined, CheckOutlined } from '@ant-design/icons';
 import { useUserContext } from '../hooks/useUserContext';
 const { Panel } = Collapse;
 const { Title } = Typography;
@@ -18,6 +18,7 @@ const Forum = ( {courseName} ) => {
             const downvotes = data[i].downvotes;
             const comments = data[i].comments;
             const username = data[i].username;
+            const subscribed = data[i].subscribed[username] ? true : false;
             const thread = {
                 id: _id,
                 title: title,
@@ -25,7 +26,8 @@ const Forum = ( {courseName} ) => {
                 upvotes : upvotes ? Object.entries(upvotes).length : 0,
                 downvotes: downvotes ? Object.entries(downvotes).length : 0,
                 comments: comments,
-                username: username
+                username: username,
+                subscribed: subscribed 
             }
             setThreads(threads => [...threads, thread]);
         }
@@ -45,6 +47,32 @@ const Forum = ( {courseName} ) => {
             fetchThreads();
         }
     }, [courseName]);
+
+    const handleSubscribe = async (threadId) => {
+        const updatedThreads = threads.map((thread) => {
+            if (thread.id === threadId) {
+                if (thread.subscribed) {
+                    message.success('Succesfully unsubscribed from thread', 1);
+                } else {
+                    message.success('Succesfully subscriped to thread', 1);
+                }
+                return {
+                    ...thread,
+                    subscribed: !thread.subscribed
+                }
+            }
+            return thread;
+        })
+        setThreads(updatedThreads);
+
+        const response = await fetch(`http://localhost:5001/api/thread/${threadId}/subscribeToThread`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({id: threadId, username: user.username})
+        })
+    }
 
     const handleCreateThread = async (values) => {
         const title = values.title;
@@ -221,6 +249,11 @@ const Forum = ( {courseName} ) => {
                                         <Button shape="Circle" icon={<DislikeOutlined />} onClick={() => handleDownVote(thread.id)} />
                                         {thread.downvotes}
                                     </span>
+                                    {user && thread.subscribed ? (
+                                        <Button shape="Circle" icon={<CheckOutlined />} onClick={() => handleSubscribe(thread.id)} />
+                                    ) : (
+                                        <Button shape="Circle" icon={<PlusOutlined />} onClick={() => handleSubscribe(thread.id)} />
+                                    )}
                                 </Space>
                             }
                             key={thread.id}

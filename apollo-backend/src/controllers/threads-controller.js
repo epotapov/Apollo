@@ -342,7 +342,7 @@ const createComment = async(req, res) => {
  * Status Codes:
  *   OK = 200
  *   NOT FOUND = 404
- *   CONFLICT = 409
+ *   CONFLICT = 210
  */
 const subscribeToThread = async(req, res) => {
 
@@ -381,7 +381,7 @@ const subscribeToThread = async(req, res) => {
     );
 
     if (doubleSubscribe) {
-      res.status(409).json(updatedThread);
+      res.status(210).json(updatedThread);
     } else {
       res.status(200).json(updatedThread);
     }

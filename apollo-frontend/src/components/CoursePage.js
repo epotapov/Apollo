@@ -28,6 +28,7 @@ export default function CoursePage() {
     const [checkedFavorite, setCheckedFavorite] = useState(false);
     const [favCourses, setFavCourses] = useState([]);
     const [courseDist, setcourseDist] = useState([]);
+    const [forum, setForum] = useState([]);
 
     const [size, setSize] = useState('large');
     const { user } = useUserContext();
