@@ -8,6 +8,7 @@ const { Title } = Typography;
 const Forum = ( {courseName} ) => {
     const {user} = useUserContext();
     const [threads, setThreads] = useState([]);
+    const [subButtonDisabled, setsubButtonDisabled] = useState(false);
 
     const formatThreads = (data) => {
         for (let i = 0; i < data.length; i++) {
@@ -49,6 +50,9 @@ const Forum = ( {courseName} ) => {
     }, [courseName]);
 
     const handleSubscribe = async (threadId) => {
+        if (subButtonDisabled) {
+            return;
+        }
         const updatedThreads = threads.map((thread) => {
             if (thread.id === threadId) {
                 if (thread.subscribed) {
@@ -72,6 +76,12 @@ const Forum = ( {courseName} ) => {
             },
             body: JSON.stringify({id: threadId, username: user.username})
         })
+
+        // Time out button for 3 seconds so no spamming
+        setsubButtonDisabled(true);
+        setTimeout(() => {
+            setsubButtonDisabled(false);
+        }, 3000);
     }
 
     const handleCreateThread = async (values) => {
@@ -250,9 +260,9 @@ const Forum = ( {courseName} ) => {
                                         {thread.downvotes}
                                     </span>
                                     {user && thread.subscribed ? (
-                                        <Button shape="Circle" icon={<CheckOutlined />} onClick={() => handleSubscribe(thread.id)} />
+                                        <Button disabled={subButtonDisabled} shape="Circle" icon={<CheckOutlined /> } onClick={() => handleSubscribe(thread.id)} />
                                     ) : (
-                                        <Button shape="Circle" icon={<PlusOutlined />} onClick={() => handleSubscribe(thread.id)} />
+                                        <Button disabled={subButtonDisabled} shape="Circle" icon={<PlusOutlined />} onClick={() => handleSubscribe(thread.id)} />
                                     )}
                                 </Space>
                             }
