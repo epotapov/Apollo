@@ -23,7 +23,7 @@ const createReview = async (req, res) => {
       const newRating = new Rating({coursename, stars, description, username});
       await newRating.save();
       
-      const review = await Rating.find({ courseName });
+      const review = await Rating.find({ coursename });
       res.status(201).json(review);
 
     } catch (err) {
