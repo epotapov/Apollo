@@ -247,7 +247,8 @@ export default function CoursePage() {
                             }}
                         ></Bar>
                         <div style={{marginTop: '10px', fontSize: '12px', textAlign: 'center'}}>
-                            <p> Data retrieved from: </p>
+                            <p> Data retrieved from: Boiler Grades </p>
+                            <p> Data is from the Fall 2022 semester </p>
                         </div>
                 </div>  
             </div>
