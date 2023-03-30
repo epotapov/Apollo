@@ -6,11 +6,11 @@ import Forum from './Forum';
 
 import Navbar from './Navbar';
 import { useUserContext } from '../hooks/useUserContext';
-import { Button, Checkbox, Form, Input, Radio, Switch } from 'antd';
+import { Collapse, Switch, Table } from 'antd';
 import Reviews from './Reviews';
 import UploadPdf from './UploadPdf';
 
-
+const { Panel } = Collapse;
 ChartJS.register(
     BarElement, 
     CategoryScale, 
@@ -29,7 +29,8 @@ export default function CoursePage() {
     const [checkedFavorite, setCheckedFavorite] = useState(false);
     const [favCourses, setFavCourses] = useState([]);
     const [courseDist, setcourseDist] = useState([]);
-    const [forum, setForum] = useState([]);
+    const [sections, setSections] = useState([]);
+    const [TypicallyOffered, setTypicallyOffered] = useState('');
 
     const [size, setSize] = useState('large');
     const { user } = useUserContext();
@@ -45,6 +46,8 @@ export default function CoursePage() {
                 setTitle(data.Title);
                 setCreditHours(data.CreditHours);
                 setDescription(data.Description);
+                setSections(data.Sections);
+                setTypicallyOffered(data.TypicallyOffered);
             })
         }
         fetchCourse();
@@ -143,6 +146,51 @@ export default function CoursePage() {
         }
     } 
 
+    const sectionsColumns = [
+        {
+            title: 'Section',
+            dataIndex: 'Section',
+            key: 'Section',
+            render: text => text || 'N/A',
+        },
+        {
+            title: 'Days',
+            dataIndex: 'Days',
+            key: 'Days',
+            render: text => text || 'N/A',
+        },
+        {
+            title: 'Time',
+            dataIndex: 'Time',
+            key: 'Time',
+            render: (text, record) => {
+                const { StartTime, EndTime } = record;
+                if (StartTime && EndTime) {
+                    return `${StartTime} - ${EndTime}`;
+                }
+                return 'N/A';
+            }
+        },
+        {
+            title: 'Location',
+            dataIndex: 'Location',
+            key: 'Location',
+            render: text => text || 'N/A',
+        },
+        {
+            title: 'Instructor',
+            dataIndex: 'Instructor',
+            key: 'Instructor',
+            render: text => text || 'N/A',
+        },
+        {
+            title: 'Instrcutor Email',
+            dataIndex: 'InstructorEmail',
+            key: 'InstructorEmail',
+            render: text => text || 'N/A',
+        }
+    ];
+
 
     return( 
         <div id='cont'>
@@ -169,8 +217,25 @@ export default function CoursePage() {
                     Description.length != 0 && <div><h2>Description: </h2><p>{Description}</p></div>
                 }
                 <UploadPdf name={courseName}/>
+                <h2> Typically Offered: </h2>
+                {TypicallyOffered ? (
+                    <p>{TypicallyOffered}</p>
+                ) : (
+                    <p>Course availability information not available.</p>
+                )}
+                <h2>Sections:</h2>
+                        {sections.length > 0 ? (
+                            <Table
+                                columns={sectionsColumns}
+                                dataSource={sections}
+                                pagination={false}
+                            />
+                        ) : (
+                            <p>No sections found</p>
+                        )}
                 <Forum courseName={courseName}/>
                 <Reviews name={courseName} type={"course"}/>
+                <h2>Grade Distribution</h2>
                 <div style={{width: 700}}>
                         <Bar 
                             data  = {gradeData}
@@ -183,7 +248,11 @@ export default function CoursePage() {
                                   }
                             }}
                         ></Bar>
-                </div>
+                        <div style={{marginTop: '10px', fontSize: '12px', textAlign: 'center'}}>
+                            <p> Data retrieved from: Boiler Grades </p>
+                            <p> Data is from the Fall 2022 semester </p>
+                        </div>
+                </div>  
             </div>
         </div>
     ) 

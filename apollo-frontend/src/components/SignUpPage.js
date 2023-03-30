@@ -102,7 +102,6 @@ export default function SignUpPage() {
     const user = {username, email, password, major, gradYear, role, 
       courses, aboutMe, country, gender, planOfStudy, DOB, 
       currentYear, profilePicture, instagramLink, linkedinLink, twitterLink, favCourses};
-    console.log(user)
 
     // TODO this URL will need to change eventually (once we have the server on another machine)
     const response = await fetch('http://localhost:5001/api/user/signup', {

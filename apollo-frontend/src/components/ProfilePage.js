@@ -73,8 +73,6 @@ export default function ProfilePage() {
     fetchUser();
   }, [usernameParam]);
 
-  console.log(userFound);
-
   if (userFound) {
     if (user && userFound.username === user.username) {
       sameAccount = true;

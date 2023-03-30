@@ -325,7 +325,7 @@ export default function EditProfile() {
 		planOfStudy = values.planofstudy ? values.planofstudy : planOfStudy;
 		courses = values.courses ? values.courses : courses;
 		isPrivate = (values.privateprofile !== "undefined") ? values.privateprofile : isPrivate;
-		emailNotif = (values.emailnotif !== "undefined") ? values.emailnotif : emailNotif;
+		emailNotif = (values.emailnotif !== "undefined") ? values.emailNotif : emailNotif;
 		instagramLink = values.instagram ? values.instagram : instagramLink;
 		linkedinLink = values.linkedin ? values.linkedin : linkedinLink;
 		twitterLink = values.twitter ? values.twitter : twitterLink;

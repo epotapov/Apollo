@@ -124,7 +124,7 @@ router.post('/edit', async (req, res) => {
 
     const {username, email, major, gradYear, role, 
         isVerified, courses, aboutMe, country, gender, planOfStudy, 
-        dob, isPrivate, year, instagramLink, twitterLink, linkedinLink, favCourses} = req.body;
+        dob, isPrivate, emailNotif, year, instagramLink, twitterLink, linkedinLink, favCourses} = req.body;
 
     const user = await UserInfo.findOne({ email: email });
 
@@ -142,6 +142,7 @@ router.post('/edit', async (req, res) => {
     user.DOB = dob;
     user.country = country;
     user.isPrivate = isPrivate;
+    user.emailNotif = emailNotif;
     user.instagramLink = instagramLink;
     user.twitterLink = twitterLink;
     user.linkedinLink = linkedinLink;
