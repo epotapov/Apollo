@@ -21,6 +21,9 @@ const User = require("../models/user-model");
 // imports course model - used for course verification
 const Course = require("../models/course-model");
 
+// imports nodemailer - used for email notification
+const nodemailer = require('nodemailer');
+
 /* CREATE */
 
 /* createThread
@@ -89,7 +92,7 @@ const createThread = async (req, res) => {
  *   OK = 200
  *   NOT FOUND = 404
  */
-const getCourseThreads = async(req, res) => {
+const getCourseThreads = async (req, res) => {
   const { courseName } = req.params;
 
   try {
@@ -126,7 +129,7 @@ const getCourseThreads = async(req, res) => {
  *   How to access # of upvotes?
  *      {thread object}.upvotes.size
  */
-const upvoteThread = async(req, res) => {
+const upvoteThread = async (req, res) => {
 
   try {
     const { id } = req.params;
@@ -203,7 +206,7 @@ const upvoteThread = async(req, res) => {
  *   How to access # of downvotes?
  *      {thread object}.downvotes.size
  */
-const downvoteThread = async(req, res) => {
+const downvoteThread = async (req, res) => {
 
   try {
     const { id } = req.params;
@@ -274,7 +277,7 @@ const downvoteThread = async(req, res) => {
  *   CREATED = 201
  *   CONFLICT = 409
  */
-const createComment = async(req, res) => {
+const createComment = async (req, res) => {
 
   try {
     // grab request param & json body
@@ -315,6 +318,39 @@ const createComment = async(req, res) => {
     // TODO @brandon can you add email stuff here? you'll have to access thread.subscribed which is a map in the form of username: email (ex: jebeene: jebeene@purdue.edu)
     // so you'll have to access all the emails in the subscribed list. i think the .values() method is the way to do this but yeah i'll let you figure it out https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/values
 
+    const smtpConfig = {
+      service: 'gmail',
+      auth: {
+        user: 'TestDummy2199@gmail.com',
+        pass: 'qjlyzponqvxkuzhp',
+      }
+    };
+
+    const transporter = nodemailer.createTransport(smtpConfig);
+
+    for (const [key, value] of thread.subscribed) {
+
+      if (!key.emailNotif) {
+        const mailOptions = {
+          from: 'TestDummy2199@gmail.com',
+          to: value,
+          subject: 'A User Reacted to your Comment!',
+          text: `Someone replied to your comment ` + thread.title + ` click here to view: http://localhost:3000/course/${thread.courseName}`
+        };
+
+        transporter.sendMail(mailOptions, (error) => {
+          if (error) {
+            console.log(error);
+            throw Error(error.message);
+          }
+          else {
+            console.log('Email notification sent successfully');
+          }
+        });
+      }
+    }
+
+
 
     // success
     console.log(username + " commented and subscribed to thread " + thread.title + "!");
@@ -344,7 +380,7 @@ const createComment = async(req, res) => {
  *   NOT FOUND = 404
  *   CONFLICT = 210
  */
-const subscribeToThread = async(req, res) => {
+const subscribeToThread = async (req, res) => {
 
   try {
     const { id } = req.params;
