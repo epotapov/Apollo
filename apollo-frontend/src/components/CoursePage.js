@@ -54,9 +54,6 @@ function mapGradeToValue(grade) {
     }
 }
 
-
-
-
 export default function CoursePage() {
     const { courseName } = useParams();
     const [Title, setTitle] = useState('');
@@ -141,7 +138,6 @@ export default function CoursePage() {
 
 
     const avgValue = totalValue / courseDist.reduce((acc, num) => acc + num, 0);
-    console.log(avgValue);
 
     let avgGrade;
     if (avgValue >= 4.0) {
@@ -297,7 +293,6 @@ export default function CoursePage() {
         }
     };
 
-
     return (
         <div id='cont'>
             <Navbar />
@@ -334,6 +329,7 @@ export default function CoursePage() {
                         columns={sectionsColumns}
                         dataSource={sections}
                         pagination={false}
+                        key={sections.Section}
                     />
                 ) : (
                     <p>No sections found</p>
