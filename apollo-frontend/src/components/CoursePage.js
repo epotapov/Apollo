@@ -339,16 +339,18 @@ export default function CoursePage() {
                 <Forum courseName={courseName} />
                 <Reviews name={courseName} type={"course"} />
                 <h2>Grade Distribution</h2>
-                <div style={{ width: 700 }}>
-                    <Bar
-                        data={gradeData}
-                        options={options}
-                    ></Bar>
-                    <div style={{ marginTop: '10px', fontSize: '12px', textAlign: 'center' }}>
-                        <p> Data retrieved from: Boiler Grades </p>
-                        <p> Data is from the Fall 2022 semester </p>
+                <section id="Bar-Graph">
+                    <div id="Bar-GraphCore">
+                        <Bar
+                            data={gradeData}
+                            options={options}
+                        ></Bar>
+                        <div style={{ marginTop: '10px', fontSize: '12px', textAlign: 'center' }}>
+                            <p> Data retrieved from: Boiler Grades </p>
+                            <p> Data is from the Fall 2022 semester </p>
+                        </div>
                     </div>
-                </div>
+                </section>
             </div>
         </div>
     )

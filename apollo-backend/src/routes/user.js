@@ -331,10 +331,30 @@ router.post("/upload-pdf/:Course/:PdfTitle", uploadCourseInfo.single("courseinfo
     res.status(200).json({ message: 'Success!'});
 });
 
+function get_date_format(myDate) {
+  
+    let month = myDate.getMonth() + 1;
+    
+    // helper function
+    const addZeroIfNeeded = (num) => {
+        return (num < 10) ? '0' + num : num.toString();
+    }
+    
+    month = addZeroIfNeeded(month);
+    let day = addZeroIfNeeded(myDate.getDate());
+    
+    let year = myDate.getFullYear();
+    let hours = addZeroIfNeeded(myDate.getHours());
+    let mins = addZeroIfNeeded(myDate.getMinutes());
+    let seconds = addZeroIfNeeded(myDate.getSeconds());
+  
+    return `${month}-${day}-${year}T${hours}:${mins}:${seconds}`;
+}
+
 router.post("/upload-pdf-resource/:Course/:PdfTitle", uploadCourseInfo.single("courseinfo"), async (req, res) => {
     //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
     const doc_name = req.file.filename;
-    const ui_name = req.params.PdfTitle;
+    const ui_name = req.params.PdfTitle + "-" + get_date_format(new Date());
     const pdf = {doc_name: doc_name, ui_name: ui_name};
     console.log("pdf stuff: " + pdf)
     const course_name = req.params.Course

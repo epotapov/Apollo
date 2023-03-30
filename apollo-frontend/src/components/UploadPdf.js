@@ -100,9 +100,7 @@ export default function UploadPdf(props) {
                         >
                             <Input placeholder="Title" />
                         </Form.Item>
-                        <Form.Item
-                            label="PDF File:"
-                        >
+                        <Form.Item>
                             <Upload
                                 name="courseinfo"
                                 beforeUpload={beforeUpload}
@@ -140,9 +138,7 @@ export default function UploadPdf(props) {
                         >
                             <Input placeholder="Title" />
                         </Form.Item>
-                        <Form.Item
-                            label="PDF File:"
-                        >
+                        <Form.Item>
                             <Upload
                                 name="courseinfo"
                                 beforeUpload={beforeUpload}
