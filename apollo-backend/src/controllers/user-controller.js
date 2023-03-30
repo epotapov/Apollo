@@ -23,13 +23,13 @@ const loginUser = async (req, res) => {
 const signupUser = async (req, res) => {
     const {username, email, password, major, 
      gradYear, role, isVerified, courses, aboutMe, country, 
-     gender, planOfStudy, DOB, isPrivate, currentYear, 
+     gender, planOfStudy, DOB, isPrivate, emailNotif, currentYear, 
      profilePicture, instagramLink, twitterLink, linkedinLink, favCourses} = req.body;
 
      try {
         const user = await UserInfo.signup(username, email, password, 
           major, gradYear, role, isVerified, courses, aboutMe, 
-          country, gender, planOfStudy, DOB, isPrivate, currentYear, 
+          country, gender, planOfStudy, DOB, isPrivate, emailNotif, currentYear, 
           profilePicture, twitterLink, instagramLink, linkedinLink, favCourses);
      
 

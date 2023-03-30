@@ -355,6 +355,11 @@ const subscribeToThread = async(req, res) => {
       throw Error(username + " is not a registered user!");
     }
 
+    // user has email notifications turned off
+    if (!userExist.emailNotif) {
+      throw Error(username + " has email notifications off!")
+    }
+
     const thread = await Thread.findById(id);
     console.log(thread);
     if (!thread) {

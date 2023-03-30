@@ -115,6 +115,11 @@ var userSchema = new Schema({
         default: false
     },
 
+    emailNotif: {
+        type: Boolean,
+        required: false,
+        default: true
+    },
 
     currentYear: {
         type: String,
