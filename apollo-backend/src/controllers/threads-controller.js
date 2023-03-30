@@ -330,7 +330,9 @@ const createComment = async (req, res) => {
 
     for (const [key, value] of thread.subscribed) {
 
-      if (!key.emailNotif) {
+      const findUser = await User.findOne({username: key})
+
+      if (findUser.emailNotif) {
         const mailOptions = {
           from: 'TestDummy2199@gmail.com',
           to: value,
@@ -347,8 +349,10 @@ const createComment = async (req, res) => {
             console.log('Email notification sent successfully');
           }
         });
+      } else {
+        console.log('This user has notifications turned off');
       }
-    }
+    } 
 
     // success
     console.log(username + " commented and subscribed to thread " + thread.title + "!");
