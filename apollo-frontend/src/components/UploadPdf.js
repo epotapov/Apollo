@@ -78,13 +78,13 @@ export default function UploadPdf(props) {
                             label="PDF File:"
                         >
                             <Upload
-                                name="profilepic"
+                                name="courseinfo"
                                 beforeUpload={beforeUpload}
                                 onChange={handleChange}
                                 showUploadList={false}
                                 action={`http://localhost:5001/api/user/upload-pdf/${name}/${pdfTitle}`}
                             >
-                                <Button icon={<UploadOutlined />} disabled type="Primary" htmlType="submit"> Upload </Button>
+                                <Button icon={<UploadOutlined />} type="Primary" htmlType="submit"> Upload </Button>
                             </Upload>
                         </Form.Item>
                     </Form>
