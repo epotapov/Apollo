@@ -254,6 +254,10 @@ h1 {
   color: white;
 }
 
+#dark a {
+  color: #f59e0b;
+}
+
 /* #dark span {
   color: white;
 }*/
@@ -282,4 +286,9 @@ h1 {
 
 #light h3 {
   color: #353744;
+}
+
+.linkDirection {
+  display: flex;
+  flex-direction: column;
 }

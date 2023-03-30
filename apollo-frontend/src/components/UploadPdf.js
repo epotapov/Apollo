@@ -12,6 +12,7 @@ export default function UploadPdf(props) {
     const [ resources, setResources ] = useState([]);
     const [ isProf, setIsProf ] = useState(false);
     const [ pdfTitle, setPdfTitle ] = useState("");
+    const [ resourceTitle, setResourceTitle ] = useState("");
  
     useEffect(() => {
         if (user && !isProf) {
@@ -29,16 +30,16 @@ export default function UploadPdf(props) {
         fetch('http://localhost:5001/api/user/get-pdf/' + name)
         .then(response => response.json())
         .then(data => {
-            setSyllabi("syllabi data: " + data);
-            console.log(data)
+            setSyllabi(data);
+            console.log("syllabi data: " + data)
         })
         fetch('http://localhost:5001/api/user/get-pdf-resource/' + name)
         .then(response => response.json())
         .then(data => {
-            setResources("resource data: " + data);
-            console.log(data);
+            setResources(data);
+            console.log("resource data: " + data);
         })
-    }, [])
+    }, [name])
 
     const beforeUpload = (file) => {
         console.log("file type " + file.type)
@@ -56,6 +57,18 @@ export default function UploadPdf(props) {
 		}
 		if (info.file.status === 'done') {
 			message.success(`${info.file.name} file uploaded successfully`);
+            fetch('http://localhost:5001/api/user/get-pdf/' + name)
+            .then(response => response.json())
+            .then(data => {
+                setSyllabi(data);
+                console.log("syllabi data: " + data)
+            })
+            fetch('http://localhost:5001/api/user/get-pdf-resource/' + name)
+            .then(response => response.json())
+            .then(data => {
+                setResources(data);
+                console.log("resource data: " + data);
+            })
 		} else if (info.file.status === 'error') {
 			message.error(`${info.file.name} file upload failed.`);
 		}
@@ -64,12 +77,18 @@ export default function UploadPdf(props) {
     return(
         <section>
             <h2> Syllabi for {name}: </h2>
-            <div>
+            <section className='linkDirection'>
                 {
                     syllabi.length !== 0 &&
-                    syllabi.map((link) => <a key={link.toString()}>aaa</a>)
+                    syllabi.map((link) =>
+                        <a key={link.toString()} href={`http://localhost:5001/pdfs/${link[0].doc_name}`} target="_blank">{link[0].ui_name}</a>
+                    )
                 }
-            </div>
+                {
+                    syllabi.length == 0 &&
+                    <p>No Syllabi.</p>
+                }
+            </section>
             {
                 user && isProf &&
                 <>  
@@ -98,12 +117,18 @@ export default function UploadPdf(props) {
                 </>
             }
             <h2> Resources for {name}: </h2>
-            <div>
+            <section className='linkDirection'>
                 {
                     resources.length !== 0 &&
-                    resources.map((link) => <a key={link.toString()} href={`http://localhost:5001/pdfs/${link.doc_name}`}>{link.ui_name}</a>)
+                    resources.map((link) =>
+                        <a key={link.toString()} href={`http://localhost:5001/pdfs/${link[0].doc_name}`} target="_blank">{link[0].ui_name}</a>
+                    )
                 }
-            </div>
+                {
+                    resources.length == 0 &&
+                    <p>No Resources.</p>
+                }
+            </section>
             {
                 user && isProf &&
                 <>  
@@ -111,7 +136,7 @@ export default function UploadPdf(props) {
                     <Form name="review">
                         <Form.Item name="title" 
                             rules={[{ required: true, message: "Please enter a title" }]}
-                            onChange={(e) => setPdfTitle(e.target.value)}
+                            onChange={(e) => setResourceTitle(e.target.value)}
                         >
                             <Input placeholder="Title" />
                         </Form.Item>
@@ -123,7 +148,7 @@ export default function UploadPdf(props) {
                                 beforeUpload={beforeUpload}
                                 onChange={handleChange}
                                 showUploadList={false}
-                                action={`http://localhost:5001/api/user/upload-pdf-resource/${name}/${pdfTitle}`}
+                                action={`http://localhost:5001/api/user/upload-pdf-resource/${name}/${resourceTitle}`}
                             >
                                 <Button icon={<UploadOutlined />} type="Primary" htmlType="submit"> Upload </Button>
                             </Upload>

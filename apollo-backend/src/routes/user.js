@@ -322,8 +322,7 @@ router.post("/upload-pdf/:Course/:PdfTitle", uploadCourseInfo.single("courseinfo
     //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
     const doc_name = req.file.filename;
     const ui_name = req.params.PdfTitle;
-    const pdf = {doc_name, ui_name};
-    console.log("pdf stuff: " + pdf)
+    const pdf = {doc_name: doc_name, ui_name: ui_name};
     const course_name = req.params.Course
     const courseReturned = await CourseInfo.findOne({Course: course_name})
     courseReturned.Information_Document.push(pdf);
