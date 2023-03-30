@@ -8,7 +8,8 @@ import { useUserContext } from '../hooks/useUserContext';
 export default function UploadPdf(props) {
     const name = props.name;
     const { user } = useUserContext();
-    const [ links, setLinks ] = useState([]);
+    const [ syllabi, setSyllabi ] = useState([]);
+    const [ resources, setResources ] = useState([]);
     const [ isProf, setIsProf ] = useState(false);
     const [ pdfTitle, setPdfTitle ] = useState("");
  
@@ -28,10 +29,16 @@ export default function UploadPdf(props) {
         fetch('http://localhost:5001/api/user/get-pdf/' + name)
         .then(response => response.json())
         .then(data => {
-            setLinks(data);
-            console.log("data for pdf" + data)
+            setSyllabi("syllabi data: " + data);
+            console.log(data)
         })
-    }, [name])
+        fetch('http://localhost:5001/api/user/get-pdf-resource/' + name)
+        .then(response => response.json())
+        .then(data => {
+            setResources("resource data: " + data);
+            console.log(data);
+        })
+    }, [])
 
     const beforeUpload = (file) => {
         console.log("file type " + file.type)
@@ -56,11 +63,11 @@ export default function UploadPdf(props) {
 
     return(
         <section>
-            <h2> PDFs for {name}: </h2>
+            <h2> Syllabi for {name}: </h2>
             <div>
                 {
-                    links.length !== 0 &&
-                    links.map((link) => <a key={link.toString()}>aaa</a>)
+                    syllabi.length !== 0 &&
+                    syllabi.map((link) => <a key={link.toString()}>aaa</a>)
                 }
             </div>
             {
@@ -83,6 +90,40 @@ export default function UploadPdf(props) {
                                 onChange={handleChange}
                                 showUploadList={false}
                                 action={`http://localhost:5001/api/user/upload-pdf/${name}/${pdfTitle}`}
+                            >
+                                <Button icon={<UploadOutlined />} type="Primary" htmlType="submit"> Upload </Button>
+                            </Upload>
+                        </Form.Item>
+                    </Form>
+                </>
+            }
+            <h2> Resources for {name}: </h2>
+            <div>
+                {
+                    resources.length !== 0 &&
+                    resources.map((link) => <a key={link.toString()} href={`http://localhost:5001/pdfs/${link.doc_name}`}>{link.ui_name}</a>)
+                }
+            </div>
+            {
+                user && isProf &&
+                <>  
+                    <h2>Upload Resource Pdf</h2>     
+                    <Form name="review">
+                        <Form.Item name="title" 
+                            rules={[{ required: true, message: "Please enter a title" }]}
+                            onChange={(e) => setPdfTitle(e.target.value)}
+                        >
+                            <Input placeholder="Title" />
+                        </Form.Item>
+                        <Form.Item
+                            label="PDF File:"
+                        >
+                            <Upload
+                                name="courseinfo"
+                                beforeUpload={beforeUpload}
+                                onChange={handleChange}
+                                showUploadList={false}
+                                action={`http://localhost:5001/api/user/upload-pdf-resource/${name}/${pdfTitle}`}
                             >
                                 <Button icon={<UploadOutlined />} type="Primary" htmlType="submit"> Upload </Button>
                             </Upload>

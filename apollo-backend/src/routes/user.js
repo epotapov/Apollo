@@ -311,6 +311,12 @@ router.get("/get-pdf/:Course", async (req, res) => {
     res.status(200).json(courseReturned.Information_Document);
 });
 
+router.get("/get-pdf-resource/:Course", async (req, res) => {
+    const param = req.params.Course;
+    const courseReturned = await CourseInfo.findOne({ Course: param });
+    res.status(200).json(courseReturned.Information_Resource);
+});
+
 //Professor upload pdf for course. (Must have isProfessor=true)
 router.post("/upload-pdf/:Course/:PdfTitle", uploadCourseInfo.single("courseinfo"), async (req, res) => {
     //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
@@ -322,6 +328,20 @@ router.post("/upload-pdf/:Course/:PdfTitle", uploadCourseInfo.single("courseinfo
     const courseReturned = await CourseInfo.findOne({Course: course_name})
     courseReturned.Information_Document.push(pdf);
     console.log(courseReturned.Information_Document[0])
+    await courseReturned.save();
+    res.status(200).json({ message: 'Success!'});
+});
+
+router.post("/upload-pdf-resource/:Course/:PdfTitle", uploadCourseInfo.single("courseinfo"), async (req, res) => {
+    //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
+    const doc_name = req.file.filename;
+    const ui_name = req.params.PdfTitle;
+    const pdf = {doc_name: doc_name, ui_name: ui_name};
+    console.log("pdf stuff: " + pdf)
+    const course_name = req.params.Course
+    const courseReturned = await CourseInfo.findOne({Course: course_name})
+    courseReturned.Information_Resource.push(pdf);
+    console.log(courseReturned.Information_Resource[0])
     await courseReturned.save();
     res.status(200).json({ message: 'Success!'});
 });

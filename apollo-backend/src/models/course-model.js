@@ -59,6 +59,10 @@ const courseSchema = new mongoose.Schema({
     type: Array
   }],
 
+  Information_Resource: [{
+    type: Array
+  }],
+
   TypicallyOffered: {
     type: String
   },
