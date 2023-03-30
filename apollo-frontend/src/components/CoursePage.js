@@ -10,6 +10,7 @@ import Navbar from './Navbar';
 import { useUserContext } from '../hooks/useUserContext';
 import { Collapse, Switch, Table } from 'antd';
 import Reviews from './Reviews';
+import UploadPdf from './UploadPdf';
 
 const { Panel } = Collapse;
 ChartJS.register(
@@ -317,6 +318,7 @@ export default function CoursePage() {
                 {
                     Description.length != 0 && <div><h2>Description: </h2><p>{Description}</p></div>
                 }
+                <UploadPdf name={courseName}/>
                 <h2> Typically Offered: </h2>
                 {TypicallyOffered ? (
                     <p>{TypicallyOffered}</p>

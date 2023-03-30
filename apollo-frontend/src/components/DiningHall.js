@@ -47,7 +47,6 @@ export default function DiningHall(props) {
                 <h2>Hours</h2>
                 <p>{hours}</p>
                 <h2><a href={link}>Menu</a></h2>
-                <h2>User Reviews:</h2>
             </div>
         </div>
     );
