@@ -133,7 +133,6 @@ export default function SignUpPage() {
       setProfilePicture('');
       setError(null);
       setConfirm(json)
-      console.log('User created', json);
     }
   }
 

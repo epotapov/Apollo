@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import { Collapse, Form, Input, Button, Typography, Space, message} from "antd";
 import { LikeOutlined, DislikeOutlined, PlusOutlined, CheckOutlined } from '@ant-design/icons';
+import { useForm } from 'antd/lib/form/Form';
 import { useUserContext } from '../hooks/useUserContext';
 const { Panel } = Collapse;
 const { Title } = Typography;
@@ -9,8 +10,11 @@ const Forum = ( {courseName} ) => {
     const {user} = useUserContext();
     const [threads, setThreads] = useState([]);
     const [subButtonDisabled, setsubButtonDisabled] = useState(false);
+    const [threadForm] = useForm();
+    const [commentForm] = useForm();
 
     const formatThreads = (data) => {
+        setThreads([]);
         for (let i = 0; i < data.length; i++) {
             const _id = data[i]._id;
             const title = data[i].title;
@@ -106,6 +110,7 @@ const Forum = ( {courseName} ) => {
 
         const data = await response.json();
         formatThreads(data);
+        threadForm.resetFields();
     }
 
     const handleAddComment = async (values, threadId) => {
@@ -140,7 +145,7 @@ const Forum = ( {courseName} ) => {
         ];
     
         setThreads(updatedThreads); 
-        console.log(threads);
+        commentForm.resetFields();
     }
 
     const handleUpVote = async (threadId) => {
@@ -259,11 +264,11 @@ const Forum = ( {courseName} ) => {
                                         <Button shape="Circle" icon={<DislikeOutlined />} onClick={() => handleDownVote(thread.id)} />
                                         {thread.downvotes}
                                     </span>
-                                    {user && thread.subscribed ? (
+                                    {user && (thread.subscribed ? (
                                         <Button disabled={subButtonDisabled} shape="Circle" icon={<CheckOutlined /> } onClick={() => handleSubscribe(thread.id)} />
                                     ) : (
                                         <Button disabled={subButtonDisabled} shape="Circle" icon={<PlusOutlined />} onClick={() => handleSubscribe(thread.id)} />
-                                    )}
+                                    ))}
                                 </Space>
                             }
                             key={thread.id}
@@ -287,7 +292,7 @@ const Forum = ( {courseName} ) => {
                             <Collapse>
                                 {user && (
                                     <Panel header="Add Comment">
-                                        <Form name="comment" onFinish={(values) => handleAddComment(values, thread.id)}>
+                                        <Form form={commentForm} name="comment" onFinish={(values) => handleAddComment(values, thread.id)}>
                                             <Form.Item name="content" rules={[{ required: true, message: "Please enter your comment" }]}>
                                             <Input.TextArea rows={4} placeholder="Comment" />
                                             </Form.Item>
@@ -307,7 +312,7 @@ const Forum = ( {courseName} ) => {
             {user ? (
                 <div>
                     <Title level={3}> Create a new thread </Title>
-                    <Form name="thread" onFinish={(values) => handleCreateThread(values)}>
+                    <Form form={threadForm} onFinish={(values) => handleCreateThread(values)} id='create-thread'>
                         <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
                             <Input placeholder="Title" />
                         </Form.Item>

@@ -350,8 +350,6 @@ const createComment = async (req, res) => {
       }
     }
 
-
-
     // success
     console.log(username + " commented and subscribed to thread " + thread.title + "!");
     res.status(201).json(updatedThread);
