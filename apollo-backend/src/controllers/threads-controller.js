@@ -39,7 +39,7 @@ const nodemailer = require('nodemailer');
 const createThread = async (req, res) => {
   console.log(req.body);
   try {
-    const { courseName, username, title, description } = req.body;
+    const { courseName, username, title, description, isProfThread } = req.body;
 
     // verify user exists before we let them create a thread
     const user = await User.findOne({ username });
@@ -60,6 +60,7 @@ const createThread = async (req, res) => {
       username,
       title,
       description,
+      isProfThread,
       upvotes: {},
       downvotes: {},
       comments: [],
@@ -313,10 +314,6 @@ const createComment = async (req, res) => {
       { comments: thread.comments, subscribed: thread.subscribed },
       { new: true }
     );
-
-
-    // TODO @brandon can you add email stuff here? you'll have to access thread.subscribed which is a map in the form of username: email (ex: jebeene: jebeene@purdue.edu)
-    // so you'll have to access all the emails in the subscribed list. i think the .values() method is the way to do this but yeah i'll let you figure it out https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map/values
 
     const smtpConfig = {
       service: 'gmail',
