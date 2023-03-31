@@ -9,7 +9,11 @@ const User = require("../models/user-model");
 
 const Course = require("../models/course-model");
 
-
+/*
+ * api request: /api/ratings/create
+ * body: coursename, stars, description, username
+ * response: all reviews associated with course 'coursename'
+ */
 const createReview = async (req, res) => {
 
     console.log(req.body);
@@ -35,6 +39,10 @@ const createReview = async (req, res) => {
     }
 }
 
+/*
+ * api request: /api/ratings/{coursename}
+ * response: all reviews associated with course 'coursename'
+ */
 const getCourseReviews = async(req, res) => {
     const { coursename } = req.params;
   
@@ -54,16 +62,24 @@ const getCourseReviews = async(req, res) => {
     }
 }
 
+/*
+ * api request: /api/ratings/{coursename}/avgRating
+ * response: 
+ */
+
 const getCourseAverageRating = async(req, res) => {
   const {coursename} = req.params;
 
   try {
+    // courseExist is the individual course object
     const courseExist = await Course.findOne({ Course: coursename });
+
+    // courseReviews is all reviews associated with coursename
     const courseReviews = await Rating.find({ coursename });
 
     // verify course exists
     if (!courseExist) {
-      throw Error(courseName + " does not exist!");
+      throw Error(coursename + " does not exist!");
     }
 
     total = 0;
@@ -74,9 +90,9 @@ const getCourseAverageRating = async(req, res) => {
 
     total /= courseReviews.length;
 
-    courseExist.Avarage_Rating = total;
+    // courseExist.Average_Rating = total;
 
-    res.status(200).json(courseReviews);
+    res.status(200).json(total);
   } catch (err) {
     console.log(err.message);
     res.status(404).json({ message: err.message });

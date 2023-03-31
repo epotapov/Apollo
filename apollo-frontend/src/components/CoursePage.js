@@ -254,7 +254,7 @@ export default function CoursePage() {
             render: text => text || 'N/A',
         },
         {
-            title: 'Instrcutor Email',
+            title: 'Instructor Email',
             dataIndex: 'InstructorEmail',
             key: 'InstructorEmail',
             render: text => text || 'N/A',
