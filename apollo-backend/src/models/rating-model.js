@@ -4,6 +4,18 @@ const ratingSchema = mongoose.Schema({
     coursename: {
         type: String
     },
+
+    title: {
+        type: String
+    },
+
+    semester: {
+        type: String
+    },
+
+    professor: {
+        type: String
+    },
     
     stars: {
         type: Number

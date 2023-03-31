@@ -19,7 +19,7 @@ const createReview = async (req, res) => {
     console.log(req.body);
 
     try {
-      const {coursename, stars, description, username} = req.body;
+      const {title, semester, professor, stars, courseName, description, username} = req.body;
   
       // verify user exists before we let them create a thread
       const userExist = await User.findOne({ username });
@@ -27,10 +27,10 @@ const createReview = async (req, res) => {
         throw Error(username + " is not a registered user!");
       }
 
-      const newRating = new Rating({coursename, stars, description, username});
+      const newRating = new Rating({title, semester, professor, stars, courseName, description, username});
       await newRating.save();
       
-      const review = await Rating.find({ coursename });
+      const review = await Rating.find({ courseName });
       res.status(201).json(review);
 
     } catch (err) {
@@ -54,7 +54,7 @@ const getCourseReviews = async(req, res) => {
       if (!courseExist) {
         throw Error(coursename + " does not exist!");
       }
-  
+      console.log("bla blabl " + courseReviews)
       res.status(200).json(courseReviews);
     } catch (err) {
       console.log(err.message);
