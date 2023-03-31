@@ -308,6 +308,10 @@ router.get("/get-image/:username", async (req, res) => {
 router.get("/get-pdf/:Course", async (req, res) => {
     const param = req.params.Course;
     const courseReturned = await CourseInfo.findOne({ Course: param });
+    if (!courseReturned) {
+        res.status(400).json({ error: "Course does not exist" })
+        return;
+    }
     res.status(200).json(courseReturned.Information_Document);
 });
 

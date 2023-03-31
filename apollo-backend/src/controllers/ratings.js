@@ -19,18 +19,18 @@ const createReview = async (req, res) => {
     console.log(req.body);
 
     try {
-      const {title, semester, professor, stars, courseName, description, username} = req.body;
+      const {title, semester, professor, stars, coursename, description, username} = req.body;
   
-      // verify user exists before we let them create a thread
+      // verify user exists before we let them create a rating
       const userExist = await User.findOne({ username });
       if (!userExist) {
         throw Error(username + " is not a registered user!");
       }
 
-      const newRating = new Rating({title, semester, professor, stars, courseName, description, username});
+      const newRating = new Rating({title, semester, professor, stars, coursename, description, username});
       await newRating.save();
       
-      const review = await Rating.find({ courseName });
+      const review = await Rating.find({ coursename });
       res.status(201).json(review);
 
     } catch (err) {
@@ -40,12 +40,13 @@ const createReview = async (req, res) => {
 }
 
 /*
- * api request: /api/ratings/{coursename}
+ * api request: /api/ratings/:{coursename}
  * response: all reviews associated with course 'coursename'
  */
 const getCourseReviews = async(req, res) => {
+    console.log("asdqwe" + req.params);
     const { coursename } = req.params;
-  
+
     try {
       const courseExist = await Course.findOne({ Course: coursename });
       const courseReviews = await Rating.find({ coursename });

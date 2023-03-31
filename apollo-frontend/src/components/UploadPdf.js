@@ -22,7 +22,6 @@ export default function UploadPdf(props) {
                 setIsProf(data);
                 console.log("prof: " + isProf)
             })
-            console.log("prof: " + isProf)
         }
 	});
 

@@ -5,6 +5,7 @@ import annotation from 'chartjs-plugin-annotation';
 
 import { useParams } from "react-router-dom";
 import Forum from './Forum';
+import Pairing from './CoursePairing';
 
 import Navbar from './Navbar';
 import { useUserContext } from '../hooks/useUserContext';
@@ -91,7 +92,6 @@ export default function CoursePage() {
             setFavorite(true);
         }
     }, [courseName]);
-
     useEffect(() => {
         fetch('http://localhost:5001/api/user/get-favCourses/' + username)
             .then(response => response.json())
@@ -116,6 +116,21 @@ export default function CoursePage() {
 
             })
     }, [courseName]);
+    useEffect(() => {
+        let found = false;
+        for (let i = 0; i < favCourses.length; i++) {
+            if (favCourses[i] === courseName) {
+                setCheckedFavorite(true);
+                found = true;
+            }
+        }
+        if (!found)
+            setCheckedFavorite(false);
+    }, [favCourses]);
+
+    if (!Title) {
+        return <div>Course does not exist</div>
+    }
 
     var gradeData = {
         labels: ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F'],
@@ -127,16 +142,13 @@ export default function CoursePage() {
             borderwidth: 1,
             fill: false
         }]
-
     }
-
 
     const grades = ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F'];
 
     const totalValue = courseDist.reduce((acc, num, index) => {
         return acc + (num * mapGradeToValue(grades[index]));
     }, 0);
-
 
     const avgValue = totalValue / courseDist.reduce((acc, num) => acc + num, 0);
 
@@ -164,19 +176,6 @@ export default function CoursePage() {
     } else {
         avgGrade = 'F';
     }
-    console.log(avgGrade)
-
-    useEffect(() => {
-        let found = false;
-        for (let i = 0; i < favCourses.length; i++) {
-            if (favCourses[i] === courseName) {
-                setCheckedFavorite(true);
-                found = true;
-            }
-        }
-        if (!found)
-            setCheckedFavorite(false);
-    }, [favCourses]);
 
     const checkClass = () => {
         console.log("hello")
@@ -290,8 +289,8 @@ export default function CoursePage() {
             legend: {
                 display: true,
                 position: 'top'
-            }
-        }
+            },
+        },
     };
 
     return (
@@ -319,6 +318,7 @@ export default function CoursePage() {
                     Description.length != 0 && <div><h2>Description: </h2><p>{Description}</p></div>
                 }
                 <UploadPdf name={courseName}/>
+                <Forum courseName={courseName} type={'Professor'}  />
                 <h2> Typically Offered: </h2>
                 {TypicallyOffered ? (
                     <p>{TypicallyOffered}</p>
@@ -331,13 +331,15 @@ export default function CoursePage() {
                         columns={sectionsColumns}
                         dataSource={sections}
                         pagination={false}
-                        key={sections.Section}
+                        rowKey={(record) => sections.Sections}
                     />
                 ) : (
                     <p>No sections found</p>
                 )}
-                <Forum courseName={courseName} />
+                <Forum courseName={courseName} type={'Public'}  />
                 <Reviews name={courseName} type={"course"} />
+                <h2> Difficulty pairing {courseName} with other courses: </h2>
+                <Pairing course={courseName} />
                 <h2>Grade Distribution</h2>
                 <section id="Bar-Graph">
                     <div id="Bar-GraphCore">

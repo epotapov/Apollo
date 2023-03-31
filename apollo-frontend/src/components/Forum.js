@@ -6,13 +6,14 @@ import { useUserContext } from '../hooks/useUserContext';
 const { Panel } = Collapse;
 const { Title } = Typography;
 
-const Forum = ( {courseName} ) => {
-    const {user} = useUserContext();
+const Forum = (props) => {
+    const courseName = props.courseName ? props.courseName : '';
+    const isProf = props.type === 'Professor' ? true : false;
     const [threads, setThreads] = useState([]);
     const [subButtonDisabled, setsubButtonDisabled] = useState(false);
     const [threadForm] = useForm();
     const [commentForm] = useForm();
-
+    
     const formatThreads = (data) => {
         setThreads([]);
         for (let i = 0; i < data.length; i++) {
@@ -24,6 +25,7 @@ const Forum = ( {courseName} ) => {
             const comments = data[i].comments;
             const username = data[i].username;
             const subscribed = data[i].subscribed[username] ? true : false;
+            const isProfThread = data[i].isProfThread;
             const thread = {
                 id: _id,
                 title: title,
@@ -32,13 +34,20 @@ const Forum = ( {courseName} ) => {
                 downvotes: downvotes ? Object.entries(downvotes).length : 0,
                 comments: comments,
                 username: username,
-                subscribed: subscribed 
+                subscribed: subscribed,
+                isProfThread: isProfThread
             }
-            setThreads(threads => [...threads, thread]);
+            if (thread.isProfThread && isProf) {
+                setThreads(threads => [...threads, thread]);
+            }
+            else if (!thread.isProfThread && !isProf) {
+                setThreads(threads => [...threads, thread]);
+            }
         }
     }   
 
     useEffect(() => {
+        console.log(courseName);
         if (courseName.length !== 0) {
             const fetchThreads = async () => {
                 fetch("http://localhost:5001/api/thread/" + courseName)
@@ -52,6 +61,10 @@ const Forum = ( {courseName} ) => {
             fetchThreads();
         }
     }, [courseName]);
+
+    let {user: innerUser} = useUserContext();
+    const [user, setUser] = useState(innerUser ? innerUser.user : null);
+
 
     const handleSubscribe = async (threadId) => {
         if (subButtonDisabled) {
@@ -93,11 +106,13 @@ const Forum = ( {courseName} ) => {
         const content = values.content;
         const course = courseName;
         const username = user.username;
+        const isProfThread = isProf;
         const body = {
             title: title,
             description: content,
             courseName: course,
-            username: username
+            username: username,
+            isProfThread: isProfThread
         }
     
         const response = await fetch('http://localhost:5001/api/thread/create', {
@@ -110,6 +125,7 @@ const Forum = ( {courseName} ) => {
 
         const data = await response.json();
         formatThreads(data);
+        console.log(data);
         threadForm.resetFields();
     }
 
@@ -243,7 +259,11 @@ const Forum = ( {courseName} ) => {
 
     return (
         <div>
-            <Title level={2}> Forum for {courseName} </Title>
+            {isProf ? ( 
+                <Title level={2}> Professor Forum for {courseName} </Title>
+            ) : (
+                <Title level={2}> Forum for {courseName} </Title>
+            )}
             {threads.length === 0 ? (
                 <div>
                     <Title level={4}> No threads yet! </Title>
@@ -310,27 +330,49 @@ const Forum = ( {courseName} ) => {
                 </Collapse>
             )}
             {user ? (
-                <div>
-                    <Title level={3}> Create a new thread </Title>
-                    <Form form={threadForm} onFinish={(values) => handleCreateThread(values)} id='create-thread'>
-                        <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
-                            <Input placeholder="Title" />
-                        </Form.Item>
-                        <Form.Item name="content" rules={[{ required: true, message: "Please enter your post content" }]}>
-                            <Input.TextArea rows={4} placeholder="Post Content"/>
-                        </Form.Item>
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit">
-                                Create Thread
-                            </Button>
-                        </Form.Item>
-                    </Form>  
-                </div>
+                console.log(isProf + " " + user.isProf),
+                isProf && user.isProf ? (
+                    <div>
+                        <Title level={3}> Create a new thread </Title>
+                        <Form form={threadForm} onFinish={(values) => handleCreateThread(values)} id='create-thread'>
+                            <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
+                                <Input placeholder="Title" />
+                            </Form.Item>
+                            <Form.Item name="content" rules={[{ required: true, message: "Please enter your post content" }]}>
+                                <Input.TextArea rows={4} placeholder="Post Content"/>
+                            </Form.Item>
+                            <Form.Item>
+                                <Button type="primary" htmlType="submit">
+                                    Create Thread
+                                </Button>
+                            </Form.Item>
+                        </Form>  
+                    </div>              
+                ) : !isProf ? (
+                    <div>
+                        <Title level={3}> Create a new thread </Title>
+                        <Form form={threadForm} onFinish={(values) => handleCreateThread(values)} id='create-thread'>
+                            <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
+                                <Input placeholder="Title" />
+                            </Form.Item>
+                            <Form.Item name="content" rules={[{ required: true, message: "Please enter your post content" }]}>
+                                <Input.TextArea rows={4} placeholder="Post Content"/>
+                            </Form.Item>
+                            <Form.Item>
+                                <Button type="primary" htmlType="submit">
+                                    Create Thread
+                                </Button>
+                            </Form.Item>
+                        </Form>  
+                    </div>
+                ) : (
+                    <p> </p>
+                )
             ) : (
                 <div>
                     <Title level={3}> Please login to create a thread </Title>
                 </div>
-            )}        
+            )}
         </div>
     )
 }

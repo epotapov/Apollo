@@ -1,7 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { useUserContext } from '../hooks/useUserContext';
-
-import { Collapse, Form, Input, Button, Typography, Space, Rate } from "antd";
+import { Collapse, Form, Input, Button, Typography, Space, Rate, InputNumber } from "antd";
 import { LikeOutlined, DislikeOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 const { Panel } = Collapse;
@@ -14,17 +13,17 @@ export default function Reviews(props) {
     const [averageReview, setAverageReview] = useState(0);
     const [rating, setRating] = useState(0);
     const [reviewForm] = useForm();
+    const [filterReviewAmount, setFilterReviewAmount] = useState(1);
 
     useEffect(() => {
         if (name.length !== 0) {
             const fetchReviews = async () => {
-                fetch("http://localhost:5001/api/ratings/" + name)
+                let path = `http://localhost:5001/api/ratings/${name}`
+                fetch(path)
                 .then(response => response.json())
                 .then(data => {
-                    setReviews([]);
                     formatReviews(data);
-
-                    console.log(data)
+                    console.log(data);
                 })
                 fetch("http://localhost:5001/api/ratings/" + name + "/avgRating")
                 .then(response => response.json())
@@ -85,13 +84,12 @@ export default function Reviews(props) {
     }
 
     const handleCreateReview = async (values) => {
-        console.log("hello " + values)
         const review = {
             title: values.title,
             semester: values.semester,
             professor: values.professor,
             stars: values.stars,
-            courseName: name,
+            coursename: name,
             stars: rating,
             description: values.description,
             username: user.username
@@ -154,7 +152,7 @@ export default function Reviews(props) {
       
         const updatedReviews = [
           ...reviews.slice(0, reviewIndex),
-          updatedReviews,
+          updatedReview,
           ...reviews.slice(reviewIndex + 1),
         ];
 
@@ -203,19 +201,30 @@ export default function Reviews(props) {
         }
       
         const updatedReviews = [    
-          ...review.slice(0, reviewIndex),
+          ...reviews.slice(0, reviewIndex),
           updatedReview,
-          ...review.slice(reviewIndex + 1),
+          ...reviews.slice(reviewIndex + 1),
         ];
 
         setReviews(updatedReviews);
     }
 
+    const handleReviewFilterChange = (value) => {
+        setFilterReviewAmount(value);    
+    }
+
     return(
         <section>
             <h2> Reviews for {name}: </h2>
-            <h1> {averageReview}/5 </h1>
+            <h1> {averageReview ? averageReview.toFixed(2) : ''}/5 </h1>
             <h3> Number of Reviews: {reviews.length}</h3>
+            { reviews.length > 0 && (
+                <div>
+                    <h3> Filter by number of reviews: </h3>
+                    <InputNumber min={1} max={5} defaultValue={filterReviewAmount}
+                        onChange={(e) => handleReviewFilterChange(e)} /> 
+                </div>
+            )}
             {
                 reviews.length === 0 &&
                 <h2>No reviews yet!</h2>
@@ -224,28 +233,29 @@ export default function Reviews(props) {
                 reviews.length !== 0 &&
                 <Collapse>
                     {reviews.map((review) => (
-                        <Panel
-                            header={
-                                <Space>
-                                    {review.title}
-                                        <span> by <a href={`/Profile/${review.username}`}> {review.username} </a></span>
-                                    <span>
-                                        <Button shape="Circle" icon={<LikeOutlined />} onClick={() => handleUpVote(review.id)} />
-                                        {review.upvotes}
-                                    </span>
-                                    <span>
-                                        <Button shape="Circle" icon={<DislikeOutlined />} onClick={() => handleDownVote(review.id)} />
-                                        {review.downvotes}
-                                    </span>
-                                </Space>
-                            }
-                            key={review.id}
-                        >
-                            <h3>{review.stars}/5</h3>    
-                            <h3>Semester: {review.semester}</h3>
-                            <h3>Professor: {review.professor}</h3>
-                            <p> {review.description} </p> 
-                        </Panel>
+                        review.stars >= filterReviewAmount &&
+                            <Panel
+                                header={
+                                    <Space>
+                                        {review.title}
+                                            <span> by <a href={`/Profile/${review.username}`}> {review.username} </a></span>
+                                        <span>
+                                            <Button shape="Circle" icon={<LikeOutlined />} onClick={() => handleUpVote(review.id)} />
+                                            {review.upvotes}
+                                        </span>
+                                        <span>
+                                            <Button shape="Circle" icon={<DislikeOutlined />} onClick={() => handleDownVote(review.id)} />
+                                            {review.downvotes}
+                                        </span>
+                                    </Space>
+                                }
+                                key={review.id}
+                            >
+                                <h3>{review.stars}/5</h3>    
+                                <h3>Semester: {review.semester}</h3>
+                                <h3>Professor: {review.professor}</h3>
+                                <p> {review.description} </p> 
+                            </Panel>
                     ))}
                 </Collapse>
             }

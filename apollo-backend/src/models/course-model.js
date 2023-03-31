@@ -70,6 +70,12 @@ const courseSchema = new mongoose.Schema({
   Sections: {
     type: [sectionSchema],
     default: [],
+  },
+
+  Pairings: {
+    type: Map,
+    of: Number,
+    default: new Map(),
   }
 });
 
