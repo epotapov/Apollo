@@ -12,7 +12,6 @@ router.post("/create", createReview);
 
 /* READ */
 router.get("/:coursename", getCourseReviews);
-router.get("/:coursename", getCourseReviews)
 router.get("/:coursename/avgRating", getCourseAverageRating);
 // router.get("/:username/threads", verifyToken, getUserThreads);
 

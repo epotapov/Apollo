@@ -37,4 +37,40 @@ router.get('/get/:courseName', async (req, res) => {
   res.json(courseReturnedGrades);
  });
 
+ router.get('/getPairings/:courseName', async (req, res) => {
+  const name = req.params.courseName;
+  try {
+    const course  = await Course.findOne({ Course: name });
+    if (!course) {
+      throw Error(courseName + " does not exist!");
+    }
+
+    res.status(200).json(course.Pairings);
+  } catch (err) {
+    res.status(400).json({ msg: err.message });
+  }
+ });
+
+ router.patch('/create_pairing/:courseName', async (req, res) => {
+  const courseName = req.params.courseName;
+  const coursePair = req.body.name;
+  const difficulty = req.body.difficulty;
+  
+  try {
+    const course = await Course.findOne({ Course: courseName });
+    if (!course) {
+      throw Error(courseName + " does not exist!");
+    }
+
+    const pairings = course.Pairings;
+    pairings.set(coursePair, difficulty);
+    course.Pairings = pairings;
+    await course.save();
+    res.status(200).json(course);
+  }
+  catch (err) {
+    res.status(400).json({ msg: err.message });
+  }
+  });
+
 module.exports = router;

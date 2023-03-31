@@ -2,31 +2,38 @@ const mongoose = require("mongoose");
 
 const ratingSchema = mongoose.Schema({
     coursename: {
-        type: String
+        type: String,
+        required: true
     },
 
     title: {
-        type: String
+        type: String,
+        required: true
     },
 
     semester: {
-        type: String
+        type: String,
+        required: true
     },
 
     professor: {
-        type: String
+        type: String,
+        required: true
     },
     
     stars: {
-        type: Number
+        type: Number,
+        required: true
     },
 
     description: {
-        type: String
+        type: String,
+        required: true
     },
 
     username: {
-        type: String
+        type: String,
+        required: true
     },
 
     upvotes: {

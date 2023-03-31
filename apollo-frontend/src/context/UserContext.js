@@ -24,14 +24,11 @@ export const UserContextProvider = ({ children }) => {
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user'));
-        console.log(user)
         if (user) {
             dispatch({type: 'LOGIN', payload: user});
         }
     }, []);
     
-    console.log('UserContext State: ', state)
-
     return (
         <UserContext.Provider value={{...state, dispatch}}>
             { children }
