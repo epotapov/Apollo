@@ -44,6 +44,11 @@ const threadSchema = mongoose.Schema({
       required: true,
     },
 
+    isProfThread: {
+      type: Boolean,
+      required: true,
+    },
+
     upvotes: {
       type: Map,
       of: Boolean,
