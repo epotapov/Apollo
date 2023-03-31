@@ -4,6 +4,18 @@ const ratingSchema = mongoose.Schema({
     coursename: {
         type: String
     },
+
+    title: {
+        type: String
+    },
+
+    semester: {
+        type: String
+    },
+
+    professor: {
+        type: String
+    },
     
     stars: {
         type: Number
@@ -15,7 +27,20 @@ const ratingSchema = mongoose.Schema({
 
     username: {
         type: String
+    },
+
+    upvotes: {
+      type: Map,
+      of: Boolean,
+      default: new Map(),
+    },
+
+    downvotes: {
+      type: Map,
+      of: Boolean,
+      default: new Map(),
     }
+
 }, {timestamps: true});
 
 module.exports = mongoose.model("Rating", ratingSchema);

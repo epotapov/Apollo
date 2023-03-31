@@ -3,19 +3,219 @@ import { useUserContext } from '../hooks/useUserContext';
 
 import { Collapse, Form, Input, Button, Typography, Space, Rate } from "antd";
 import { LikeOutlined, DislikeOutlined } from '@ant-design/icons';
+import { useForm } from 'antd/lib/form/Form';
 const { Panel } = Collapse;
 const { Title } = Typography;
 
 export default function Reviews(props) {
     const name = props.name;
-    const type = props.type;
     const { user } = useUserContext();
     const [reviews, setReviews] = useState([]);
+    const [averageReview, setAverageReview] = useState(0);
+    const [rating, setRating] = useState(0);
+    const [reviewForm] = useForm();
+
+    useEffect(() => {
+        if (name.length !== 0) {
+            const fetchReviews = async () => {
+                fetch("http://localhost:5001/api/ratings/" + name)
+                .then(response => response.json())
+                .then(data => {
+                    setReviews([]);
+                    formatReviews(data);
+
+                    console.log(data)
+                })
+                fetch("http://localhost:5001/api/ratings/" + name + "/avgRating")
+                .then(response => response.json())
+                .then(data => {
+                    setAverageReview(data);
+                    console.log("average review: " + data)
+                })  
+            };
+
+            fetchReviews();
+        }
+    }, [name]);
+
+
+    /*useEffect(() => {
+        fetch("http://localhost:5001/api/ratings/" + name)
+        .then(response => response.json())
+        .then(data => {
+            setReviews([]);
+            formatReviews(data);
+            console.log(reviews)
+        })
+        fetch("http://localhost:5001/api/ratings/" + name + "/avgRating")
+        .then(response => response.json())
+        .then(data => {
+            setAverageReview(data);
+            console.log(averageReview)
+        })
+    }, [])*/
+
+
+    const formatReviews = (data) => {
+        setReviews([]);
+        for (let i = 0; i < data.length; i++) {
+            const _id = data[i]._id;
+            const title = data[i].title;
+            const semester = data[i].semester;
+            const professor = data[i].professor;
+            const stars = data[i].stars;
+            const description = data[i].description;
+            const upvotes = data[i].upvotes;
+            const downvotes = data[i].downvotes;
+            const username = data[i].username;
+            const review = {
+                id: _id,
+                title: title,
+                semester: semester,
+                professor: professor,
+                stars: stars,
+                description: description,
+                upvotes : upvotes ? Object.entries(upvotes).length : 0,
+                downvotes: downvotes ? Object.entries(downvotes).length : 0,
+                username: username
+            }
+            setReviews(reviews => [...reviews, review]);
+            console.log("review data: " + {...reviews})
+        }
+    }
+
+    const handleCreateReview = async (values) => {
+        console.log("hello " + values)
+        const review = {
+            title: values.title,
+            semester: values.semester,
+            professor: values.professor,
+            stars: values.stars,
+            courseName: name,
+            stars: rating,
+            description: values.description,
+            username: user.username
+        }
+    
+        const response = await fetch('http://localhost:5001/api/ratings/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(review)
+        })
+
+        const data = await response.json();
+        formatReviews(data);
+        reviewForm.resetFields();
+    }
+
+    const handleUpVote = async (reviewId) => {
+        if (!user) {
+            alert("Please login to upvote");
+            return;
+        }
+        const response = await fetch(`http://localhost:5001/api/ratings/${reviewId}/upvote`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({username: user.username})
+        })
+
+        if (!response.ok) {
+            return;
+        }
+        
+        const reviewIndex = reviews.findIndex((review) => review.id === reviewId);
+        const review = reviews[reviewIndex];
+
+        let updatedReview = {}; 
+      
+        if (response.status === 209) {
+            updatedReview = {
+            ...review,
+            upvotes: review.upvotes - 1,
+            };
+        }
+        else if (response.status === 210) {
+            updatedReview = {
+            ...review,
+            upvotes: review.upvotes + 1,
+            downvotes: review.downvotes - 1
+            };
+        }
+        else {
+            updatedReview = {
+            ...review,
+            upvotes: review.upvotes + 1,
+            };
+        }
+      
+        const updatedReviews = [
+          ...reviews.slice(0, reviewIndex),
+          updatedReviews,
+          ...reviews.slice(reviewIndex + 1),
+        ];
+
+        setReviews(updatedReviews);
+    }
+
+    const handleDownVote = async (reviewId) => {
+        if (!user) {
+            alert("Please login to downvote");
+            return;
+        }
+        const response = await fetch(`http://localhost:5001/api/ratings/${reviewId}/downvote`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({username: user.username})
+        })
+
+        if (!response.ok) {
+            return;
+        }
+
+        const reviewIndex = reviews.findIndex((review) => review.id === reviewId);
+        const review = reviews[reviewIndex];
+      
+        let updatedReview = {};
+        if (response.status === 209) {
+            updatedReview = {
+            ...review,
+            downvotes: review.downvotes - 1,
+            };
+        }
+        else if (response.status === 210) {
+            updatedReview = {
+            ...review,
+            downvotes: review.downvotes + 1,
+            upvotes: review.upvotes - 1
+            };
+        }
+        else {
+            updatedReview = {
+            ...review,
+            downvotes: review.downvotes + 1,
+            };
+        }
+      
+        const updatedReviews = [    
+          ...review.slice(0, reviewIndex),
+          updatedReview,
+          ...review.slice(reviewIndex + 1),
+        ];
+
+        setReviews(updatedReviews);
+    }
+
     return(
         <section>
             <h2> Reviews for {name}: </h2>
-            <h1> 4/5 </h1>
-            <h3> Number of Reviews: 400</h3>
+            <h1> {averageReview}/5 </h1>
+            <h3> Number of Reviews: {reviews.length}</h3>
             {
                 reviews.length === 0 &&
                 <h2>No reviews yet!</h2>
@@ -23,35 +223,51 @@ export default function Reviews(props) {
             {
                 reviews.length !== 0 &&
                 <Collapse>
-                    {reviews.map((review) => {
-                        <Panel></Panel>
-                    })}
+                    {reviews.map((review) => (
+                        <Panel
+                            header={
+                                <Space>
+                                    {review.title}
+                                        <span> by <a href={`/Profile/${review.username}`}> {review.username} </a></span>
+                                    <span>
+                                        <Button shape="Circle" icon={<LikeOutlined />} onClick={() => handleUpVote(review.id)} />
+                                        {review.upvotes}
+                                    </span>
+                                    <span>
+                                        <Button shape="Circle" icon={<DislikeOutlined />} onClick={() => handleDownVote(review.id)} />
+                                        {review.downvotes}
+                                    </span>
+                                </Space>
+                            }
+                            key={review.id}
+                        >
+                            <h3>{review.stars}/5</h3>    
+                            <h3>Semester: {review.semester}</h3>
+                            <h3>Professor: {review.professor}</h3>
+                            <p> {review.description} </p> 
+                        </Panel>
+                    ))}
                 </Collapse>
             }
             {
                 user && 
                 <div>
                     <h3> Write a Review </h3>
-                    <Form name="review">
-                        <Rate className='rate' />
+                    <Form form={reviewForm} name="review" onFinish={(values) => handleCreateReview(values)}>
+                        <Rate name="stars" onChange={(value) => {setRating(value)}} className='rate' rules={[{ required: true, message: "Please enter a Rating" }]}/>
                         <br/>
                         <br/>
                         <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
                             <Input placeholder="Title" />
                         </Form.Item>
-                        {
-                            type == "course" &&
-                            <>
-                            <Form.Item name="professor" rules={[{ required: true, message: "Please enter a professor" }]}>
+                        <Form.Item name="professor" rules={[{ required: true, message: "Please enter a professor" }]}>
                                 <Input placeholder="Professor" />
                             </Form.Item>
                             <Form.Item name="semester" rules={[{ required: true, message: "Please enter a semester" }]}>
                                 <Input placeholder="Semester" />
                             </Form.Item>
-                            </>
-                        }
-                        <Form.Item name="content" rules={[{ required: true, message: "Please enter your post content" }]}>
-                            <Input.TextArea rows={4} placeholder="Post Content"/>
+                        <Form.Item name="description" rules={[{ required: true, message: "Please enter your post description" }]}>
+                            <Input.TextArea rows={4} placeholder="Post Description"/>
                         </Form.Item>
                         <Form.Item>
                             <Button type="primary" htmlType="submit">
