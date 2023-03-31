@@ -488,61 +488,98 @@ export default function EditProfile() {
                     />
                 </Form.Item>
                 <Form.Item
-                    name ="classyear"
-                    label="Class Year"
-                >
-                    <Select placeholder="Select Class Year" allowClear defaultValue={year}>
-                        <Option value="freshman">Freshman</Option>
-                        <Option value="sophomore">Sophomore</Option>
-                        <Option value="junior">Junior</Option>
-                        <Option value="senior">Senior</Option>
-                        <Option value="graduate">Graduate</Option>
-                    </Select>
-                </Form.Item>
-                <Form.Item
-                    name="major"
-                    label="Major"
-                >
-                    <Input placeholder="Major" defaultValue={major} />
-                </Form.Item>
-                <Form.Item
                     name="dob"
                     label="Date of Birth"
                     defaultValue={dob}
                 >
                     <DatePicker />
                 </Form.Item>
+				{ role == 'Student' ? (
+				<div>
+					<Form.Item
+						name ="classyear"
+						label="Class Year"
+					>
+						<Select placeholder="Select Class Year" allowClear defaultValue={year}>
+							<Option value="freshman">Freshman</Option>
+							<Option value="sophomore">Sophomore</Option>
+							<Option value="junior">Junior</Option>
+							<Option value="senior">Senior</Option>
+							<Option value="graduate">Graduate</Option>
+						</Select>
+					</Form.Item>
 				<Form.Item
-					name="courses"
-					label="Courses"
-				>
-					<Select
-						mode="multiple"
-						placeholder="Insert courses"
-						defaultValue={courses}
-						style={{ width: '100%' }}
-						options={courseData}
-					/>
-				</Form.Item>
+                    name="major"
+                    label="Major"
+                >
+                    <Input placeholder="Major" defaultValue={major} />
+                </Form.Item>
+					<Form.Item
+						name="courses"
+						label="Courses"
+					>
+						<Select
+							mode="multiple"
+							placeholder="Insert courses"
+							defaultValue={courses}
+							style={{ width: '100%' }}
+							options={courseData}
+						/>
+					</Form.Item>
+						<Form.Item
+							name="gradyear"
+							label="Graduation Year"
+							defaultValue={gradYear}
+						>
+						<InputNumber min={2020} max={2040} placeholder="Graduation Year" />
+						</Form.Item>
+					<Form.Item
+						name="planofstudy"
+						label="Plan of Study"
+					> 
+						<Select
+							mode="multiple"
+							placeholder="Insert courses"
+							defaultValue={planOfStudy}
+							style={{ width: '100%' }}
+							options={courseData}
+						/>
+					</Form.Item>
+				</div>
+				) : (
+				<div>
 				<Form.Item
-					name="gradyear"
-					label="Graduation Year"
-					defaultValue={gradYear}
-				>
-					<InputNumber min={2020} max={2040} placeholder="Graduation Year" />
-				</Form.Item>
-				<Form.Item
-					name="planofstudy"
-					label="Plan of Study"
-				> 
-					<Select
-						mode="multiple"
-						placeholder="Insert courses"
-						defaultValue={planOfStudy}
-						style={{ width: '100%' }}
-						options={courseData}
-   					/>
-				</Form.Item>
+                    name="major"
+                    label="Department"
+                >
+                    <Input placeholder="Department" defaultValue={major} />
+                </Form.Item>
+					<Form.Item
+						name="courses"
+						label="Courses currently teaching"
+					>
+						<Select
+							mode="multiple"
+							placeholder="Insert courses"
+							defaultValue={courses}
+							style={{ width: '100%' }}
+							options={courseData}
+						/>
+					</Form.Item>
+					<Form.Item
+						name="planofstudy"
+						label="Courses Planning to Teach"
+					> 
+						<Select
+							mode="multiple"
+							placeholder="Insert courses"
+							defaultValue={planOfStudy}
+							style={{ width: '100%' }}
+							options={courseData}
+						/>
+					</Form.Item>
+				</div>	
+				)}
 				<Form.Item
 					name="privateprofile"
 					label="Private Profile"

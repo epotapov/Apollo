@@ -129,14 +129,24 @@ export default function ProfilePage() {
                 <p> About me: {aboutMe} </p>
                 <p> Email: {email} </p>
                 <p> Date of Birth: {dob} </p>
-                <p> Major: {major} </p>
-                <p> Year: {year} </p>
                 <p> Role: {role} </p>
                 <p> Country: {country} </p>
                 <p> Gender: {gender} </p>
-                <p> Graduation year: {gradYear} </p>
-                <p> Courses: {displayArray(courses)} </p>
-                <p> Plan of Study: {displayArray(planOfStudy)} </p>
+                {role == "Student" ? (
+                  <div>
+                    <p> Major: {major} </p>
+                    <p> Year: {year} </p>
+                    <p> Courses: {displayArray(courses)} </p>
+                    <p> Plan of Study: {displayArray(planOfStudy)} </p>
+                    <p> Graduation year: {gradYear} </p>
+                  </div>
+                ) : (
+                  <div>
+                  <p> Currently Teaching: {displayArray(courses)} </p>
+                  <p> Planning To teach: {displayArray(planOfStudy)}  </p>
+                  <p> Department: {major} </p>
+                </div>
+                )}
                 <Card title="Social media Links" bordered={false} style={{ width: 200 }}>
                 {
                   instagramLink.length != 0 &&
