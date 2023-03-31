@@ -423,6 +423,8 @@ const subscribeToThread = async (req, res) => {
       { new: true }
     );
 
+    res.status(201).json(updatedThread);
+
     if (doubleSubscribe) {
       res.status(210).json(updatedThread);
     } else {

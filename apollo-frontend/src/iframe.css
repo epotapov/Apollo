@@ -1,0 +1,10 @@
+.embedded-page {
+    width: 100%;
+    height: 500px;
+    border: none;
+  }
+  
+  .embedded-page-container {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+  }

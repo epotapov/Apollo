@@ -1,7 +1,9 @@
-import {React, useState} from 'react';
-import {Card, Col, Row} from 'antd';
+import { React, useState } from 'react';
+import { Card, Col, Row } from 'antd';
 import { useLocation } from 'react-router-dom';
+import { iframe } from 'iframe';
 import '../index.css';
+import '../iframe.css';
 
 import Navbar from './Navbar';
 
@@ -11,9 +13,8 @@ export default function DiningHall(props) {
     let mealSwipe = '';
     let mobileOrder = '';
     let description = '';
-    let link = '';
     let hours = '';
-    
+    let link = '';
     const [size, setSize] = useState('large');
     const data = useLocation();
     console.log(data)
@@ -27,14 +28,14 @@ export default function DiningHall(props) {
         link = hall.link;
         hours = hall.hours;
     }
-    return( 
+    return (
         <div id='cont'>
-            <Navbar/>
+            <Navbar />
             <div className='namePage'>
                 <h1 > {name} </h1>
             </div>
             <div className='bodyPage'>
-                <h2>Address: </h2> 
+                <h2>Address: </h2>
                 <p>{address}</p>
                 <h2>Meal Swipes:</h2>
                 {mealSwipe && <p>Yes</p>}
@@ -46,7 +47,14 @@ export default function DiningHall(props) {
                 <p>{description}</p>
                 <h2>Hours</h2>
                 <p>{hours}</p>
-                <h2><a href={link}>Menu</a></h2>
+                <h2>Menu and times:</h2>
+                <div className="embedded-page-container">
+                    <iframe
+                        title= "Dining Court Webpage"
+                        src= {link}
+                        className="embedded-page"
+                    />
+                </div>
             </div>
         </div>
     );
