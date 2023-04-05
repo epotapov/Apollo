@@ -39,7 +39,7 @@ const nodemailer = require('nodemailer');
 const createThread = async (req, res) => {
   console.log(req.body);
   try {
-    const { courseName, username, title, description, isProfThread } = req.body;
+    const { courseName, username, title, description, isProfThread, pfp } = req.body;
 
     // verify user exists before we let them create a thread
     const user = await User.findOne({ username });
@@ -67,6 +67,7 @@ const createThread = async (req, res) => {
       subscribed: {
         [username]: userEmail
       },
+      userPfp: pfp,
     })
     await newThread.save();
 
@@ -283,7 +284,7 @@ const createComment = async (req, res) => {
   try {
     // grab request param & json body
     const { id } = req.params;
-    const { username, description } = req.body;
+    const { username, description, pfp } = req.body;
 
     // does user exist
     const userExist = await User.findOne({ username });
@@ -300,6 +301,7 @@ const createComment = async (req, res) => {
     const newComment = new Comment({
       username,
       description,
+      userPfp: pfp,
     })
 
     // add comment to thread obj

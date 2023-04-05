@@ -46,6 +46,12 @@ const ratingSchema = mongoose.Schema({
       type: Map,
       of: Boolean,
       default: new Map(),
+    },
+
+    userPfp : {
+        type: String,
+        required: true,
+        default: "default"
     }
 
 }, {timestamps: true});

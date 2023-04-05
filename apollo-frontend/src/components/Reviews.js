@@ -1,10 +1,11 @@
 import { React, useState, useEffect } from 'react';
 import { useUserContext } from '../hooks/useUserContext';
-import { Collapse, Form, Input, Button, Typography, Space, Rate, InputNumber } from "antd";
+import { Collapse, Form, Input, Button, Typography, Space, Rate, InputNumber, Avatar } from "antd";
 import { LikeOutlined, DislikeOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
+import defpfp from '../img/defaultpfp.png';
+
 const { Panel } = Collapse;
-const { Title } = Typography;
 
 export default function Reviews(props) {
     const name = props.name;
@@ -23,36 +24,17 @@ export default function Reviews(props) {
                 .then(response => response.json())
                 .then(data => {
                     formatReviews(data);
-                    console.log(data);
                 })
                 fetch("http://localhost:5001/api/ratings/" + name + "/avgRating")
                 .then(response => response.json())
                 .then(data => {
                     setAverageReview(data);
-                    console.log("average review: " + data)
                 })  
             };
 
             fetchReviews();
         }
     }, [name]);
-
-
-    /*useEffect(() => {
-        fetch("http://localhost:5001/api/ratings/" + name)
-        .then(response => response.json())
-        .then(data => {
-            setReviews([]);
-            formatReviews(data);
-            console.log(reviews)
-        })
-        fetch("http://localhost:5001/api/ratings/" + name + "/avgRating")
-        .then(response => response.json())
-        .then(data => {
-            setAverageReview(data);
-            console.log(averageReview)
-        })
-    }, [])*/
 
 
     const formatReviews = (data) => {
@@ -67,6 +49,7 @@ export default function Reviews(props) {
             const upvotes = data[i].upvotes;
             const downvotes = data[i].downvotes;
             const username = data[i].username;
+            const pfp = data[i].userPfp;
             const review = {
                 id: _id,
                 title: title,
@@ -76,10 +59,10 @@ export default function Reviews(props) {
                 description: description,
                 upvotes : upvotes ? Object.entries(upvotes).length : 0,
                 downvotes: downvotes ? Object.entries(downvotes).length : 0,
-                username: username
+                username: username,
+                userPfp: pfp
             }
             setReviews(reviews => [...reviews, review]);
-            console.log("review data: " + {...reviews})
         }
     }
 
@@ -92,7 +75,8 @@ export default function Reviews(props) {
             coursename: name,
             stars: rating,
             description: values.description,
-            username: user.username
+            username: user.username,
+            userPfp: user.user.profilePicture
         }
     
         const response = await fetch('http://localhost:5001/api/ratings/create', {
@@ -220,7 +204,7 @@ export default function Reviews(props) {
             <h3> Number of Reviews: {reviews.length}</h3>
             { reviews.length > 0 && (
                 <div>
-                    <h3> Filter by number of reviews: </h3>
+                    <h3> Filter by number of stars: </h3>
                     <InputNumber min={1} max={5} defaultValue={filterReviewAmount}
                         onChange={(e) => handleReviewFilterChange(e)} /> 
                 </div>
@@ -233,12 +217,16 @@ export default function Reviews(props) {
                 reviews.length !== 0 &&
                 <Collapse>
                     {reviews.map((review) => (
-                        review.stars >= filterReviewAmount &&
+                        review.stars == filterReviewAmount &&
                             <Panel
                                 header={
                                     <Space>
-                                        {review.title}
-                                            <span> by <a href={`/Profile/${review.username}`}> {review.username} </a></span>
+                                        <Avatar 
+                                            src={review.userPfp !== "default" ? `http://localhost:5001/pictures/${review.userPfp}` : defpfp } 
+                                            onClick={() => {window.open(`/Profile/${review.username}`);}}
+                                        />
+                                        <a target="_blank" href={`/Profile/${review.username}`}> {review.username}: </a>
+                                        <span> {review.title} </span> 
                                         <span>
                                             <Button shape="Circle" icon={<LikeOutlined />} onClick={() => handleUpVote(review.id)} />
                                             {review.upvotes}

@@ -1,12 +1,16 @@
 import { React, useState, useEffect } from 'react';
-import { Collapse, Form, Input, Button, Typography, Space, message} from "antd";
-import { LikeOutlined, DislikeOutlined, PlusOutlined, CheckOutlined } from '@ant-design/icons';
+import { Collapse, Form, Input, Button, Typography, Space, message, Avatar} from "antd";
+import { LikeOutlined, DislikeOutlined, PlusOutlined, CheckOutlined} from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
+import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../hooks/useUserContext';
+import defpfp from '../img/defaultpfp.png';
+
 const { Panel } = Collapse;
 const { Title } = Typography;
 
 const Forum = (props) => {
+    const navigate = useNavigate();
     const courseName = props.courseName ? props.courseName : '';
     const isProf = props.type === 'Professor' ? true : false;
     const [threads, setThreads] = useState([]);
@@ -26,6 +30,7 @@ const Forum = (props) => {
             const username = data[i].username;
             const subscribed = data[i].subscribed[username] ? true : false;
             const isProfThread = data[i].isProfThread;
+            const pfp = data[i].userPfp;
             const thread = {
                 id: _id,
                 title: title,
@@ -35,7 +40,8 @@ const Forum = (props) => {
                 comments: comments,
                 username: username,
                 subscribed: subscribed,
-                isProfThread: isProfThread
+                isProfThread: isProfThread,
+                userPfp: pfp
             }
             if (thread.isProfThread && isProf) {
                 setThreads(threads => [...threads, thread]);
@@ -47,7 +53,6 @@ const Forum = (props) => {
     }   
 
     useEffect(() => {
-        console.log(courseName);
         if (courseName.length !== 0) {
             const fetchThreads = async () => {
                 fetch("http://localhost:5001/api/thread/" + courseName)
@@ -107,12 +112,14 @@ const Forum = (props) => {
         const course = courseName;
         const username = user.username;
         const isProfThread = isProf;
+        const pfp = user.profilePicture ? user.profilePicture : "default";
         const body = {
             title: title,
             description: content,
             courseName: course,
             username: username,
-            isProfThread: isProfThread
+            isProfThread: isProfThread,
+            pfp: pfp
         }
     
         const response = await fetch('http://localhost:5001/api/thread/create', {
@@ -142,7 +149,7 @@ const Forum = (props) => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({username: username, description: description})
+            body: JSON.stringify({username: username, description: description, pfp: user.profilePicture ? user.profilePicture : "default"})
         })
         .then(response => response.json())
         .then(data => {
@@ -274,8 +281,14 @@ const Forum = (props) => {
                         <Panel
                             header={
                                 <Space>
-                                    {thread.title}
-                                        <span> by <a href={`/Profile/${thread.username}`}> {thread.username} </a></span>
+                                    <span> 
+                                        <Avatar 
+                                            src={thread.userPfp !== "default" ? `http://localhost:5001/pictures/${thread.userPfp}` : defpfp } 
+                                            onClick={() => {window.open(`/Profile/${thread.username}`);}}
+                                        />
+                                        <a target="_blank" href={`/Profile/${thread.username}`}> {thread.username}: </a>
+                                        <span> {thread.title} </span>                                        
+                                    </span>
                                     <span>
                                         <Button shape="Circle" icon={<LikeOutlined />} onClick={() => handleUpVote(thread.id)} />
                                         {thread.upvotes}
@@ -300,7 +313,10 @@ const Forum = (props) => {
                                     {thread.comments.map(comment => (
                                         <li key={comment._id}>
                                             <div>
-                                                <a href={`/Profile/${comment.username}`}> 
+                                                <Avatar 
+                                                onClick={() => {window.open(`/Profile/${comment.username}`);}}
+                                                src={comment.userPfp !== "default" ? `http://localhost:5001/pictures/${comment.userPfp}` : defpfp } />
+                                                <a  target='_blank' href={`/Profile/${comment.username}`}> 
                                                     <span> {comment.username}: </span>
                                                 </a>
                                                 <span> {comment.description} </span>
@@ -330,7 +346,6 @@ const Forum = (props) => {
                 </Collapse>
             )}
             {user ? (
-                console.log(isProf + " " + user.isProf),
                 isProf && user.isProf ? (
                     <div>
                         <Title level={3}> Create a new thread </Title>

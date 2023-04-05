@@ -20,6 +20,12 @@ const commentSchema = mongoose.Schema({
     required: true,
   },
 
+  userPfp : {
+    type: String,
+    required: true,
+    default: "default"
+  }
+
 }, { timestamps: true });
 
 // schema for threads
@@ -70,7 +76,13 @@ const threadSchema = mongoose.Schema({
       type: Map,
       of: String,
       default: new Map(),
-    }
+    },
+
+    userPfp : {
+      type: String,
+      required: true,
+      default: "default"
+    },
   },
   { timestamps: true }
 );
