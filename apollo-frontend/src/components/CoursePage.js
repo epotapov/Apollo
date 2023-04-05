@@ -9,7 +9,7 @@ import Pairing from './CoursePairing';
 
 import Navbar from './Navbar';
 import { useUserContext } from '../hooks/useUserContext';
-import { Collapse, Switch, Table } from 'antd';
+import { Collapse, Switch, Table, Spin} from 'antd';
 import Reviews from './Reviews';
 import UploadPdf from './UploadPdf';
 
@@ -67,6 +67,7 @@ export default function CoursePage() {
     const [courseDist, setcourseDist] = useState([]);
     const [sections, setSections] = useState([]);
     const [TypicallyOffered, setTypicallyOffered] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
 
     const [size, setSize] = useState('large');
     const { user } = useUserContext();
@@ -93,28 +94,31 @@ export default function CoursePage() {
         }
     }, [courseName]);
     useEffect(() => {
-        fetch('http://localhost:5001/api/user/get-favCourses/' + username)
-            .then(response => response.json())
-            .then(data => {
-                setFavCourses(data);
-                console.log("favorite courses: ", favCourses)
-            })
-        fetch('http://localhost:5001/api/course/get/grades/' + courseName)
-            .then(response => response.json())
-            .then(data => {
-                var gradeArray = [];
-                var json_data = data;
-                for (var i in json_data) {
-                    gradeArray[i] = json_data[i];
-                }
-                gradeArray = Object.values(gradeArray)
+        const fetchData = async () => {
+            setIsLoading(true);
+            await fetch('http://localhost:5001/api/user/get-favCourses/' + username)
+                .then(response => response.json())
+                .then(data => {
+                    setFavCourses(data);
+                    console.log("favorite courses: ", favCourses)
+                })
+            await fetch('http://localhost:5001/api/course/get/grades/' + courseName)
+                .then(response => response.json())
+                .then(data => {
+                    var gradeArray = [];
+                    var json_data = data;
+                    for (var i in json_data) {
+                        gradeArray[i] = json_data[i];
+                    }
+                    gradeArray = Object.values(gradeArray)
 
-                gradeArray = gradeArray.filter(Number.isFinite)
+                    gradeArray = gradeArray.filter(Number.isFinite)
 
-                setcourseDist(gradeArray)
-
-
-            })
+                    setcourseDist(gradeArray)
+                })
+            setIsLoading(false);
+        }
+        fetchData();
     }, [courseName]);
     useEffect(() => {
         let found = false;
@@ -128,9 +132,24 @@ export default function CoursePage() {
             setCheckedFavorite(false);
     }, [favCourses]);
 
-    if (!Title) {
-        return <div>Course does not exist</div>
+    if (Title === '') {
+        return (
+            <div>
+                {isLoading ? (
+                    <div>
+                        <Navbar />
+                        <Spin size="large" />
+                    </div>
+                ) : (
+                <div>
+                    <Navbar />
+                    <h1>Course does not exist</h1>
+                </div>
+                )}
+            </div>
+        )
     }
+
 
     var gradeData = {
         labels: ['A+', 'A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'F'],

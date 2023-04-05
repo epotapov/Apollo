@@ -32,14 +32,6 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const { logout } = useLogout();
   const { user } = useUserContext();
-  // Passowrd Modal
-  const [visible, setVisible] = useState(false);
-
-  const editProfile = () => {
-    fetch('http://localhost:5001/api/user/get/' + user.username)
-    .then(response => response.json())
-    .then(data => navigate('/EditProfile',{state: {user: data}}))
-  }
 
   const [userFound, setUserFound] = useState(null);
   let sameAccount = false;
@@ -107,6 +99,12 @@ export default function ProfilePage() {
         pfp = picServer + profilePic
       }
     }
+  }
+
+  const editProfile = () => {
+    fetch('http://localhost:5001/api/user/get/' + user.username)
+    .then(response => response.json())
+    .then(data => navigate('/EditProfile',{state: {user: data}}))
   }
 
     return (

@@ -1,9 +1,7 @@
 import { React, useState } from 'react';
 import { Card, Col, Row } from 'antd';
 import { useLocation } from 'react-router-dom';
-import { iframe } from 'iframe';
 import '../index.css';
-import '../iframe.css';
 
 import Navbar from './Navbar';
 
@@ -48,13 +46,6 @@ export default function DiningHall(props) {
                 <h2>Hours</h2>
                 <p>{hours}</p>
                 <h2>Menu and times:</h2>
-                <div className="embedded-page-container">
-                    <iframe
-                        title= "Dining Court Webpage"
-                        src= {link}
-                        className="embedded-page"
-                    />
-                </div>
             </div>
         </div>
     );

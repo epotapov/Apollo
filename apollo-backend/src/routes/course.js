@@ -53,7 +53,7 @@ router.get('/get/:courseName', async (req, res) => {
 
  router.patch('/create_pairing/:courseName', async (req, res) => {
   const courseName = req.params.courseName;
-  const coursePair = req.body.name;
+  const coursePair = req.body.course;
   const difficulty = req.body.difficulty;
   
   try {

@@ -24,12 +24,13 @@ const CoursePairing = (course) => {
     }, []);
 
     useEffect(() => {
+        setPairings([]);
         fetch('http://localhost:5001/api/course/getPairings/' + courseName)
         .then(response => response.json())
         .then(data => {
             const obj = Object.entries(data);
             for (let i = 0; i < obj.length; i++) {
-                const element = {course: obj[i][0], difficulty: obj[i][1]};
+                const element = {course: obj[i][0], difficulty: obj[i][1], index: i};
                 setPairings(pairings => pairings.concat(element));
             }
         })
@@ -44,7 +45,7 @@ const CoursePairing = (course) => {
     };
 
     const onFinish = async (values) => {
-        const pairing = {name: values.course, difficulty: values.difficulty};
+        const pairing = {course: values.course, difficulty: values.difficulty, index: pairings.length};
         setPairings(pairings => pairings.concat(pairing));
         console.log(pairings);
 
@@ -57,7 +58,7 @@ const CoursePairing = (course) => {
         })
 
         setVisible(false);
-        message.success('Pairing added successfully\n Course: ' + values.course + '\n Difficulty: ' + values.difficulty + '\n', 2);
+        message.success('Pairing added successfully\n Course: ' + values.course + '\n Difficulty: ' + values.difficulty + '\n', 3);
     };
 
     const coloumns = [
@@ -76,7 +77,7 @@ const CoursePairing = (course) => {
     return (
         <div>
             { pairings.length > 0 ? (
-                <Table columns={coloumns} dataSource={pairings} rowKey={(record, index) => pairings.course} pagination={false} />
+                <Table columns={coloumns} dataSource={pairings} rowKey={(record) => record.index} pagination={false} />
             ) : (
                 <p>No pairings found</p>
             )}
