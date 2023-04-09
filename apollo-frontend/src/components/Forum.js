@@ -67,8 +67,8 @@ const Forum = (props) => {
         }
     }, [courseName]);
 
-    let {user: innerUser} = useUserContext();
-    const [user, setUser] = useState(innerUser ? innerUser.user : null);
+    let {user: outerUser} = useUserContext();
+    const [user, setUser] = useState(outerUser ? outerUser.user : null);
 
 
     const handleSubscribe = async (threadId) => {

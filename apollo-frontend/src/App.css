@@ -101,7 +101,10 @@ h1 {
   display: flex;
   justify-content: center;
   flex-direction: row;
+  padding-right: 20px;
+  padding-top: 10px;
 }
+
 
 #ThemeButtonContainer {
   display: flex;
@@ -309,4 +312,9 @@ h1 {
   #Bar-GraphCore {
     width: 700px;
   }
+}
+
+.avatar-bar {
+  padding-left: 10px;
+  padding-right: "10px";
 }

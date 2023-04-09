@@ -9,6 +9,7 @@ import { useUserContext } from '../hooks/useUserContext';
 import { useNavigate } from 'react-router-dom';
 import { useThemeContext } from '../hooks/useThemeContext';
 import defpfp from '../img/defaultpfp.png';
+import AvatarBar from './AvatarBar';
 
 const picServer = "http://localhost:5001/pictures/"
 
@@ -58,10 +59,12 @@ export default function Navbar() {
             <div className='CornerButtons'>
                 {user && (
                     <div>
+                        {/*
                         <Avatar onClick={goToProfile} size={35} className="avatar" shape="circle" src={pfp} />
                         <Button type="primary" onClick={() => logout()} size={size}>
                             Log Out
-                        </Button>
+                        </Button> */}
+                        <AvatarBar />
                     </div>
                 )}
                 {!user && (

@@ -12,6 +12,7 @@ import { useThemeContext } from '../hooks/useThemeContext';
 
 import { Button, Avatar, Switch, theme } from 'antd';
 import defpfp from '../img/defaultpfp.png';
+import AvatarBar from './AvatarBar';
 
 const picServer = "http://localhost:5001/pictures/"
 
@@ -29,7 +30,6 @@ export default function LandingPage() {
 
     function getpfp() {
         if (user) {
-            console.log("asd" + profilePic);
             if (profilePic === 'default' || profilePic === "" || profilePic === null) {
                 return defpfp;
             }
@@ -85,12 +85,15 @@ export default function LandingPage() {
                         <Switch checked={theme === "dark"} id="themeSwitch" onChange={() => changeTheme()} />
                     </div>
                     {user && (
-                        <div>
+                        <div
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                            }}
+                        >
                             <span className='WelcomeTag'>Welcome {user.username} </span>
-                            <Avatar onClick={goToProfile} size={40} className="avatar" shape="circle" src={pfp} />
-                            <Button type="primary" onClick={() => logout()} size={size}>
-                                Log Out
-                            </Button>
+                            <AvatarBar />
                         </div>
                     )}
                     {!user && (
@@ -109,7 +112,7 @@ export default function LandingPage() {
                     <h1>Apollo</h1>
                 </div>
                 <section id="SearchLandingHolder">
-                    <SearchBar/>
+                <SearchBar/>
                 </section>
                 {user && (
                     <section className='grid-container'>
