@@ -293,6 +293,15 @@ h1 {
   flex-direction: column;
 }
 
+.linkSelect {
+  display: flex;
+  flex-direction: row;
+}
+
+.linkSelect a {
+  padding-right: 5px;
+}
+
 #Bar-Graph {
   display: flex;
   justify-content: center;
