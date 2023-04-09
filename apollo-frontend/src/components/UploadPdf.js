@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 
 import { Collapse, Form, Input, Button, Typography, Upload, message } from "antd";
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined, CloseOutlined } from '@ant-design/icons';
 
 import { useUserContext } from '../hooks/useUserContext';
 
@@ -13,6 +13,52 @@ export default function UploadPdf(props) {
     const [ isProf, setIsProf ] = useState(false);
     const [ pdfTitle, setPdfTitle ] = useState("");
     const [ resourceTitle, setResourceTitle ] = useState("");
+
+    const onDelete = async (link, type) => {
+        console.log("press")
+
+        if (type) {
+            const response = await fetch(`http://localhost:5001/api/user/delete-pdf/${name}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({link})
+            })
+            const json = await response.json();
+
+            if (!response.ok) {
+                message.error(`File delete failed.`);
+            }
+        }
+        else {
+            const response = await fetch(`http://localhost:5001/api/user/delete-pdf-resource/${name}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({link})
+            })
+            const json = await response.json();
+
+            if (!response.ok) {
+                message.error(`File delete failed.`);
+            }
+        }
+
+        fetch('http://localhost:5001/api/user/get-pdf/' + name)
+        .then(response => response.json())
+        .then(data => {
+            setSyllabi(data);
+            console.log("syllabi data: " + data)
+        })
+        fetch('http://localhost:5001/api/user/get-pdf-resource/' + name)
+        .then(response => response.json())
+        .then(data => {
+            setResources(data);
+            console.log("resource data: " + data);
+        })
+    }
  
     useEffect(() => {
         if (user && !isProf) {
@@ -80,7 +126,10 @@ export default function UploadPdf(props) {
                 {
                     syllabi.length !== 0 &&
                     syllabi.map((link) =>
-                        <a key={link.toString()} href={`http://localhost:5001/pdfs/${link[0].doc_name}`} target="_blank">{link[0].ui_name}</a>
+                        <div key={link.toString()} className='linkSelect'>
+                            <a key={link.toString()} href={`http://localhost:5001/pdfs/${link[0].doc_name}`} target="_blank">{link[0].ui_name}</a>
+                            {isProf && <CloseOutlined key={link.toString()} onClick={() => onDelete(link[0].doc_name, true)}/>}
+                        </div>
                     )
                 }
                 {
@@ -118,7 +167,10 @@ export default function UploadPdf(props) {
                 {
                     resources.length !== 0 &&
                     resources.map((link) =>
-                        <a key={link.toString()} href={`http://localhost:5001/pdfs/${link[0].doc_name}`} target="_blank">{link[0].ui_name}</a>
+                        <div key={link.toString()} className='linkSelect'>
+                            <a key={link.toString()} href={`http://localhost:5001/pdfs/${link[0].doc_name}`} target="_blank">{link[0].ui_name}</a>
+                            {isProf && <CloseOutlined key={link.toString()} onClick={() => onDelete(link[0].doc_name, false)}/>}
+                        </div>
                     )
                 }
                 {

@@ -335,6 +335,22 @@ router.post("/upload-pdf/:Course/:PdfTitle", uploadCourseInfo.single("courseinfo
     res.status(200).json({ message: 'Success!'});
 });
 
+//Professor delete pdf for course. (Must have isProfessor=true)
+router.post("/delete-pdf/:Course", async (req, res) => {
+    //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
+    const doc_name = req.body.link;
+    const course_name = req.params.Course;
+    const courseReturned = await CourseInfo.findOne({Course: course_name})
+    for (let i = 0; i < courseReturned.Information_Document.length; i++) {
+        if (courseReturned.Information_Document[i][0].doc_name == doc_name) {
+            console.log(courseReturned.Information_Document[i][0].doc_name)
+            courseReturned.Information_Document.splice(i, 1);
+        }
+    }
+    await courseReturned.save();
+    res.status(200).json({ message: 'Success!'});
+});
+
 function get_date_format(myDate) {
   
     let month = myDate.getMonth() + 1;
@@ -365,6 +381,22 @@ router.post("/upload-pdf-resource/:Course/:PdfTitle", uploadCourseInfo.single("c
     const courseReturned = await CourseInfo.findOne({Course: course_name})
     courseReturned.Information_Resource.push(pdf);
     console.log(courseReturned.Information_Resource[0])
+    await courseReturned.save();
+    res.status(200).json({ message: 'Success!'});
+});
+
+//Professor delete pdf for course resource. (Must have isProfessor=true)
+router.post("/delete-pdf-resource/:Course", async (req, res) => {
+    //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
+    const doc_name = req.body.link;
+    const course_name = req.params.Course;
+    const courseReturned = await CourseInfo.findOne({Course: course_name})
+    for (let i = 0; i < courseReturned.Information_Resource.length; i++) {
+        if (courseReturned.Information_Resource[i][0].doc_name == doc_name) {
+            console.log(courseReturned.Information_Resource[i][0].doc_name)
+            courseReturned.Information_Resource.splice(i, 1);
+        }
+    }
     await courseReturned.save();
     res.status(200).json({ message: 'Success!'});
 });
