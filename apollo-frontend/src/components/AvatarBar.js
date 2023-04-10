@@ -7,12 +7,12 @@ import defpfp from '../img/defaultpfp.png';
 
 const { Panel } = Collapse;
 
-const AvatarBar = () => {
+const AvatarBar = (props) => {
     const [visible, setVisible] = useState(false);
     const {user: outerUser} = useUserContext();
     const [user] = useState(outerUser ? outerUser.user : null);    
     const { logout } = useLogout();
-    let pfp = user ? user.profilePicture : null;
+    let pfp = props.pic;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -21,7 +21,8 @@ const AvatarBar = () => {
                 pfp = defpfp;
             }
             else {
-                pfp = `http://localhost:5001/pictures/${pfp}`;
+                console.log(props.pic)
+                pfp = props.pic;
             }
         }
     }, []);
@@ -77,7 +78,7 @@ const AvatarBar = () => {
             <Badge count={3}>
                 <Avatar 
                     className="avatar"
-                    size={45}
+                    size={35}
                     src={pfp}
                     onClick={showDrawer}
                     shape="circle"

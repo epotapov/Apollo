@@ -93,7 +93,7 @@ export default function LandingPage() {
                             }}
                         >
                             <span className='WelcomeTag'>Welcome {user.username} </span>
-                            <AvatarBar />
+                            <AvatarBar pic={getpfp()}/>
                         </div>
                     )}
                     {!user && (

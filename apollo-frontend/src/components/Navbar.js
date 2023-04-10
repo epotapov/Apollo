@@ -64,7 +64,7 @@ export default function Navbar() {
                         <Button type="primary" onClick={() => logout()} size={size}>
                             Log Out
                         </Button> */}
-                        <AvatarBar />
+                        <AvatarBar pic={getpfp()} />
                     </div>
                 )}
                 {!user && (
