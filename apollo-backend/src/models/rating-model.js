@@ -52,6 +52,18 @@ const ratingSchema = mongoose.Schema({
         type: String,
         required: true,
         default: "default"
+    },
+
+    difficulty: {
+        type: Number
+    },
+
+    enjoyability: {
+        type: Number
+    },
+
+    attendanceRequired: {
+        type: Boolean
     }
 
 }, {timestamps: true});
