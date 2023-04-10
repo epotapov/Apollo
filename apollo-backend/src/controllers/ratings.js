@@ -19,7 +19,7 @@ const createReview = async (req, res) => {
     console.log(req.body);
 
     try {
-      const {title, semester, professor, stars, coursename, description, username, userPfp} = req.body;
+      const {title, semester, professor, stars, coursename, description, username, userPfp, difficulty, enjoyability, attendanceRequired} = req.body;
   
       // verify user exists before we let them create a rating
       const userExist = await User.findOne({ username });
@@ -27,7 +27,7 @@ const createReview = async (req, res) => {
         throw Error(username + " is not a registered user!");
       }
 
-      const newRating = new Rating({title, semester, professor, stars, coursename, description, username, userPfp});
+      const newRating = new Rating({title, semester, professor, stars, coursename, description, username, userPfp, difficulty, enjoyability, attendanceRequired});
       await newRating.save();
       
       const review = await Rating.find({ coursename });
