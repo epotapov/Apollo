@@ -55,15 +55,18 @@ const ratingSchema = mongoose.Schema({
     },
 
     difficulty: {
-        type: Number
+        type: Number,
+        required: true
     },
 
     enjoyability: {
-        type: Number
+        type: Number,
+        required: true
     },
 
     attendanceRequired: {
-        type: Boolean
+        type: Boolean,
+        required: true
     }
 
 }, {timestamps: true});
