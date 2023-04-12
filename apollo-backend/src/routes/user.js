@@ -338,6 +338,7 @@ router.post("/upload-pdf/:Course/:PdfTitle", uploadCourseInfo.single("courseinfo
 //Professor delete pdf for course. (Must have isProfessor=true)
 router.post("/delete-pdf/:Course", async (req, res) => {
     //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
+
     const doc_name = req.body.link;
     const course_name = req.params.Course;
     const courseReturned = await CourseInfo.findOne({Course: course_name})
@@ -348,6 +349,10 @@ router.post("/delete-pdf/:Course", async (req, res) => {
         }
     }
     await courseReturned.save();
+
+    const fs = require('fs');
+    fs.unlinkSync("../../profile_pictures/" + doc_name)
+
     res.status(200).json({ message: 'Success!'});
 });
 
