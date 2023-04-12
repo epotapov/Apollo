@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { useUserContext } from '../hooks/useUserContext';
-import { Collapse, Form, Input, Button, Typography, Space, Rate, InputNumber, Avatar } from "antd";
+import { Collapse, Form, Input, Button, Typography, Space, Rate, InputNumber, Avatar, message, Checkbox } from "antd";
 import { LikeOutlined, DislikeOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import defpfp from '../img/defaultpfp.png';
@@ -13,6 +13,8 @@ export default function Reviews(props) {
     const [reviews, setReviews] = useState([]);
     const [averageReview, setAverageReview] = useState(0);
     const [rating, setRating] = useState(0);
+    const [attendance, setAttendance] = useState(false);
+    const [writeReviewEnabled, setWriteReviewEnabled] = useState(false);
     const [reviewForm] = useForm();
     const [filterReviewAmount, setFilterReviewAmount] = useState(1);
 
@@ -46,10 +48,15 @@ export default function Reviews(props) {
             const professor = data[i].professor;
             const stars = data[i].stars;
             const description = data[i].description;
+            const difficulty = data[i].difficulty;
+            const enjoyability = data[i].enjoyability;
+            const attendanceRequired = data[i].attendanceRequired;
             const upvotes = data[i].upvotes;
             const downvotes = data[i].downvotes;
             const username = data[i].username;
             const pfp = data[i].userPfp;
+            if (username === user.username) 
+                setWriteReviewEnabled(true)
             const review = {
                 id: _id,
                 title: title,
@@ -57,6 +64,9 @@ export default function Reviews(props) {
                 professor: professor,
                 stars: stars,
                 description: description,
+                difficulty: difficulty,
+                enjoyability: enjoyability,
+                attendanceRequired: attendanceRequired,
                 upvotes : upvotes ? Object.entries(upvotes).length : 0,
                 downvotes: downvotes ? Object.entries(downvotes).length : 0,
                 username: username,
@@ -75,6 +85,9 @@ export default function Reviews(props) {
             coursename: name,
             stars: rating,
             description: values.description,
+            difficulty: values.difficulty,
+            enjoyability: values.enjoyability,
+            attendanceRequired: attendance,
             username: user.username,
             userPfp: user.user.profilePicture
         }
@@ -85,6 +98,18 @@ export default function Reviews(props) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(review)
+        })
+
+        if (!response.ok) {
+            message.error(`Create review failed.`);
+            return;
+        }
+
+        let path = `http://localhost:5001/api/ratings/${name}`
+        fetch("http://localhost:5001/api/ratings/" + name + "/avgRating")
+        .then(response => response.json())
+        .then(data => {
+            setAverageReview(data);
         })
 
         const data = await response.json();
@@ -242,6 +267,9 @@ export default function Reviews(props) {
                                 <h3>{review.stars}/5</h3>    
                                 <h3>Semester: {review.semester}</h3>
                                 <h3>Professor: {review.professor}</h3>
+                                <h3>Difficulty: {review.difficulty}/5</h3>
+                                <h3>Enjoyability: {review.enjoyability}/5</h3>
+                                <h3>Attendance Required: {review.attendanceRequired ? <>yes</> : <>no</>}</h3>
                                 <p> {review.description} </p> 
                             </Panel>
                     ))}
@@ -259,16 +287,25 @@ export default function Reviews(props) {
                             <Input placeholder="Title" />
                         </Form.Item>
                         <Form.Item name="professor" rules={[{ required: true, message: "Please enter a professor" }]}>
-                                <Input placeholder="Professor" />
-                            </Form.Item>
-                            <Form.Item name="semester" rules={[{ required: true, message: "Please enter a semester" }]}>
-                                <Input placeholder="Semester" />
-                            </Form.Item>
+                            <Input placeholder="Professor" />
+                        </Form.Item>
+                        <Form.Item name="semester" rules={[{ required: true, message: "Please enter a semester" }]}>
+                            <Input placeholder="Semester" />
+                        </Form.Item>
+                        <Form.Item label="Difficulty" name="difficulty" rules={[{ required: true, message: "Please enter a difficulty" }]}>
+                            <InputNumber min={1} max={5}/> 
+                        </Form.Item>
+                        <Form.Item label="Enjoyablility" name="enjoyability" rules={[{ required: true, message: "Please enter a enjoyability" }]}>
+                            <InputNumber min={1} max={5}/> 
+                        </Form.Item>
+                        <Form.Item name="attendanceRequired">
+                            <Checkbox onChange={() => setAttendance(!attendance)}>Attendance Required</Checkbox>
+                        </Form.Item>
                         <Form.Item name="description" rules={[{ required: true, message: "Please enter your post description" }]}>
                             <Input.TextArea rows={4} placeholder="Post Description"/>
                         </Form.Item>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit">
+                            <Button type="primary" htmlType="submit" disabled={writeReviewEnabled}>
                                 Create Review
                             </Button>
                         </Form.Item>
