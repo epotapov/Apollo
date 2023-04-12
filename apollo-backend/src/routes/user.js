@@ -351,7 +351,7 @@ router.post("/delete-pdf/:Course", async (req, res) => {
     await courseReturned.save();
 
     const fs = require('fs');
-    fs.unlinkSync("../../profile_pictures/" + doc_name)
+    fs.unlinkSync("course_info_docs/" + doc_name)
 
     res.status(200).json({ message: 'Success!'});
 });
