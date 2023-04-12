@@ -4,13 +4,13 @@ import { GoogleMap, LoadScript  } from '@react-google-maps/api';
 import Navbar from './Navbar';
 
 const containerStyle = {
-    width: '400px',
-    height: '400px'
+    width: "100%",
+    height: "85vh"
 };
 
 const center = {
-    lat: -3.745,
-    lng: -38.523
+    lat: 40.426,
+    lng: -86.917
 };
 
 export default function Map() {
@@ -18,12 +18,12 @@ export default function Map() {
         <div id='cont'>
             <Navbar />
             <LoadScript
-                googleMapsApiKey="YOUR_API_KEY"
+                googleMapsApiKey={process.env.REACT_APP_MAPS}
             >
                 <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={center}
-                zoom={10}
+                zoom={15}
                 >
                 { /* Child components, such as markers, info windows, etc. */ }
                 <></>

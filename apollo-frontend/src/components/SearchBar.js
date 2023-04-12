@@ -15,11 +15,18 @@ export default function SearchBar() {
     const [courseData, setCourseData] = useState([]);
     const [diningHallData, setDiningHallData] = useState([]);
     const [userData, setUserData] = useState([]);
+    const map = [{value: "Map", label: "Map", group: 'Map'}];
     const navigate = useNavigate();
     
     const onChange = (val) => {
         console.log('onChange:', val);
         console.log(courseData.length)
+        if (val === map[0].value) {
+            console.log("map was used")
+            let path = '/Map';
+            navigate(path)
+            return;
+        }
         for (let i = 0; i < courseData.length; i++) {
             if (courseData[i].value === val) {
                 let path = '/Course/' + val.substring(0, val.indexOf(":"));
@@ -104,6 +111,10 @@ export default function SearchBar() {
                     {
                         label: 'Users',
                         options: userData
+                    },
+                    {
+                        label: 'Map',
+                        options: map
                     }
                 ]
             }
