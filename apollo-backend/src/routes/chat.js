@@ -9,7 +9,7 @@
 
 // requires
 const express = require("express");
-const { accessChat, fetchChats, createGroupChat, renameGroup } = require("../controllers/chat-controller");
+const { accessChat, fetchChats, createGroupChat, renameGroup, removeFromGroup, addToGroup } = require("../controllers/chat-controller");
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -23,7 +23,7 @@ router.route("/").get(protect, fetchChats);
 
 /* PUT */
 router.route("/rename").put(protect, renameGroup);
-// router.put("/groupRemove", removeFromGroup);
-// router.put("/groupAdd", addToGroup);
+router.route("/groupRemove").put(protect, removeFromGroup);
+router.route("/groupAdd").put(protect, addToGroup);
 
 module.exports = router;
