@@ -9,17 +9,17 @@
 
 // requires
 const express = require("express");
-const { accessChat } = require("../controllers/chat-controller");
+const { accessChat, fetchChats, createGroupChat } = require("../controllers/chat-controller");
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 /* POST */
 router.route("/").post(protect, accessChat);
-// router.post("/group", createGroupChat);
+router.route("/group").post(protect, createGroupChat);
 
-// /* GET */
-// router.get("/", fetchChats);
+/* GET */
+router.route("/").get(protect, fetchChats);
 
 // /* PUT */
 // router.put("/rename", renameGroup);
