@@ -4,12 +4,13 @@
  * Chat model.
  *
  * @author jebeene
+ * @source https://github.com/piyush-eon/mern-chat-app
  */
 
 const mongoose = require("mongoose");
 
 // schema for chats
-const chatModel = mongoose.Schema({
+const chatSchema = mongoose.Schema({
     chatName: {
         type: String,
         trim: true
@@ -18,17 +19,19 @@ const chatModel = mongoose.Schema({
         type: Boolean,
         default: false
     },
+    // array of user ids pulled from UserInfo collection
     users: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "UserInfo"
     }],
+    // latest message shows up as a preview in the chat list
     latestMessage: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Message",
     },
     groupAdmin: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "UserInfo"
     },
 }, {timestamps: true });
 

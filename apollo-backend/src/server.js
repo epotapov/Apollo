@@ -26,6 +26,7 @@ const courseRoutes = require('./routes/course');
 const diningHallRoutes = require('./routes/dining');
 const threadRoutes = require('./routes/thread');
 const ratingRoutes = require('./routes/ratings');
+const chatRoutes = require('./routes/chat');
 
 // express app
 const app = express();
@@ -48,7 +49,7 @@ app.use('/pictures', express.static(path.join(__dirname, '../profile_pictures'))
 app.use('/pdfs', express.static(path.join(__dirname, '../course_info_docs')));
 app.use("/api/thread", threadRoutes);
 app.use("/api/ratings", ratingRoutes);
-app.use("api/chat", chatRoutes);
+app.use("/api/chat", chatRoutes);
 
 // connect to MongoDB
 mongoose.connect(process.env.ATLAS_URI)
