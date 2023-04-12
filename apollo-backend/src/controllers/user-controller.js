@@ -1,5 +1,6 @@
 const UserInfo = require('../models/user-model');
 const fs = require('fs'); //filereader
+const generateToken = require('../config/generate-token.js');
 
 
 //login user
@@ -10,8 +11,8 @@ const loginUser = async (req, res) => {
 
      try {
           const user = await UserInfo.login(username, password);
-
-          res.status(200).json({ username, user });
+          const userToken = generateToken(user._id);
+          res.status(200).json({ username, user, userToken});
 
      } catch (error) {
           res.status(400).json({ error: error.message })

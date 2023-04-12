@@ -10,11 +10,12 @@
 // requires
 const express = require("express");
 const { accessChat } = require("../controllers/chat-controller");
+const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 /* POST */
-router.post("/", accessChat);
+router.route("/").post(protect, accessChat);
 // router.post("/group", createGroupChat);
 
 // /* GET */

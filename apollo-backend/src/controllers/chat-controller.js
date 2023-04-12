@@ -7,22 +7,26 @@
  * @source https://github.com/piyush-eon/mern-chat-app
  */
 
+const asyncHandler = require("express-async-handler");
 const Chat = require("../models/chat-model");
 const User = require("../models/user-model");
 
-const accessChat = async (req, res) => {
-    const { userId } = req.body;
+const accessChat = asyncHandler(async (req, res) => {
+    const { idOfOtherUser } = req.body;
 
-    if (!userId) {
+    if (!idOfOtherUser) {
         res.status(400);
         throw new Error("No user id provided.");
     }
 
+    const idOfLoggedInUser = req.user._id;
+
+    // find chat containing logged in user and other user
     var isChat = await Chat.find({
         isGroupChat: false,
         $and: [
-            {users: {$elemMatch: {$eq: req.user._id}}},
-            {users: {$elemMatch: {$eq: userId}}},
+            {users: {$elemMatch: {$eq: idOfLoggedInUser}}},
+            {users: {$elemMatch: {$eq: idOfOtherUser}}},
         ],
     })
     .populate("users", "-password")
@@ -39,7 +43,7 @@ const accessChat = async (req, res) => {
         var chatData = {
             chatName: "sender",
             isGroupChat: false,
-            users: [req.user._id, userId],
+            users: [idOfLoggedInUser, idOfOtherUser],
         };
 
         try {
@@ -53,6 +57,6 @@ const accessChat = async (req, res) => {
             throw new Error("Error creating chat.");
         }
     }
-};
+});
 
 module.exports = { accessChat }
