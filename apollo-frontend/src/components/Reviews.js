@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import { useUserContext } from '../hooks/useUserContext';
-import { Collapse, Form, Input, Button, Typography, Space, Rate, InputNumber, Avatar, message, Checkbox } from "antd";
-import { LikeOutlined, DislikeOutlined } from '@ant-design/icons';
+import { Collapse, Form, Input, Button, Typography, Space, Rate, InputNumber, Avatar, message, Checkbox, Modal } from "antd";
+import { LikeOutlined, DislikeOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import defpfp from '../img/defaultpfp.png';
 
@@ -17,6 +17,29 @@ export default function Reviews(props) {
     const [writeReviewEnabled, setWriteReviewEnabled] = useState(false);
     const [reviewForm] = useForm();
     const [filterReviewAmount, setFilterReviewAmount] = useState(1);
+
+    //modal stuff
+    const [open, setOpen] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [modalText, setModalText] = useState('Are you sure you want to delete this review?');
+
+    const showModal = () => {
+        setOpen(true);
+    };
+
+    const handleOk = () => {
+        setModalText('Deleting Review...');
+        setConfirmLoading(true);
+        setTimeout(() => {
+            setOpen(false);
+            setConfirmLoading(false);
+        }, 2000);
+    };
+
+    const handleCancel = () => {
+        console.log('Clicked cancel button');
+        setOpen(false);
+    };
 
     useEffect(() => {
         if (name.length !== 0) {
@@ -55,7 +78,7 @@ export default function Reviews(props) {
             const downvotes = data[i].downvotes;
             const username = data[i].username;
             const pfp = data[i].userPfp;
-            if (username === user.username) 
+            if (user && username === user.username) 
                 setWriteReviewEnabled(true)
             const review = {
                 id: _id,
@@ -218,6 +241,24 @@ export default function Reviews(props) {
         setReviews(updatedReviews);
     }
 
+    const handleDelete = async (reviewId) => {
+        if (!user) {
+            alert("Please login to delete");
+            return;
+        }
+        const response = await fetch(`http://localhost:5001/api/ratings/${reviewId}/downvote`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({username: user.username})
+        })
+
+        if (!response.ok) {
+            return;
+        }
+    }
+
     const handleReviewFilterChange = (value) => {
         setFilterReviewAmount(value);    
     }
@@ -228,11 +269,14 @@ export default function Reviews(props) {
             <h1> {averageReview ? averageReview.toFixed(2) : ''}/5 </h1>
             <h3> Number of Reviews: {reviews.length}</h3>
             { reviews.length > 0 && (
-                <div>
-                    <h3> Filter by number of stars: </h3>
-                    <InputNumber min={1} max={5} defaultValue={filterReviewAmount}
-                        onChange={(e) => handleReviewFilterChange(e)} /> 
-                </div>
+                <>
+                    <div>
+                        <h3> Filter by number of stars: </h3>
+                        <InputNumber min={1} max={5} defaultValue={filterReviewAmount}
+                            onChange={(e) => handleReviewFilterChange(e)} />
+                    </div>
+                    <br/>
+                </>
             )}
             {
                 reviews.length === 0 &&
@@ -260,6 +304,21 @@ export default function Reviews(props) {
                                             <Button shape="Circle" icon={<DislikeOutlined />} onClick={() => handleDownVote(review.id)} />
                                             {review.downvotes}
                                         </span>
+                                        {
+                                            user && user.username == review.username &&
+                                            <span>
+                                                <Button shape="Circle" icon={<DeleteOutlined />} onClick={showModal} />
+                                                <Modal
+                                                    title="Deleting Review"
+                                                    open={open}
+                                                    onOk={handleOk}
+                                                    confirmLoading={confirmLoading}
+                                                    onCancel={handleCancel}
+                                                >
+                                                    <p>{modalText}</p>
+                                                </Modal>
+                                            </span>
+                                        }
                                     </Space>
                                 }
                                 key={review.id}

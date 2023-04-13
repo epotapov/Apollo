@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 
 import { Collapse, Form, Input, Button, Typography, Upload, message } from "antd";
-import { UploadOutlined, CloseOutlined } from '@ant-design/icons';
+import { UploadOutlined, DeleteOutlined } from '@ant-design/icons';
 
 import { useUserContext } from '../hooks/useUserContext';
 
@@ -128,7 +128,7 @@ export default function UploadPdf(props) {
                     syllabi.map((link) =>
                         <div key={link.toString()} className='linkSelect'>
                             <a key={link.toString()} href={`http://localhost:5001/pdfs/${link[0].doc_name}`} target="_blank">{link[0].ui_name}</a>
-                            {isProf && <CloseOutlined key={link.toString()} onClick={() => onDelete(link[0].doc_name, true)}/>}
+                            {isProf && <DeleteOutlined key={link.toString()} onClick={() => onDelete(link[0].doc_name, true)}/>}
                         </div>
                     )
                 }
@@ -169,7 +169,7 @@ export default function UploadPdf(props) {
                     resources.map((link) =>
                         <div key={link.toString()} className='linkSelect'>
                             <a key={link.toString()} href={`http://localhost:5001/pdfs/${link[0].doc_name}`} target="_blank">{link[0].ui_name}</a>
-                            {isProf && <CloseOutlined key={link.toString()} onClick={() => onDelete(link[0].doc_name, false)}/>}
+                            {isProf && <DeleteOutlined key={link.toString()} onClick={() => onDelete(link[0].doc_name, false)}/>}
                         </div>
                     )
                 }

@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react';
-import { Collapse, Form, Input, Button, Typography, Space, message, Avatar} from "antd";
-import { LikeOutlined, DislikeOutlined, PlusOutlined, CheckOutlined} from '@ant-design/icons';
+import { Collapse, Form, Input, Button, Typography, Space, message, Avatar, Modal } from "antd";
+import { LikeOutlined, DislikeOutlined, PlusOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../hooks/useUserContext';
@@ -17,6 +17,53 @@ const Forum = (props) => {
     const [subButtonDisabled, setsubButtonDisabled] = useState(false);
     const [threadForm] = useForm();
     const [commentForm] = useForm();
+
+    //modal stuff
+    const [open, setOpen] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [modalText, setModalText] = useState('Are you sure you want to delete this thread?');
+
+    //comment modal
+    const [openComment, setOpenComment] = useState(false);
+    const [confirmCommentLoading, setConfirmCommentLoading] = useState(false);
+    const [modalCommentText, setModalCommentText] = useState('Are you sure you want to delete this comment?');
+
+    const showModal = () => {
+        setOpen(true);
+    };
+
+    const showCommentModal = () => {
+        setOpenComment(true);
+    };
+
+    const handleOk = () => {
+        setModalText('Deleting Thread...');
+        setConfirmLoading(true);
+        setTimeout(() => {
+            setOpen(false);
+            setConfirmLoading(false);
+        }, 2000);
+    };
+
+    const handleCommentOk = () => {
+        setModalCommentText('Deleting Comment...');
+        setConfirmCommentLoading(true);
+        setTimeout(() => {
+            setOpenComment(false);
+            setConfirmCommentLoading(false);
+        }, 2000);
+    };
+
+
+    const handleCancel = () => {
+        console.log('Clicked cancel button');
+        setOpen(false);
+    };
+
+    const handleCommentCancel = () => {
+        console.log('Clicked cancel button');
+        setOpenComment(false);
+    };
     
     const formatThreads = (data) => {
         setThreads([]);
@@ -302,6 +349,21 @@ const Forum = (props) => {
                                     ) : (
                                         <Button disabled={subButtonDisabled} shape="Circle" icon={<PlusOutlined />} onClick={() => handleSubscribe(thread.id)} />
                                     ))}
+                                    {
+                                        user && user.username == thread.username &&
+                                        <span>
+                                            <Button shape="Circle" icon={<DeleteOutlined />} onClick={showModal} />
+                                            <Modal
+                                                title="Deleting Thread"
+                                                open={open}
+                                                onOk={handleOk}
+                                                confirmLoading={confirmLoading}
+                                                onCancel={handleCancel}
+                                            >
+                                                <p>{modalText}</p>
+                                            </Modal>
+                                        </span>
+                                    }
                                 </Space>
                             }
                             key={thread.id}
@@ -319,6 +381,21 @@ const Forum = (props) => {
                                                 <a  target='_blank' href={`/Profile/${comment.username}`}> 
                                                     <span> {comment.username}: </span>
                                                 </a>
+                                                {
+                                                    user && user.username == comment.username &&
+                                                    <span>
+                                                        <Button shape="Circle" icon={<DeleteOutlined />} onClick={showCommentModal} />
+                                                        <Modal
+                                                            title="Deleting Comment"
+                                                            open={openComment}
+                                                            onOk={handleCommentOk}
+                                                            confirmLoading={confirmCommentLoading}
+                                                            onCancel={handleCommentCancel}
+                                                        >
+                                                            <p>{modalCommentText}</p>
+                                                        </Modal>
+                                                    </span>
+                                                }
                                                 <span> {comment.description} </span>
                                             </div>
                                         </li>
