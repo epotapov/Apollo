@@ -323,7 +323,7 @@ const Forum = (props) => {
                     <Title level={4}> No threads yet! </Title>
                 </div>
             ) : (
-                <Collapse> 
+                <Collapse collapsible='icon'> 
                     {threads.map((thread) => (
                         <Panel
                             header={
@@ -402,7 +402,7 @@ const Forum = (props) => {
                                     ))}
                                 </ul>
                             )}
-                            <Collapse>
+                            <Collapse collapsible='icon'>
                                 {user && (
                                     <Panel header="Add Comment">
                                         <Form form={commentForm} name="comment" onFinish={(values) => handleAddComment(values, thread.id)}>

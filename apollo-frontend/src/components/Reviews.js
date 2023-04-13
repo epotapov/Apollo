@@ -284,7 +284,7 @@ export default function Reviews(props) {
             }
             {
                 reviews.length !== 0 &&
-                <Collapse>
+                <Collapse collapsible='icon'>
                     {reviews.map((review) => (
                         review.stars == filterReviewAmount &&
                             <Panel
