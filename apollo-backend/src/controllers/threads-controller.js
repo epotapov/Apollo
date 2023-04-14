@@ -39,7 +39,7 @@ const nodemailer = require('nodemailer');
 const createThread = async (req, res) => {
   console.log(req.body);
   try {
-    const { courseName, username, title, description, isProfThread, pfp } = req.body;
+    const { courseName, username, title, description, tag, isProfThread, pfp } = req.body;
 
     // verify user exists before we let them create a thread
     const user = await User.findOne({ username });
@@ -60,6 +60,7 @@ const createThread = async (req, res) => {
       username,
       title,
       description,
+      tag,
       isProfThread,
       upvotes: {},
       downvotes: {},
