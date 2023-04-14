@@ -73,6 +73,14 @@ router.get('/get/:username', async (req, res) => {
     res.json(userReturned);
 });
 
+// ex: /api/user/friends/{username}
+router.get('/friends/:username', async (req, res) => {
+    const param = req.params.username;
+    const userReturned = await UserInfo.findOne({ username: param });
+    console.log(userReturned.friendsList);
+    res.json(userReturned.friendsList);
+});
+
 // get is professor accoutn
 router.get('/getIsProf/:username', async (req, res) => {
     const param = req.params.username;

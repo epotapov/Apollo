@@ -7,16 +7,22 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom'
 import { UserContextProvider } from './context/UserContext';
 import { ThemeContextProvider } from './context/ThemeContext';
+import ChatProvider from './context/ChatContext';
+import { ChakraProvider } from '@chakra-ui/react'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <UserContextProvider>
-    <ThemeContextProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </ThemeContextProvider>
-  </UserContextProvider>
+  <ChakraProvider>
+    <UserContextProvider>
+      <ThemeContextProvider>
+        <BrowserRouter>
+            <ChatProvider>
+              <App />
+            </ChatProvider>
+        </BrowserRouter>
+      </ThemeContextProvider>
+    </UserContextProvider>
+  </ChakraProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

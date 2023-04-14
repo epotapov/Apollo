@@ -14,7 +14,7 @@ import ResetPass from './components/ResetPass';
 import ChangePass from './components/ChangePass';
 import Error from './components/Error';
 import Map from './components/Map';
-import { useState } from 'react';
+import ChatPage from './components/chats/ChatPage';
 
 
 function App() {
@@ -32,6 +32,7 @@ function App() {
         <Route exact path="/ResetPass/:token" element={<ResetPass />}/>
         <Route exact path="/ChangePass" element={<ChangePass />}/>
         <Route exact path="/Map" element={<Map />}/>
+        <Route exact path="/Chat" element={<ChatPage />}/>
         <Route exact path='*' element={<Error/>}/>
       </Routes>
     </div>

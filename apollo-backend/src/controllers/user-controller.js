@@ -1,7 +1,7 @@
 const UserInfo = require('../models/user-model');
 const fs = require('fs'); //filereader
 const generateToken = require('../config/generate-token.js');
-
+const asyncHandler = require('express-async-handler');
 
 //login user
 
