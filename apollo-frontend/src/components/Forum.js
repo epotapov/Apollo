@@ -339,6 +339,7 @@ const Forum = (props) => {
                         style={{ width: 120 }}
                         onChange={(val) => {setTagFilter(val)}}
                         options={[
+                            { value: 'All', label: 'All' },
                             { value: 'General', label: 'General' },
                             { value: 'Homework', label: 'Homework' },
                             { value: 'Projects', label: 'Projects' },
@@ -353,7 +354,7 @@ const Forum = (props) => {
                     <br/>
                     <Collapse collapsible='icon'> 
                         {threads.map((thread) => (
-                            <Panel
+                            (thread.tag === tagFilter || tagFilter === "All") && <Panel
                                 header={
                                     <Space>
                                         <span> 
