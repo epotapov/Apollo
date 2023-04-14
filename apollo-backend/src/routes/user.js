@@ -14,6 +14,8 @@ const validator = require('validator'); // helps validate user input
 
 const CourseInfo = require('../models/course-model');
 
+const { protect } = require('../middleware/authMiddleware');
+
 
 //Need for file upload
 const path = require('path')
@@ -44,7 +46,7 @@ const storage_courseInfo = multer.diskStorage({
 const uploadCourseInfo = multer({storage: storage_courseInfo});
 
 //controller functions
-const { signupUser, loginUser } = require('../controllers/user-controller');
+const { signupUser, loginUser, allUsers } = require('../controllers/user-controller');
 
 const UserInfo = require('../models/user-model');
 
@@ -55,6 +57,8 @@ router.post('/login', loginUser);
 
 //signup route - signupUser is the "method" that is executed
 router.post('/signup', signupUser);
+
+router.route('/').get(protect, allUsers);
 
 // ex: /api/user/getAll
 router.get('/getAll', async function (req, res) {
@@ -80,6 +84,8 @@ router.get('/friends/:username', async (req, res) => {
     console.log(userReturned.friendsList);
     res.json(userReturned.friendsList);
 });
+
+
 
 // get is professor accoutn
 router.get('/getIsProf/:username', async (req, res) => {

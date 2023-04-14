@@ -15,8 +15,8 @@ const accessChat = asyncHandler(async (req, res) => {
     const { idOfOtherUser } = req.body;
 
     if (!idOfOtherUser) {
-        res.status(400);
-        throw new Error("No user id provided.");
+        console.log("UserId param not sent with request");
+        return res.sendStatus(400);
     }
 
     const idOfLoggedInUser = req.user._id;

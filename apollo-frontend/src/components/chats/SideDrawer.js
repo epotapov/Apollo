@@ -73,11 +73,13 @@ function SideDrawer() {
 
       const config = {
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${user.userToken}`,
         },
       };
 
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+      const { data } = await axios.get(`http://localhost:5001/api/user?search=${search}`, config);
+      console.log(user)
+      console.log(data)
 
       setLoading(false);
       setSearchResult(data);
@@ -93,18 +95,21 @@ function SideDrawer() {
     }
   };
 
-  const accessChat = async (userId) => {
-    console.log(userId);
+  const accessChat = async (idOfOtherUser) => {
+    console.log(idOfOtherUser);
+    console.log("accessing " + user.username + "'s chat with " + idOfOtherUser)
+    console.log("user token: " + user.userToken)
 
     try {
       setLoadingChat(true);
       const config = {
         headers: {
           "Content-type": "application/json",
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${user.userToken}`,
         },
       };
-      const { data } = await axios.post(`/api/chat`, { userId }, config);
+      const { data } = await axios.post(`http://localhost:5001/api/chat`, { idOfOtherUser }, config);
+      console.log("data retrieved: " + data)
 
       if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats]);
       setSelectedChat(data);
@@ -175,8 +180,8 @@ function SideDrawer() {
               <Avatar
                 size="sm"
                 cursor="pointer"
-                name={user.name}
-                src={user.pic}
+                name={user.username}
+                src={user.profilePicture}
               />
             </MenuButton>
             <MenuList>
@@ -210,7 +215,7 @@ function SideDrawer() {
               searchResult?.map((user) => (
                 <UserListItem
                   key={user._id}
-                  user={user}
+                  user={user.username}
                   handleFunction={() => accessChat(user._id)}
                 />
               ))

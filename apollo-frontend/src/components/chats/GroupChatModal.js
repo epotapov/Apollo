@@ -55,10 +55,10 @@ import {
         setLoading(true);
         const config = {
           headers: {
-            Authorization: `Bearer ${user.token}`,
+            Authorization: `Bearer ${user.userToken}`,
           },
         };
-        const { data } = await axios.get(`/api/user?search=${search}`, config);
+        const { data } = await axios.get(`http://localhost:5001/api/user?search=${search}`, config);
         console.log(data);
         setLoading(false);
         setSearchResult(data);
@@ -93,11 +93,11 @@ import {
       try {
         const config = {
           headers: {
-            Authorization: `Bearer ${user.token}`,
+            Authorization: `Bearer ${user.userToken}`,
           },
         };
         const { data } = await axios.post(
-          `/api/chat/group`,
+          `http://localhost:5001/api/user?search=${search}`,
           {
             name: groupChatName,
             users: JSON.stringify(selectedUsers.map((u) => u._id)),
@@ -116,7 +116,7 @@ import {
       } catch (error) {
         toast({
           title: "Failed to Create the Chat!",
-          description: error.response.data,
+          description: error.response,
           status: "error",
           duration: 5000,
           isClosable: true,
