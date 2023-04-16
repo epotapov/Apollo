@@ -31,6 +31,7 @@ import { Effect } from "react-notification-badge";
 import { getSender } from "../config/ChatLogics";
 import UserListItem from "../userAvatar/UserListItem";
 import { ChatState } from "../../context/ChatContext";
+import { FormControl } from "@chakra-ui/react";
 
 function SideDrawer() {
   const [search, setSearch] = useState("");
@@ -57,6 +58,10 @@ function SideDrawer() {
   };
 
   const handleSearch = async () => {
+    // setSearch(query);
+    // if (!query) {
+    //   return;
+    // }
     if (!search) {
       toast({
         title: "Please Enter something in search",
@@ -201,6 +206,7 @@ function SideDrawer() {
           <DrawerHeader borderBottomWidth="1px">Search Users</DrawerHeader>
           <DrawerBody>
             <Box d="flex" pb={2}>
+            {/* <FormControl> */}
               <Input
                 placeholder="Search by name or email"
                 mr={2}
@@ -208,6 +214,7 @@ function SideDrawer() {
                 onChange={(e) => setSearch(e.target.value)}
               />
               <Button onClick={handleSearch}>Go</Button>
+            {/* </FormControl> */}
             </Box>
             {loading ? (
               <ChatLoading />
@@ -215,7 +222,7 @@ function SideDrawer() {
               searchResult?.map((user) => (
                 <UserListItem
                   key={user._id}
-                  user={user.username}
+                  user={user}
                   handleFunction={() => accessChat(user._id)}
                 />
               ))
