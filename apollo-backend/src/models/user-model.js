@@ -189,6 +189,12 @@ var userSchema = new Schema({
         of: String,
         required: false,
         default: []
+    },
+
+    blockedList: {
+        type: Array,
+        of: String,
+        default: []
     }
 }, { timestamps: true});
 
