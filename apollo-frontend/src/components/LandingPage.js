@@ -10,7 +10,7 @@ import { useUserContext } from '../hooks/useUserContext';
 import { useTheme } from '../hooks/useTheme';
 import { useThemeContext } from '../hooks/useThemeContext';
 
-import { Button, Avatar, Switch, theme } from 'antd';
+import { Button, Avatar, Switch, theme, message } from 'antd';
 import defpfp from '../img/defaultpfp.png';
 import AvatarBar from './AvatarBar';
 
@@ -47,11 +47,17 @@ export default function LandingPage() {
                 setFavCourses(data);
                 console.log("favorite courses: ", favCourses)
             })
+            .catch(error => {
+                message.error('Connection Error');
+            });
             fetch('http://localhost:5001/api/user/get-image/' + user.username)
             .then(response => response.json())
             .then(data => {
                 setProfilePic(data);
             })  
+            .catch(error => {
+                message.error('Connection Error');
+            });
         } 
     }, [user])
 

@@ -50,11 +50,17 @@ export default function Reviews(props) {
                 .then(data => {
                     formatReviews(data);
                 })
+                .catch(error => {
+                    message.error('Connection Error');
+                });
                 fetch("http://localhost:5001/api/ratings/" + name + "/avgRating")
                 .then(response => response.json())
                 .then(data => {
                     setAverageReview(data);
-                })  
+                })
+                .catch(error => {
+                    message.error('Connection Error');
+                });  
             };
 
             fetchReviews();
@@ -134,6 +140,9 @@ export default function Reviews(props) {
         .then(data => {
             setAverageReview(data);
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
 
         const data = await response.json();
         formatReviews(data);
@@ -152,6 +161,9 @@ export default function Reviews(props) {
             },
             body: JSON.stringify({username: user.username})
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
 
         if (!response.ok) {
             return;
@@ -203,6 +215,9 @@ export default function Reviews(props) {
             },
             body: JSON.stringify({username: user.username})
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
 
         if (!response.ok) {
             return;
@@ -253,6 +268,9 @@ export default function Reviews(props) {
             },
             body: JSON.stringify({username: user.username})
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
 
         if (!response.ok) {
             return;

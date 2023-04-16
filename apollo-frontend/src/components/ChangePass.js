@@ -2,7 +2,7 @@ import { React, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../App.css';
 import { useParams } from 'react-router-dom'
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import { useUserContext } from '../hooks/useUserContext';
 
 export default function ChangePass() {
@@ -77,6 +77,9 @@ export default function ChangePass() {
       fetch('http://localhost:5001/api/user/get/' + user.username)
       .then(response => response.json())
       .then(data => navigate('/Profile',{state: {user: data}}))
+      .catch(error => {
+          message.error('Connection Error');
+      });
     }
   }
 

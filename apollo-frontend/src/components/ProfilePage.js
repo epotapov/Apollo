@@ -48,6 +48,9 @@ export default function ProfilePage() {
     await fetch('http://localhost:5001/api/user/get/' + usernameParam)
     .then(response => response.json())
     .then(data => setUserFound(data))
+    .catch(error => {
+      message.error('Connection Error');
+    });
   }
 
   useEffect(() => {
@@ -146,6 +149,9 @@ export default function ProfilePage() {
     fetch('http://localhost:5001/api/user/get/' + user.username)
     .then(response => response.json())
     .then(data => navigate('/EditProfile',{state: {user: data}}))
+    .catch(error => {
+      message.error('Connection Error');
+    });
   }
 
   const sendFriendRequest = async () => {
@@ -175,7 +181,9 @@ export default function ProfilePage() {
         setFriendStatus(1);
       }
     })
-    .catch(error => console.log(error));
+    .catch(error => {
+      message.error('Connection Error');
+    });
   }
 
   const cancelFriendRequest = async () => {
@@ -200,7 +208,9 @@ export default function ProfilePage() {
         setFriendStatus(0);
       }
     })
-    .catch(error => console.log(error));
+    .catch(error => {
+      message.error('Connection Error');
+    });
   }
 
   const acceptFriendRequest = () => {
@@ -214,6 +224,9 @@ export default function ProfilePage() {
         friendUsername: userFound.username
       })
     })
+    .catch(error => {
+      message.error('Connection Error');
+    });
 
     if (response.status === 200) {
       message.success('Friend request accepted!', 2);
@@ -243,6 +256,9 @@ export default function ProfilePage() {
         setFriendStatus(0);
       }
     })
+    .catch(error => {
+      message.error('Connection Error');
+    });
   }
 
     return (

@@ -20,7 +20,7 @@ const Forum = (props) => {
     const [threads, setThreads] = useState([]);
     const [subButtonDisabled, setsubButtonDisabled] = useState(false);
     const [tag, setTag] = useState("");
-    const [tagFilter, setTagFilter] = useState("")
+    const [tagFilter, setTagFilter] = useState("All")
     const [threadForm] = useForm();
     const [commentForm] = useForm();
 
@@ -115,6 +115,9 @@ const Forum = (props) => {
                     setThreads([]);
                     formatThreads(data);
                 }) 
+                .catch(error => {
+                    message.error('Connection Error');
+                });
             };
 
             fetchThreads();
@@ -152,6 +155,9 @@ const Forum = (props) => {
             },
             body: JSON.stringify({id: threadId, username: user.username})
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
 
         // Time out button for 3 seconds so no spamming
         setsubButtonDisabled(true);
@@ -185,6 +191,9 @@ const Forum = (props) => {
             },
             body: JSON.stringify(body)
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
 
         const data = await response.json();
         formatThreads(data);
@@ -211,6 +220,9 @@ const Forum = (props) => {
         .then(data => {
             newComments = data.comments;
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
     
         const updatedThread = {
           ...thread,
@@ -239,6 +251,9 @@ const Forum = (props) => {
             },
             body: JSON.stringify({username: user.username})
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
         
         const threadIndex = threads.findIndex((thread) => thread.id === threadId);
         const thread = threads[threadIndex];
@@ -286,6 +301,9 @@ const Forum = (props) => {
             },
             body: JSON.stringify({username: user.username})
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
 
         const threadIndex = threads.findIndex((thread) => thread.id === threadId);
         const thread = threads[threadIndex];
@@ -320,6 +338,34 @@ const Forum = (props) => {
         setThreads(updatedThreads);
     }
 
+    const deleteThread = async (threadId) => {
+        const response = await fetch(`http://localhost:5001/api/thread/${threadId}/delete`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({username: user.username})
+        })
+
+        if (!response.ok) {
+            message.error(`Thread delete failed.`);
+            return;
+        }
+        fetch("http://localhost:5001/api/thread/" + courseName)
+        .then(response => response.json())
+        .then(data => {
+            setThreads([]);
+            formatThreads(data);
+        })
+        .catch(error => {
+            message.error('Error data:', error);
+        });
+    }
+
+    const deleteComment = async (threadId, CommentId) => {
+        
+    }
+
     return (
         <div>
             {isProf ? ( 
@@ -334,7 +380,7 @@ const Forum = (props) => {
             ) : (
                 <>
                     <Select
-                        defaultValue="General"
+                        defaultValue="All"
                         style={{ width: 120 }}
                         onChange={(val) => {setTagFilter(val)}}
                         options={[
