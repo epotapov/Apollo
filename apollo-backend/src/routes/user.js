@@ -617,5 +617,12 @@ router.get("/get-favCourses/:username", async (req, res) => {
     res.status(200).json(userReturned.favCourses);
 });
 
+router.post("/block-user/:username", async (req, res) => {
+    const user = req.params.username;
+    const userReturned = await UserInfo.findOne({username : user});
+    const {userToBlock} = req.body;
+    userReturned.blockList.push(userToBlock)
+});
+
 module.exports = router;
 
