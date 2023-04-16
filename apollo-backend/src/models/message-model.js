@@ -28,7 +28,8 @@ const messageSchema = mongoose.Schema(
         ref: "UserInfo"
     }],
   },
-  { timestamps: true }
+  { timestamps: true,
+    toJSON: {virtuals: true}}
 );
 
 module.exports = mongoose.model("Message", messageSchema);

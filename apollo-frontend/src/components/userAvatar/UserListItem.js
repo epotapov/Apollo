@@ -2,8 +2,13 @@ import { Avatar } from "@chakra-ui/avatar";
 import { Box, Text } from "@chakra-ui/layout";
 import { ChatState } from "../../context/ChatContext";
 
-const UserListItem = ({ handleFunction }) => {
-  const { user } = ChatState();
+const UserListItem = //({ handleFunction }) => {
+  // const { user } = ChatState();
+  (props) => {
+    // const { user } = ChatState();
+    const user = props.user
+    const handleFunction = props.handleFunction
+    console.log(user)
 
   return (
     <Box
