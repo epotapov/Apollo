@@ -622,6 +622,8 @@ router.post("/block-user/:username", async (req, res) => {
     const userReturned = await UserInfo.findOne({username : user});
     const {userToBlock} = req.body;
     userReturned.blockList.push(userToBlock)
+    await userReturned.save()
+    res.status(200).json({ message: 'Blocked!'});
 });
 
 module.exports = router;
