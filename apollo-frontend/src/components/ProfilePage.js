@@ -3,7 +3,7 @@ import { Link , useNavigate} from 'react-router-dom'
 import { useParams } from "react-router-dom";
 import Navbar from './Navbar';
 import {LinkedinFilled, InstagramFilled, TwitterCircleFilled} from '@ant-design/icons';
-import { Avatar, Card, Button} from 'antd';
+import { Avatar, Card, Button, message} from 'antd';
 import defpfp from '../img/defaultpfp.png';
 
 import { useLogout } from '../hooks/useLogout';
@@ -31,9 +31,61 @@ export default function ProfilePage() {
 
   const navigate = useNavigate();
   const { logout } = useLogout();
-  const { user } = useUserContext();
-
+  const { user: outerUser } = useUserContext();
+  const [user, setUser] = useState(outerUser ? outerUser.user : null);
   const [userFound, setUserFound] = useState(null);
+  const [friendStatus, setFriendStatus] = useState(null);
+
+  // Track the friend status of the current user and viewed user
+  // 0: Not friends 1: Current user sent a friend request 2: Current user received a friend request 3: Friends
+  // If the user is the same or there is no user, we set it to null
+  const usernameParam = useParams().username;
+  var friendsList = null;
+  var friendRequestsSent = null;
+  var friendRequests = null;
+
+  const fetchUser = async () => {
+    await fetch('http://localhost:5001/api/user/get/' + usernameParam)
+    .then(response => response.json())
+    .then(data => setUserFound(data))
+  }
+
+  useEffect(() => {
+    if (!userFound || userFound.username !== usernameParam) {
+      fetchUser();
+    }
+    if (!user) {
+      setUser(outerUser ? outerUser.user : null);
+    }
+    if (user && userFound) {
+      friendsList = user.friendsList ? user.friendsList : [];
+      friendRequestsSent = user.friendRequestsSent ? user.friendRequestsSent : [];
+      friendRequests = user.friendRequests ? user.friendRequests : [];
+      var friends = false;
+      for (let i = 0; i < friendsList.length; i++) {
+          if (userFound.username === friendsList[i].username) {
+              friends = true;
+          }
+      }
+      if (friends) {
+         setFriendStatus(3);
+      } else if (friendRequestsSent.includes(userFound.username)) {
+        setFriendStatus(1);
+      } else if (friendRequests.includes(userFound.username)) {
+        setFriendStatus(2);
+      } else if (user.username !== userFound.username) {
+        setFriendStatus(0);
+      }
+    }
+  }, [userFound || user || usernameParam]);
+
+  useEffect(() => {
+    if (usernameParam) {
+      fetchUser();
+    }
+  }, [usernameParam]);
+  
+
   let sameAccount = false;
   let privateAccount = false;
   let username = '';
@@ -54,17 +106,6 @@ export default function ProfilePage() {
 
   let gender = '';
   
-  const usernameParam = useParams().username;
-  useEffect(() => {
-    const fetchUser = async () => {
-      fetch('http://localhost:5001/api/user/get/' + usernameParam)
-      .then(response => response.json())
-      .then(data => setUserFound(data))
-    }
-
-    fetchUser();
-  }, [usernameParam]);
-
   if (userFound) {
     if (user && userFound.username === user.username) {
       sameAccount = true;
@@ -107,6 +148,103 @@ export default function ProfilePage() {
     .then(data => navigate('/EditProfile',{state: {user: data}}))
   }
 
+  const sendFriendRequest = async () => {
+    if (user.friendRequests.includes(userFound.username)) {
+      message.error('You already sent a friend request to this user!', 2);
+      return;
+    }
+
+    const response = await fetch('http://localhost:5001/api/user/sendFriendRequest', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: user.username,
+        friendUsername: userFound.username
+      })
+    })
+    .then(response => response.json())
+    .then(data =>{
+      if (data.user) {
+        setUser(data.user);
+      }
+      if (data.pendingFriend) {
+        setUserFound(data.userFound);
+        message.success('Friend request sent!', 3);
+        setFriendStatus(1);
+      }
+    })
+    .catch(error => console.log(error));
+  }
+
+  const cancelFriendRequest = async () => {
+    const response = await fetch('http://localhost:5001/api/user/cancelFriendRequest', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: user.username,
+        friendUsername: userFound.username
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.user) {
+        setUser(data.user);
+      }
+      if (data.pendingFriend) {
+        setUserFound(data.userFound);
+        message.success('Friend request cancelled!', 3);
+        setFriendStatus(0);
+      }
+    })
+    .catch(error => console.log(error));
+  }
+
+  const acceptFriendRequest = () => {
+    const response = fetch('http://localhost:5001/api/user/acceptFriendRequest', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: user.username,
+        friendUsername: userFound.username
+      })
+    })
+
+    if (response.status === 200) {
+      message.success('Friend request accepted!', 2);
+    }
+  }
+
+  const removeFriend = () => {
+    const response = fetch('http://localhost:5001/api/user/removeFriend', {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: user.username,
+        friendUsername: userFound.username
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log (data);
+      if (data.user) {
+        setUser(data.user);
+      }
+      if (data.pendingFriend) {
+        setUserFound(data.userFound);
+        message.success('Friend removed!', 3);
+        setFriendStatus(0);
+      }
+    })
+  }
+
     return (
       <div>
         <Navbar/>
@@ -114,6 +252,10 @@ export default function ProfilePage() {
           <Card id="ProfileCard" title="Profile" bordered={true}>
             <Avatar src={pfp} size={150} shape="circle" alt="Profile Picture" />
             <h3> Username: {username}</h3>
+            {friendStatus == 0 && <Button onClick={sendFriendRequest}> Add Friend </Button>}
+            {friendStatus == 1 && <Button onClick={cancelFriendRequest}> Cancel Friend Request </Button>}
+            {friendStatus == 2 && <Button onClick={acceptFriendRequest}> Accept Friend Request </Button>}
+            {friendStatus == 3 && <Button onClick={removeFriend}> Remove Friend </Button>}
             {
               privateAccount && !sameAccount &&
               <div>

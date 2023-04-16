@@ -60,7 +60,6 @@ const Forum = (props) => {
         }, 2000);
     };
 
-
     const handleCancel = () => {
         console.log('Clicked cancel button');
         setOpen(false);

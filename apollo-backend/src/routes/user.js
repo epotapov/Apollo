@@ -14,6 +14,8 @@ const validator = require('validator'); // helps validate user input
 
 const CourseInfo = require('../models/course-model');
 
+// Friend schema 
+const Friend = require('../models/user-model');
 
 //Need for file upload
 const path = require('path')
@@ -44,7 +46,7 @@ const storage_courseInfo = multer.diskStorage({
 const uploadCourseInfo = multer({storage: storage_courseInfo});
 
 //controller functions
-const { signupUser, loginUser } = require('../controllers/user-controller');
+const { signupUser, loginUser, addFriend, removeFriend, getFriends } = require('../controllers/user-controller');
 
 const UserInfo = require('../models/user-model');
 
@@ -55,6 +57,189 @@ router.post('/login', loginUser);
 
 //signup route - signupUser is the "method" that is executed
 router.post('/signup', signupUser);
+
+/*Send friend request route
+ * API Request: "/api/user/sendFriendRequest"
+ * Request Body: {
+ *     username: String,  (the user sending the friend request)
+ *    friendUsername: String (the user receiving the friend request)
+ * }    
+ * Response: 
+ * 
+ * Status codes: 
+ * 200: Friend request sent successfully
+ * 201: Friend request already sent
+*/
+router.patch('/sendFriendRequest', async (req, res) => {
+    try {
+        const {username, friendUsername} = req.body;
+        const user = await UserInfo.findOne({username: username});
+        const pendingFriend = await UserInfo.findOne({username: friendUsername});
+
+        if (!user || !pendingFriend) {
+            throw Error("User not found");
+        }
+
+        console.log(user);
+        //Check if friend request has already been sent
+        if (user.friendRequestsSent.includes(friendUsername)) {
+            res.status(201).json({message: "Friend request already sent"})
+            return;
+        } else {
+            user.friendRequestsSent.push(friendUsername);
+            pendingFriend.friendRequests.push(username);
+            await user.save();
+            await pendingFriend.save();
+            res.status(200).json({user: user, pendingFriend: pendingFriend})
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({message:error.message});
+    }
+});
+
+/* Accept a friend request
+    * API Request: "/api/user/acceptRequest"
+    * Request Body: {
+    *    username: String, (the user accepting the friend request)
+    *   friendUsername: String (the user who sent the friend request)
+    * }
+    * 
+    * This is for when a user accepts a friend request from pendingFriend 
+*/
+router.patch('/acceptFriendRequest', async (req, res) => {
+    try {
+        const {username, friendUsername} = req.body;
+        const user = await UserInfo.findOne({username: username});
+        const pendingFriend = await UserInfo.findOne({username: friendUsername});
+
+        if (user.friendRequests.includes(friendUsername)) {
+            user.friendRequests.splice(user.friendRequests.indexOf(friendUsername), 1);
+            pendingFriend.friendRequestsSent.splice(pendingFriend.friendRequestsSent.indexOf(username), 1);
+
+            // This is the friend object that will be added to the user's friends array
+            const newFriend = new Friend({
+                username: friendUsername,
+                profilePicture: pendingFriend.profilePicture,
+            });
+
+            // This is the friend object that will be added to the pendingFriend's friends array
+            const newPendingFriend = new Friend({
+                username: username,
+                profilePicture: user.profilePicture,
+            });
+
+            user.friendsList.push(newFriend);
+            pendingFriend.friendsList.push(newPendingFriend);
+            await user.save();
+            await pendingFriend.save();
+            res.status(200).json({user: user, pendingFriend: pendingFriend})
+        } else {
+            res.status(201).json({message: "Friend request not found"});
+            return;
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({message:error.message});
+    }
+});
+
+/*Deny a friend request
+    * API Request: "/api/user/denyRequest"
+    * Request Body: {
+    *   username: String, (The current user)
+    *   friendUsername: String (User who sent the friend request)
+    * }
+    * 
+    * This is for when a user denies a friend request from pendingFriend
+*/
+router.patch('/denyFriendRequest', async (req, res) => {
+    try {
+        const {username, friendUsername} = req.body;
+        const user = await UserInfo.find({username: username});
+        const pendingFriend = await UserInfo.find({username: friendUsername});
+
+        if (user.friendRequests.includes(friendUsername)) {
+            user.friendRequests.splice(user.friendRequests.indexOf(friendUsername), 1);
+            pendingFriend.friendRequestsSent.splice(pendingFriend.friendRequestsSent.indexOf(username), 1);
+            res.status(200).json({user: user, pendingFriend: pendingFriend})
+
+        } else {
+            res.status(201).json({message: "Friend request not found"});
+            return;
+        }
+
+        await user.save();
+        await pendingFriend.save();
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({message:error.message});
+    }
+});
+
+/*Remove friend route
+    * API Request: "/api/user/removeFriend"
+    * Request Body: {
+    *  username: String, (The current user)
+    * friendUsername: String (The friend to be removed)
+    * }
+    * 
+    * This is for when a user removes a friend from their friends list (it removes the friend from both the user's and the friend's friends list)
+*/
+router.patch('/removeFriend', async (req, res) => {   
+    try {
+        const {username, friendUsername} = req.body;
+        const user = await UserInfo.findOne({username: username});
+        const pendingFriend = await UserInfo.findOne({username: friendUsername});
+
+        var friends = false;
+        for (let i = 0; i < user.friendsList.length; i++) {
+            if (user.friendsList[i].username === friendUsername) {
+                friends = true;
+            }
+        }
+        if (friends) {
+            user.friendsList.splice(user.friendsList.indexOf(friendUsername), 1);
+            pendingFriend.friendsList.splice(pendingFriend.friendsList.indexOf(username), 1);             
+            await user.save();
+            await pendingFriend.save();
+            res.status(200).json({user: user, pendingFriend: pendingFriend})
+        } else {
+            res.status(201).json({message: "Friend not found"});
+            return;
+        }
+        } catch (error) {
+        console.log(error);
+        res.status(400).json({message:error.message});
+    }
+});
+
+// Cancel a friend request
+router.patch('/cancelFriendRequest', async (req, res) => {
+    try {
+        const {username, friendUsername} = req.body;
+        const user = await UserInfo.findOne({username: username});
+        const pendingFriend = await UserInfo.findOne({username: friendUsername});
+
+        if (!user || !pendingFriend) {
+            res.status(400).json({message: "User not found"});
+            return;
+        }
+
+        if (user.friendRequestsSent.includes(friendUsername)) {
+            user.friendRequestsSent.splice(user.friendRequestsSent.indexOf(friendUsername), 1);
+            pendingFriend.friendRequests.splice(pendingFriend.friendRequests.indexOf(username), 1);
+            await user.save();
+            await pendingFriend.save();
+            res.status(200).json({user: user, pendingFriend: pendingFriend})
+        } else {
+            res.status(201).json({message: "Friend request not found"});
+        }
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({message:error.message});
+    }
+});
 
 // ex: /api/user/getAll
 router.get('/getAll', async function (req, res) {
