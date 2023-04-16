@@ -74,7 +74,6 @@ const createThread = async (req, res) => {
 
     // returns courseName threads
     const thread = await Thread.find({ courseName });
-
     res.status(201).json(thread);
 
   } catch (err) {

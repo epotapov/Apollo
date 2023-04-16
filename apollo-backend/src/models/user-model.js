@@ -14,6 +14,19 @@ const fs = require('fs'); //file reader
 const { resourceLimits } = require('worker_threads');
 
 
+//Schema for a friend, friends are within the user schema
+const friendSchema = new Schema({
+    username: {
+        type: String,
+        required: true
+    },
+    profilePicture: {
+        type: String,
+        required: true,
+        default: "default"
+    }
+})
+
 // a schema is similar to an object
 var userSchema = new Schema({
 
@@ -57,13 +70,15 @@ var userSchema = new Schema({
     },
 
     friendsList: {
-        type: Array,
-        required: false
+        type: [friendSchema],
+        required: false,
+        default: []
     },
 
     blockList: {
         type: Array,
-        required: false
+        required: false,
+        default: []
     },
 
     emailToken: {
@@ -148,6 +163,22 @@ var userSchema = new Schema({
     favCourses: {
         type: Array,
         required: false
+    },
+
+    // Friend requests that you receive
+    friendRequests: {
+        type: Array,
+        of: String,
+        required: false,
+        default: []
+    },
+
+    // Friend requests that you sent
+    friendRequestsSent: {
+        type: Array,
+        of: String,
+        required: false,
+        default: []
     }
 }, { timestamps: true});
 
