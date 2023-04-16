@@ -171,7 +171,12 @@ const AvatarBar = (props) => {
                         ))}
                     </Panel>
                 </Collapse>
-                <Button onClick={() => {navigate(`/Profile/${user.username}`);}}>View Profile</Button>
+                <Button onClick={() => {
+                    onClose();
+                    navigate(`/Profile/${user.username}`);
+                    window.location.reload();
+                }}
+                >View Profile</Button>
                 <Button onClick={handleLogout}>Logout</Button>
             </Drawer>
         </div>

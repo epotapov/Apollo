@@ -43,14 +43,15 @@ export default function ProfilePage() {
   var friendsList = null;
   var friendRequestsSent = null;
   var friendRequests = null;
-  useEffect(() => {
-    const fetchUser = async () => {
-      await fetch('http://localhost:5001/api/user/get/' + usernameParam)
-      .then(response => response.json())
-      .then(data => setUserFound(data))
-    }
 
-    if (!userFound) {
+  const fetchUser = async () => {
+    await fetch('http://localhost:5001/api/user/get/' + usernameParam)
+    .then(response => response.json())
+    .then(data => setUserFound(data))
+  }
+
+  useEffect(() => {
+    if (!userFound || userFound.username !== usernameParam) {
       fetchUser();
     }
     if (!user) {
@@ -76,7 +77,14 @@ export default function ProfilePage() {
         setFriendStatus(0);
       }
     }
-  }, [usernameParam, user, userFound]);
+  }, [userFound || user || usernameParam]);
+
+  useEffect(() => {
+    if (usernameParam) {
+      fetchUser();
+    }
+  }, [usernameParam]);
+  
 
   let sameAccount = false;
   let privateAccount = false;
@@ -225,7 +233,7 @@ export default function ProfilePage() {
     })
     .then(response => response.json())
     .then(data => {
-      console.log(data);
+      console.log (data);
       if (data.user) {
         setUser(data.user);
       }
