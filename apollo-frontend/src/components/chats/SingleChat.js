@@ -3,7 +3,7 @@ import { Input } from "@chakra-ui/input";
 import { Box, Text } from "@chakra-ui/layout";
 import "./styles.css";
 import { IconButton, Spinner, useToast } from "@chakra-ui/react";
-import { getOtherUser, getSender, getSenderFull } from "../config/ChatLogics";
+import { getSender, getSenderFull } from "../config/ChatLogics";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { ArrowBackIcon } from "@chakra-ui/icons";
@@ -181,7 +181,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             {messages &&
               (!selectedChat.isGroupChat ? (
                 <>
-                  {getOtherUser(user, selectedChat.users)}
+                  {getSender(user, selectedChat.users)}
                   <ProfileModal
                     user={getSenderFull(user, selectedChat.users)}
                   />
