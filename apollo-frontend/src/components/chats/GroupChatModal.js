@@ -89,6 +89,7 @@ import {
         });
         return;
       }
+      console.log(selectedUsers)
   
       try {
         const config = {
@@ -97,7 +98,7 @@ import {
           },
         };
         const { data } = await axios.post(
-          `http://localhost:5001/api/user?search=${search}`,
+          `http://localhost:5001/api/chat/group`,
           {
             name: groupChatName,
             users: JSON.stringify(selectedUsers.map((u) => u._id)),
@@ -105,6 +106,7 @@ import {
           config
         );
         setChats([data, ...chats]);
+        console.log(chats)
         onClose();
         toast({
           title: "New Group Chat Created!",

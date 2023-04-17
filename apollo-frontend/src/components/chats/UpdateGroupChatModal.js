@@ -32,6 +32,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   const toast = useToast();
 
   const { selectedChat, setSelectedChat, user } = ChatState();
+  const realUser = user.user === undefined ? user : user.user;
 
   const handleSearch = async (query) => {
     setSearch(query);
@@ -113,7 +114,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       return;
     }
 
-    if (selectedChat.groupAdmin._id !== user._id) {
+    if (selectedChat.groupAdmin._id !== realUser._id) {
       toast({
         title: "Only admins can add someone!",
         status: "error",
@@ -128,7 +129,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
       setLoading(true);
       const config = {
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${user.userToken}`,
         },
       };
       const { data } = await axios.put(
@@ -158,7 +159,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
   };
 
   const handleRemove = async (user1) => {
-    if (selectedChat.groupAdmin._id !== user._id && user1._id !== user._id) {
+    if (selectedChat.groupAdmin._id !== realUser._id && user1._id !== realUser._id) {
       toast({
         title: "Only admins can remove someone!",
         status: "error",
@@ -185,7 +186,7 @@ const UpdateGroupChatModal = ({ fetchMessages, fetchAgain, setFetchAgain }) => {
         config
       );
 
-      user1._id === user._id ? setSelectedChat() : setSelectedChat(data);
+      user1._id === realUser._id ? setSelectedChat() : setSelectedChat(data);
       setFetchAgain(!fetchAgain);
       fetchMessages();
       setLoading(false);
