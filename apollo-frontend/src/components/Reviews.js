@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import { useUserContext } from '../hooks/useUserContext';
-import { Collapse, Form, Input, Button, Typography, Space, Rate, InputNumber, Avatar } from "antd";
-import { LikeOutlined, DislikeOutlined } from '@ant-design/icons';
+import { Collapse, Form, Input, Button, Typography, Space, Rate, InputNumber, Avatar, message, Checkbox, Modal } from "antd";
+import { LikeOutlined, DislikeOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import defpfp from '../img/defaultpfp.png';
 
@@ -13,8 +13,33 @@ export default function Reviews(props) {
     const [reviews, setReviews] = useState([]);
     const [averageReview, setAverageReview] = useState(0);
     const [rating, setRating] = useState(0);
+    const [attendance, setAttendance] = useState(false);
+    const [writeReviewEnabled, setWriteReviewEnabled] = useState(false);
     const [reviewForm] = useForm();
     const [filterReviewAmount, setFilterReviewAmount] = useState(1);
+
+    //modal stuff
+    const [open, setOpen] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [modalText, setModalText] = useState('Are you sure you want to delete this review?');
+
+    const showModal = () => {
+        setOpen(true);
+    };
+
+    const handleOk = () => {
+        setModalText('Deleting Review...');
+        setConfirmLoading(true);
+        setTimeout(() => {
+            setOpen(false);
+            setConfirmLoading(false);
+        }, 2000);
+    };
+
+    const handleCancel = () => {
+        console.log('Clicked cancel button');
+        setOpen(false);
+    };
 
     useEffect(() => {
         if (name.length !== 0) {
@@ -25,11 +50,17 @@ export default function Reviews(props) {
                 .then(data => {
                     formatReviews(data);
                 })
+                .catch(error => {
+                    message.error('Connection Error');
+                });
                 fetch("http://localhost:5001/api/ratings/" + name + "/avgRating")
                 .then(response => response.json())
                 .then(data => {
                     setAverageReview(data);
-                })  
+                })
+                .catch(error => {
+                    message.error('Connection Error');
+                });  
             };
 
             fetchReviews();
@@ -46,10 +77,15 @@ export default function Reviews(props) {
             const professor = data[i].professor;
             const stars = data[i].stars;
             const description = data[i].description;
+            const difficulty = data[i].difficulty;
+            const enjoyability = data[i].enjoyability;
+            const attendanceRequired = data[i].attendanceRequired;
             const upvotes = data[i].upvotes;
             const downvotes = data[i].downvotes;
             const username = data[i].username;
             const pfp = data[i].userPfp;
+            if (user && username === user.username) 
+                setWriteReviewEnabled(true)
             const review = {
                 id: _id,
                 title: title,
@@ -57,6 +93,9 @@ export default function Reviews(props) {
                 professor: professor,
                 stars: stars,
                 description: description,
+                difficulty: difficulty,
+                enjoyability: enjoyability,
+                attendanceRequired: attendanceRequired,
                 upvotes : upvotes ? Object.entries(upvotes).length : 0,
                 downvotes: downvotes ? Object.entries(downvotes).length : 0,
                 username: username,
@@ -75,6 +114,9 @@ export default function Reviews(props) {
             coursename: name,
             stars: rating,
             description: values.description,
+            difficulty: values.difficulty,
+            enjoyability: values.enjoyability,
+            attendanceRequired: attendance,
             username: user.username,
             userPfp: user.user.profilePicture
         }
@@ -86,6 +128,21 @@ export default function Reviews(props) {
             },
             body: JSON.stringify(review)
         })
+
+        if (!response.ok) {
+            message.error(`Create review failed.`);
+            return;
+        }
+
+        let path = `http://localhost:5001/api/ratings/${name}`
+        fetch("http://localhost:5001/api/ratings/" + name + "/avgRating")
+        .then(response => response.json())
+        .then(data => {
+            setAverageReview(data);
+        })
+        .catch(error => {
+            message.error('Connection Error');
+        });
 
         const data = await response.json();
         formatReviews(data);
@@ -104,6 +161,9 @@ export default function Reviews(props) {
             },
             body: JSON.stringify({username: user.username})
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
 
         if (!response.ok) {
             return;
@@ -155,6 +215,9 @@ export default function Reviews(props) {
             },
             body: JSON.stringify({username: user.username})
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
 
         if (!response.ok) {
             return;
@@ -193,6 +256,27 @@ export default function Reviews(props) {
         setReviews(updatedReviews);
     }
 
+    const handleDelete = async (reviewId) => {
+        if (!user) {
+            alert("Please login to delete");
+            return;
+        }
+        const response = await fetch(`http://localhost:5001/api/ratings/${reviewId}/downvote`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({username: user.username})
+        })
+        .catch(error => {
+            message.error('Connection Error');
+        });
+
+        if (!response.ok) {
+            return;
+        }
+    }
+
     const handleReviewFilterChange = (value) => {
         setFilterReviewAmount(value);    
     }
@@ -203,11 +287,14 @@ export default function Reviews(props) {
             <h1> {averageReview ? averageReview.toFixed(2) : ''}/5 </h1>
             <h3> Number of Reviews: {reviews.length}</h3>
             { reviews.length > 0 && (
-                <div>
-                    <h3> Filter by number of stars: </h3>
-                    <InputNumber min={1} max={5} defaultValue={filterReviewAmount}
-                        onChange={(e) => handleReviewFilterChange(e)} /> 
-                </div>
+                <>
+                    <div>
+                        <h3> Filter by number of stars: </h3>
+                        <InputNumber min={1} max={5} defaultValue={filterReviewAmount}
+                            onChange={(e) => handleReviewFilterChange(e)} />
+                    </div>
+                    <br/>
+                </>
             )}
             {
                 reviews.length === 0 &&
@@ -215,7 +302,7 @@ export default function Reviews(props) {
             }
             {
                 reviews.length !== 0 &&
-                <Collapse>
+                <Collapse collapsible='icon'>
                     {reviews.map((review) => (
                         review.stars == filterReviewAmount &&
                             <Panel
@@ -235,6 +322,21 @@ export default function Reviews(props) {
                                             <Button shape="Circle" icon={<DislikeOutlined />} onClick={() => handleDownVote(review.id)} />
                                             {review.downvotes}
                                         </span>
+                                        {
+                                            user && user.username == review.username &&
+                                            <span>
+                                                <Button shape="Circle" icon={<DeleteOutlined />} onClick={showModal} />
+                                                <Modal
+                                                    title="Deleting Review"
+                                                    open={open}
+                                                    onOk={handleOk}
+                                                    confirmLoading={confirmLoading}
+                                                    onCancel={handleCancel}
+                                                >
+                                                    <p>{modalText}</p>
+                                                </Modal>
+                                            </span>
+                                        }
                                     </Space>
                                 }
                                 key={review.id}
@@ -242,6 +344,9 @@ export default function Reviews(props) {
                                 <h3>{review.stars}/5</h3>    
                                 <h3>Semester: {review.semester}</h3>
                                 <h3>Professor: {review.professor}</h3>
+                                <h3>Difficulty: {review.difficulty}/5</h3>
+                                <h3>Enjoyability: {review.enjoyability}/5</h3>
+                                <h3>Attendance Required: {review.attendanceRequired ? <>yes</> : <>no</>}</h3>
                                 <p> {review.description} </p> 
                             </Panel>
                     ))}
@@ -259,16 +364,25 @@ export default function Reviews(props) {
                             <Input placeholder="Title" />
                         </Form.Item>
                         <Form.Item name="professor" rules={[{ required: true, message: "Please enter a professor" }]}>
-                                <Input placeholder="Professor" />
-                            </Form.Item>
-                            <Form.Item name="semester" rules={[{ required: true, message: "Please enter a semester" }]}>
-                                <Input placeholder="Semester" />
-                            </Form.Item>
+                            <Input placeholder="Professor" />
+                        </Form.Item>
+                        <Form.Item name="semester" rules={[{ required: true, message: "Please enter a semester" }]}>
+                            <Input placeholder="Semester" />
+                        </Form.Item>
+                        <Form.Item label="Difficulty" name="difficulty" rules={[{ required: true, message: "Please enter a difficulty" }]}>
+                            <InputNumber min={1} max={5}/> 
+                        </Form.Item>
+                        <Form.Item label="Enjoyablility" name="enjoyability" rules={[{ required: true, message: "Please enter a enjoyability" }]}>
+                            <InputNumber min={1} max={5}/> 
+                        </Form.Item>
+                        <Form.Item name="attendanceRequired">
+                            <Checkbox onChange={() => setAttendance(!attendance)}>Attendance Required</Checkbox>
+                        </Form.Item>
                         <Form.Item name="description" rules={[{ required: true, message: "Please enter your post description" }]}>
                             <Input.TextArea rows={4} placeholder="Post Description"/>
                         </Form.Item>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit">
+                            <Button type="primary" htmlType="submit" disabled={writeReviewEnabled}>
                                 Create Review
                             </Button>
                         </Form.Item>

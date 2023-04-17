@@ -15,6 +15,19 @@ const { resourceLimits } = require('worker_threads');
 const generateToken = require('../config/generate-token.js');
 
 
+//Schema for a friend, friends are within the user schema
+const friendSchema = new Schema({
+    username: {
+        type: String,
+        required: true
+    },
+    profilePicture: {
+        type: String,
+        required: true,
+        default: "default"
+    }
+})
+
 // a schema is similar to an object
 var userSchema = new Schema({
 
@@ -58,13 +71,15 @@ var userSchema = new Schema({
     },
 
     friendsList: {
-        type: Array,
-        required: false
+        type: [friendSchema],
+        required: false,
+        default: []
     },
 
     blockList: {
         type: Array,
-        required: false
+        required: false,
+        default: []
     },
 
     emailToken: {
@@ -149,6 +164,40 @@ var userSchema = new Schema({
     favCourses: {
         type: Array,
         required: false
+    },
+
+    recentActivity: {
+        type: Array,
+        required: false
+    },
+
+    recentActivity: {
+        type: Array,
+        of: String,
+        required: false,
+        default: []
+    },
+
+    // Friend requests that you receive
+    friendRequests: {
+        type: Array,
+        of: String,
+        required: false,
+        default: []
+    },
+
+    // Friend requests that you sent
+    friendRequestsSent: {
+        type: Array,
+        of: String,
+        required: false,
+        default: []
+    },
+
+    blockedList: {
+        type: Array,
+        of: String,
+        default: []
     }
 }, { timestamps: true});
 
@@ -157,7 +206,7 @@ var userSchema = new Schema({
 userSchema.statics.signup = async function(username, email, password, major, 
     gradYear, role, isVerified, profilePicture, courses, aboutMe, country, gender, 
     planOfStudy, DOB, isPrivate, currentYear, 
-    instagramLink, linkedinLink, twitterLink, profilePicture, favCourses) {
+    instagramLink, linkedinLink, twitterLink, profilePicture, favCourses, recentActivity) {
 
    
     //validation

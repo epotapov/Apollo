@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react';
-import { Collapse, Form, Input, Button, Typography, Space, message, Avatar} from "antd";
-import { LikeOutlined, DislikeOutlined, PlusOutlined, CheckOutlined} from '@ant-design/icons';
+import { Collapse, Form, Input, Button, Typography, Space, message, Avatar, Modal, Select, Tag } from "antd";
+import { LikeOutlined, DislikeOutlined, PlusOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../hooks/useUserContext';
@@ -9,21 +9,74 @@ import defpfp from '../img/defaultpfp.png';
 const { Panel } = Collapse;
 const { Title } = Typography;
 
+const tagPair = { "General": "magenta", "Homework": "purple", "Projects": "orange",
+                  "Quizzes": "red", "Lab": "green", "Exams": "geekblue", "Social": "volcano",
+                  "Other": "blue" }; 
+
 const Forum = (props) => {
     const navigate = useNavigate();
     const courseName = props.courseName ? props.courseName : '';
     const isProf = props.type === 'Professor' ? true : false;
     const [threads, setThreads] = useState([]);
     const [subButtonDisabled, setsubButtonDisabled] = useState(false);
+    const [tag, setTag] = useState("");
+    const [tagFilter, setTagFilter] = useState("All")
     const [threadForm] = useForm();
     const [commentForm] = useForm();
-    
+
+    //modal stuff
+    const [open, setOpen] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [modalText, setModalText] = useState('Are you sure you want to delete this thread?');
+
+    //comment modal
+    const [openComment, setOpenComment] = useState(false);
+    const [confirmCommentLoading, setConfirmCommentLoading] = useState(false);
+    const [modalCommentText, setModalCommentText] = useState('Are you sure you want to delete this comment?');
+
+    const showModal = () => {
+        setOpen(true);
+    };
+
+    const showCommentModal = () => {
+        setOpenComment(true);
+    };
+
+    const handleOk = () => {
+        setModalText('Deleting Thread...');
+        setConfirmLoading(true);
+        setTimeout(() => {
+            setOpen(false);
+            setConfirmLoading(false);
+        }, 2000);
+    };
+
+    const handleCommentOk = () => {
+        setModalCommentText('Deleting Comment...');
+        setConfirmCommentLoading(true);
+        setTimeout(() => {
+            setOpenComment(false);
+            setConfirmCommentLoading(false);
+        }, 2000);
+    };
+
+    const handleCancel = () => {
+        console.log('Clicked cancel button');
+        setOpen(false);
+    };
+
+    const handleCommentCancel = () => {
+        console.log('Clicked cancel button');
+        setOpenComment(false);
+    };
+
     const formatThreads = (data) => {
         setThreads([]);
         for (let i = 0; i < data.length; i++) {
             const _id = data[i]._id;
             const title = data[i].title;
             const description = data[i].description;
+            const tag = data[i].tag;
             const upvotes = data[i].upvotes;
             const downvotes = data[i].downvotes;
             const comments = data[i].comments;
@@ -35,6 +88,7 @@ const Forum = (props) => {
                 id: _id,
                 title: title,
                 description: description,
+                tag: tag,
                 upvotes : upvotes ? Object.entries(upvotes).length : 0,
                 downvotes: downvotes ? Object.entries(downvotes).length : 0,
                 comments: comments,
@@ -61,6 +115,9 @@ const Forum = (props) => {
                     setThreads([]);
                     formatThreads(data);
                 }) 
+                .catch(error => {
+                    message.error('Connection Error');
+                });
             };
 
             fetchThreads();
@@ -98,6 +155,9 @@ const Forum = (props) => {
             },
             body: JSON.stringify({id: threadId, username: user.username})
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
 
         // Time out button for 3 seconds so no spamming
         setsubButtonDisabled(true);
@@ -109,6 +169,7 @@ const Forum = (props) => {
     const handleCreateThread = async (values) => {
         const title = values.title;
         const content = values.content;
+        const tagName = tag;
         const course = courseName;
         const username = user.username;
         const isProfThread = isProf;
@@ -116,6 +177,7 @@ const Forum = (props) => {
         const body = {
             title: title,
             description: content,
+            tag: tagName,
             courseName: course,
             username: username,
             isProfThread: isProfThread,
@@ -129,6 +191,9 @@ const Forum = (props) => {
             },
             body: JSON.stringify(body)
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
 
         const data = await response.json();
         formatThreads(data);
@@ -155,6 +220,9 @@ const Forum = (props) => {
         .then(data => {
             newComments = data.comments;
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
     
         const updatedThread = {
           ...thread,
@@ -183,6 +251,9 @@ const Forum = (props) => {
             },
             body: JSON.stringify({username: user.username})
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
         
         const threadIndex = threads.findIndex((thread) => thread.id === threadId);
         const thread = threads[threadIndex];
@@ -230,6 +301,9 @@ const Forum = (props) => {
             },
             body: JSON.stringify({username: user.username})
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
 
         const threadIndex = threads.findIndex((thread) => thread.id === threadId);
         const thread = threads[threadIndex];
@@ -264,6 +338,34 @@ const Forum = (props) => {
         setThreads(updatedThreads);
     }
 
+    const deleteThread = async (threadId) => {
+        const response = await fetch(`http://localhost:5001/api/thread/${threadId}/delete`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({username: user.username})
+        })
+
+        if (!response.ok) {
+            message.error(`Thread delete failed.`);
+            return;
+        }
+        fetch("http://localhost:5001/api/thread/" + courseName)
+        .then(response => response.json())
+        .then(data => {
+            setThreads([]);
+            formatThreads(data);
+        })
+        .catch(error => {
+            message.error('Error data:', error);
+        });
+    }
+
+    const deleteComment = async (threadId, CommentId) => {
+        
+    }
+
     return (
         <div>
             {isProf ? ( 
@@ -276,74 +378,127 @@ const Forum = (props) => {
                     <Title level={4}> No threads yet! </Title>
                 </div>
             ) : (
-                <Collapse> 
-                    {threads.map((thread) => (
-                        <Panel
-                            header={
-                                <Space>
-                                    <span> 
-                                        <Avatar 
-                                            src={thread.userPfp !== "default" ? `http://localhost:5001/pictures/${thread.userPfp}` : defpfp } 
-                                            onClick={() => {window.open(`/Profile/${thread.username}`);}}
-                                        />
-                                        <a target="_blank" href={`/Profile/${thread.username}`}> {thread.username}: </a>
-                                        <span> {thread.title} </span>                                        
-                                    </span>
-                                    <span>
-                                        <Button shape="Circle" icon={<LikeOutlined />} onClick={() => handleUpVote(thread.id)} />
-                                        {thread.upvotes}
-                                    </span>
-                                    <span>
-                                        <Button shape="Circle" icon={<DislikeOutlined />} onClick={() => handleDownVote(thread.id)} />
-                                        {thread.downvotes}
-                                    </span>
-                                    {user && (thread.subscribed ? (
-                                        <Button disabled={subButtonDisabled} shape="Circle" icon={<CheckOutlined /> } onClick={() => handleSubscribe(thread.id)} />
-                                    ) : (
-                                        <Button disabled={subButtonDisabled} shape="Circle" icon={<PlusOutlined />} onClick={() => handleSubscribe(thread.id)} />
-                                    ))}
-                                </Space>
-                            }
-                            key={thread.id}
-                        >
-                            <p> {thread.description} </p>
-                            <h3> Comments </h3>
-                            {threads.length !== 0 && (
-                                <ul style={{display: "flex", flexDirection: "column", listStyleType: "none", padding: 0}}>
-                                    {thread.comments.map(comment => (
-                                        <li key={comment._id}>
-                                            <div>
-                                                <Avatar 
-                                                onClick={() => {window.open(`/Profile/${comment.username}`);}}
-                                                src={comment.userPfp !== "default" ? `http://localhost:5001/pictures/${comment.userPfp}` : defpfp } />
-                                                <a  target='_blank' href={`/Profile/${comment.username}`}> 
-                                                    <span> {comment.username}: </span>
-                                                </a>
-                                                <span> {comment.description} </span>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                            <Collapse>
-                                {user && (
-                                    <Panel header="Add Comment">
-                                        <Form form={commentForm} name="comment" onFinish={(values) => handleAddComment(values, thread.id)}>
-                                            <Form.Item name="content" rules={[{ required: true, message: "Please enter your comment" }]}>
-                                            <Input.TextArea rows={4} placeholder="Comment" />
-                                            </Form.Item>
-                                            <Form.Item>
-                                            <Button type="primary" htmlType="submit">
-                                                Add Comment
-                                            </Button>
-                                            </Form.Item>
-                                        </Form>
-                                    </Panel>
+                <>
+                    <Select
+                        defaultValue="All"
+                        style={{ width: 120 }}
+                        onChange={(val) => {setTagFilter(val)}}
+                        options={[
+                            { value: 'All', label: 'All' },
+                            { value: 'General', label: 'General' },
+                            { value: 'Homework', label: 'Homework' },
+                            { value: 'Projects', label: 'Projects' },
+                            { value: 'Quizzes', label: 'Quizzes' },
+                            { value: 'Lab', label: 'Lab' },
+                            { value: 'Exams', label: 'Exams' },
+                            { value: 'Social', label: 'Social' },
+                            { value: 'Other', label: 'Other' },
+                        ]}
+                    />
+                    <br/>
+                    <br/>
+                    <Collapse collapsible='icon'> 
+                        {threads.map((thread) => (
+                            (thread.tag === tagFilter || tagFilter === "All") && <Panel
+                                header={
+                                    <Space>
+                                        <span> 
+                                            <Avatar 
+                                                src={thread.userPfp !== "default" ? `http://localhost:5001/pictures/${thread.userPfp}` : defpfp } 
+                                                onClick={() => {window.open(`/Profile/${thread.username}`);}}
+                                            />
+                                            <a target="_blank" href={`/Profile/${thread.username}`}> {thread.username}: </a>
+                                            <span> {thread.title} </span>                                        
+                                        </span>
+                                        <span>
+                                            <Tag color={tagPair[thread.tag]}>{thread.tag}</Tag>
+                                        </span>
+                                        <span>
+                                            <Button shape="Circle" icon={<LikeOutlined />} onClick={() => handleUpVote(thread.id)} />
+                                            {thread.upvotes}
+                                        </span>
+                                        <span>
+                                            <Button shape="Circle" icon={<DislikeOutlined />} onClick={() => handleDownVote(thread.id)} />
+                                            {thread.downvotes}
+                                        </span>
+                                        {user && (thread.subscribed ? (
+                                            <Button disabled={subButtonDisabled} shape="Circle" icon={<CheckOutlined /> } onClick={() => handleSubscribe(thread.id)} />
+                                        ) : (
+                                            <Button disabled={subButtonDisabled} shape="Circle" icon={<PlusOutlined />} onClick={() => handleSubscribe(thread.id)} />
+                                        ))}
+                                        {
+                                            user && user.username == thread.username &&
+                                            <span>
+                                                <Button shape="Circle" icon={<DeleteOutlined />} onClick={showModal} />
+                                                <Modal
+                                                    title="Deleting Thread"
+                                                    open={open}
+                                                    onOk={handleOk}
+                                                    confirmLoading={confirmLoading}
+                                                    onCancel={handleCancel}
+                                                >
+                                                    <p>{modalText}</p>
+                                                </Modal>
+                                            </span>
+                                        }
+                                    </Space>
+                                }
+                                key={thread.id}
+                            >
+                                <p> {thread.description} </p>
+                                <h3> Comments </h3>
+                                {threads.length !== 0 && (
+                                    <ul style={{display: "flex", flexDirection: "column", listStyleType: "none", padding: 0}}>
+                                        {thread.comments.map(comment => (
+                                            <li key={comment._id}>
+                                                <div>
+                                                    <Avatar 
+                                                    onClick={() => {window.open(`/Profile/${comment.username}`);}}
+                                                    src={comment.userPfp !== "default" ? `http://localhost:5001/pictures/${comment.userPfp}` : defpfp } />
+                                                    <a  target='_blank' href={`/Profile/${comment.username}`}> 
+                                                        <span> {comment.username}: </span>
+                                                    </a>
+                                                    {
+                                                        user && user.username == comment.username &&
+                                                        <span>
+                                                            <Button shape="Circle" icon={<DeleteOutlined />} onClick={showCommentModal} />
+                                                            <Modal
+                                                                title="Deleting Comment"
+                                                                open={openComment}
+                                                                onOk={handleCommentOk}
+                                                                confirmLoading={confirmCommentLoading}
+                                                                onCancel={handleCommentCancel}
+                                                            >
+                                                                <p>{modalCommentText}</p>
+                                                            </Modal>
+                                                        </span>
+                                                    }
+                                                    <span> {comment.description} </span>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
                                 )}
-                            </Collapse>
-                    </Panel>           
-                    ))}
-                </Collapse>
+                                <Collapse collapsible='icon'>
+                                    {user && (
+                                        <Panel header="Add Comment">
+                                            <Form form={commentForm} name="comment" onFinish={(values) => handleAddComment(values, thread.id)}>
+                                                <Form.Item name="content" rules={[{ required: true, message: "Please enter your comment" }]}>
+                                                <Input.TextArea rows={4} placeholder="Comment" />
+                                                </Form.Item>
+                                                <Form.Item>
+                                                <Button type="primary" htmlType="submit">
+                                                    Add Comment
+                                                </Button>
+                                                </Form.Item>
+                                            </Form>
+                                        </Panel>
+                                    )}
+                                </Collapse>
+                        </Panel>         
+                        ))}
+                    </Collapse>
+                </>
             )}
             {user ? (
                 isProf && user.isProf ? (
@@ -352,6 +507,22 @@ const Forum = (props) => {
                         <Form form={threadForm} onFinish={(values) => handleCreateThread(values)} id='create-thread'>
                             <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
                                 <Input placeholder="Title" />
+                            </Form.Item>
+                            <Form.Item label="Tag" name="tag" rules={[{ required: true, message: "Please enter a tag" }]}>
+                                <Select
+                                    style={{ width: 120 }}
+                                    onChange={(val) => {setTag(val)}}
+                                    options={[
+                                        { value: 'General', label: 'General' },
+                                        { value: 'Homework', label: 'Homework' },
+                                        { value: 'Projects', label: 'Projects' },
+                                        { value: 'Quizzes', label: 'Quizzes' },
+                                        { value: 'Lab', label: 'Lab' },
+                                        { value: 'Exams', label: 'Exams' },
+                                        { value: 'Social', label: 'Social' },
+                                        { value: 'Other', label: 'Other' },
+                                    ]}
+                                />
                             </Form.Item>
                             <Form.Item name="content" rules={[{ required: true, message: "Please enter your post content" }]}>
                                 <Input.TextArea rows={4} placeholder="Post Content"/>
@@ -369,6 +540,22 @@ const Forum = (props) => {
                         <Form form={threadForm} onFinish={(values) => handleCreateThread(values)} id='create-thread'>
                             <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
                                 <Input placeholder="Title" />
+                            </Form.Item>
+                            <Form.Item label="Tag" name="tag" rules={[{ required: true, message: "Please enter a tag" }]}>
+                                <Select
+                                    style={{ width: 120 }}
+                                    onChange={(val) => {setTag(val)}}
+                                    options={[
+                                        { value: 'General', label: 'General' },
+                                        { value: 'Homework', label: 'Homework' },
+                                        { value: 'Projects', label: 'Projects' },
+                                        { value: 'Quizzes', label: 'Quizzes' },
+                                        { value: 'Lab', label: 'Lab' },
+                                        { value: 'Exams', label: 'Exams' },
+                                        { value: 'Social', label: 'Social' },
+                                        { value: 'Other', label: 'Other' },
+                                    ]}
+                                />
                             </Form.Item>
                             <Form.Item name="content" rules={[{ required: true, message: "Please enter your post content" }]}>
                                 <Input.TextArea rows={4} placeholder="Post Content"/>

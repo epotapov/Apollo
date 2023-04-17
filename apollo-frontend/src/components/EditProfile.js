@@ -307,6 +307,9 @@ export default function EditProfile() {
                 setCourseData(courseData => courseData.concat(element));
             }
         })
+		.catch(error => {
+			message.error('Connection Error');
+		});
 	}, []);
 
 	const navigate = useNavigate();

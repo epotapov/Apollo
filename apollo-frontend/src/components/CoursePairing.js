@@ -21,6 +21,9 @@ const CoursePairing = (course) => {
                 setCourseData(courseData => courseData.concat(element));
             }
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
     }, []);
 
     useEffect(() => {
@@ -34,6 +37,9 @@ const CoursePairing = (course) => {
                 setPairings(pairings => pairings.concat(element));
             }
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
     }, []);
 
     const showDrawer = () => {
@@ -56,6 +62,9 @@ const CoursePairing = (course) => {
             },
             body: JSON.stringify(pairing),
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
 
         setVisible(false);
         message.success('Pairing added successfully\n Course: ' + values.course + '\n Difficulty: ' + values.difficulty + '\n', 3);

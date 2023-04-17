@@ -50,6 +50,11 @@ const threadSchema = mongoose.Schema({
       required: true,
     },
 
+    tag: {
+      type: Object,
+      required: true,
+    },
+
     isProfThread: {
       type: Boolean,
       required: true,
