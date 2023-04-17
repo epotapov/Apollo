@@ -621,7 +621,7 @@ router.post("/block-user/:username", async (req, res) => {
     const user = req.params.username;
     const userReturned = await UserInfo.findOne({username : user});
     const {userToBlock} = req.body;
-    userReturned.blockList.push(userToBlock)
+    userReturned.blockedList.push(userToBlock)
     await userReturned.save()
     res.status(200).json({ message: 'Blocked!'});
 });
@@ -636,6 +636,11 @@ router.post("/clear-recent-activity/:username", async (req, res) => {
 
     await user.save();
     res.status(200).json({ message: 'Recent activity cleared!'});
+})
+
+router.post("/edit-posts/:username", async (req, res) => {
+    const userToEdit = req.params.username
+    
 })
 
 module.exports = router;
