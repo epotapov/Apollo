@@ -77,7 +77,6 @@ io.on("connection", (socket) => {
 
   socket.on("join chat", (room) => {
     socket.join(room);
-    console.log("User Joined Room: " + room);
   });
   socket.on("typing", (room) => socket.in(room).emit("typing"));
   socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
@@ -91,6 +90,7 @@ io.on("connection", (socket) => {
       if (user._id == newMessageRecieved.sender._id) return;
 
       socket.in(user._id).emit("message recieved", newMessageRecieved);
+      console.log("message recieved");
     });
   });
 
@@ -99,6 +99,3 @@ io.on("connection", (socket) => {
     socket.leave(userData._id);
   });
 });
-// export so we can use db elsewhere
-// const db = mongoose.connection;
-// export default db;
