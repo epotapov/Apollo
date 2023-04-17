@@ -16,6 +16,9 @@ import {
 
 const ProfileModal = ({ user, children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  
+  // sometimes we pass the user context, sometimes we pass the actual user. this is while "realUser" is used
+  const realUser = user.user === undefined ? user : user.user;
   const picServer = "http://localhost:5001/pictures/"
 
   return (
@@ -34,7 +37,7 @@ const ProfileModal = ({ user, children }) => {
             d="flex"
             justifyContent="center"
           >
-            {user.username}
+            {realUser.username}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody
@@ -46,14 +49,14 @@ const ProfileModal = ({ user, children }) => {
             <Image
               borderRadius="full"
               boxSize="150px"
-              src={picServer + user.profilePicture}
-              alt={user.username}
+              src={picServer + realUser.profilePicture}
+              alt={realUser.username}
             />
             <Text
               fontSize={{ base: "28px", md: "30px" }}
               fontFamily="Work sans"
             >
-              Email: {user.email}
+              Email: {realUser.email}
             </Text>
           </ModalBody>
           <ModalFooter>
