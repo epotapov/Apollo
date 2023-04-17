@@ -626,5 +626,10 @@ router.post("/block-user/:username", async (req, res) => {
     res.status(200).json({ message: 'Blocked!'});
 });
 
+router.post("/edit-posts/:username", async (req, res) => {
+    const userToEdit = req.params.username
+    
+})
+
 module.exports = router;
 
