@@ -452,7 +452,7 @@ const subscribeToThread = async (req, res) => {
 
 
 
-//Recent Activity
+//Recent Activity Function  
 
 async function recentActivity (username, activity) {
 

@@ -626,5 +626,17 @@ router.post("/block-user/:username", async (req, res) => {
     res.status(200).json({ message: 'Blocked!'});
 });
 
+router.post("/clear-recent-activity/:username", async (req, res) => {
+    const username = req.body;
+    const user = await UserInfo.findOneandUpdate({username: username});
+
+    while (user.recentActivity.length > 0) {
+        user.recentActivity.pop();
+    }
+
+    await user.save();
+    res.status(200).json({ message: 'Recent activity cleared!'});
+})
+
 module.exports = router;
 
