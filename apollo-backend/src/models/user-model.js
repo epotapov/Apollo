@@ -172,7 +172,9 @@ var userSchema = new Schema({
 
     recentActivity: {
         type: Array,
-        required: false
+        of: String,
+        required: false,
+        default: []
     },
 
     // Friend requests that you receive

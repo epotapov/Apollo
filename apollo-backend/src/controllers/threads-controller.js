@@ -75,7 +75,7 @@ const createThread = async (req, res) => {
     // returns courseName threads
     const thread = await Thread.find({ courseName });
 
-    // recentActivity(user, user + " Created a new thread in " + courseName)
+    recentActivity(username, username + " created a new thread in " + courseName)
 
     res.status(201).json(thread);
 
@@ -166,9 +166,10 @@ const upvoteThread = async (req, res) => {
       downvoteUpvoteAttempt = true;
     } else {
       console.log(username + " upvoted this thread!");
-      // recentActivity(username, username + " upvoted a thread in " + thread.courseName)
       thread.upvotes.set(username, true);
     }
+
+    recentActivity(username, username + " upvoted a thread in " + thread.courseName)
 
     const updatedThread = await Thread.findByIdAndUpdate(
       id,
@@ -243,10 +244,11 @@ const downvoteThread = async (req, res) => {
       thread.downvotes.set(username, true);
       downvoteUpvoteAttempt = true;
     } else {
-      // recentActivity(username, username + " downvoted a thread in " + thread.courseName)
       console.log(username + " downvoted this thread!");
       thread.downvotes.set(username, true);
     }
+
+    recentActivity(username, username + " downvoted a thread in " + thread.courseName)
 
     const updatedThread = await Thread.findByIdAndUpdate(
       id,
@@ -360,7 +362,7 @@ const createComment = async (req, res) => {
 
     // success
     console.log(username + " commented and subscribed to thread " + thread.title + "!");
-    // recentActivity(username, username + " commented and subscribed to a thread in " + thread.courseName)
+    recentActivity(username, username + " commented to a thread in " + thread.courseName)
     res.status(201).json(updatedThread);
 
   } catch (err) {
@@ -417,7 +419,7 @@ const subscribeToThread = async (req, res) => {
       thread.subscribed.delete(username);
       doubleSubscribe = true;
     } else {
-      // recentActivity(username, username + " subscribed to a thread in " + thread.courseName)
+      recentActivity(username, username + " subscribed to a thread in " + thread.courseName)
       console.log(username + " subscribed to this thread!");
       thread.subscribed.set(username, userExist.email);
     }
@@ -452,35 +454,34 @@ const subscribeToThread = async (req, res) => {
 
 //Recent Activity
 
-// function recentActivity (username, activity) {
+async function recentActivity (username, activity) {
 
-//   try {
-//     const user = User.findOne({ username });
+  try {
+    const user = await User.findOne({ username });
 
-//     if (!user) {
-//       throw Error(username + " is not a registered user!");
-//     }
+    if (!user) {
+      throw Error(username + " is not a registered user!");
+    }
 
-//     if (user.recentActivity.length > 5) {
-//       user.recentActivity.pop();
-//     }
+    user.recentActivity.unshift(activity);
 
-//     user.recentActivity.unshift(activity);
+    if (user.recentActivity.length > 5) {
+      user.recentActivity.pop();
+    }
 
-//     console.log(user.recentActivity);
+    await user.save();
 
+  } catch (err) {
+    if (err instanceof mongoose.Error.CastError) {
+      console.log("RECENT ACTIVITY ERROR");
+      res.status(400).json({ message: "RECENT ACTIVITY ERROR" });
+    } else {
+      console.log(err.message);
+      res.status(404).json({ message: err.message });
+    }
+  }
 
-//   } catch (err) {
-//     if (err instanceof mongoose.Error.CastError) {
-//       console.log("RECENT ACTIVITY ERROR");
-//       res.status(400).json({ message: "RECENT ACTIVITY ERROR" });
-//     } else {
-//       console.log(err.message);
-//       res.status(404).json({ message: err.message });
-//     }
-//   }
-
-// }
+}
 
 // export functions so they can be imported & used elsewhere
-module.exports = { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment, subscribeToThread};
+module.exports = { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment, subscribeToThread, recentActivity};
