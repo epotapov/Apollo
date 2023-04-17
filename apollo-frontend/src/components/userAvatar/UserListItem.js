@@ -8,7 +8,7 @@ const UserListItem = //({ handleFunction }) => {
     // const { user } = ChatState();
     const user = props.user
     const handleFunction = props.handleFunction
-    console.log(user)
+    const picServer = "http://localhost:5001/pictures/"
 
   return (
     <Box
@@ -33,7 +33,7 @@ const UserListItem = //({ handleFunction }) => {
         size="sm"
         cursor="pointer"
         name={user.username}
-        src={user.profilePicture}
+        src={picServer + user.profilePicture}
       />
       <Box>
         <Text>{user.username}</Text>

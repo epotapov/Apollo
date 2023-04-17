@@ -12,6 +12,7 @@ import { ChatState } from "../../context/ChatContext";
 const ScrollableChat = ({ messages }) => {
   const { user } = ChatState();
   const userId = user.user._id;
+  const picServer = "http://localhost:5001/pictures/"
 
   return (
     <ScrollableFeed>
@@ -27,7 +28,7 @@ const ScrollableChat = ({ messages }) => {
                   size="sm"
                   cursor="pointer"
                   name={m.sender.username}
-                  src={m.sender.profilePicture}
+                  src={picServer + m.sender.profilePicture}
                 />
               </Tooltip>
             )}

@@ -31,13 +31,13 @@ import { Effect } from "react-notification-badge";
 import { getSender } from "../config/ChatLogics";
 import UserListItem from "../userAvatar/UserListItem";
 import { ChatState } from "../../context/ChatContext";
-import { FormControl } from "@chakra-ui/react";
 
 function SideDrawer() {
   const [search, setSearch] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
+  const picServer = "http://localhost:5001/pictures/"
 
   const {
     setSelectedChat,
@@ -58,10 +58,6 @@ function SideDrawer() {
   };
 
   const handleSearch = async () => {
-    // setSearch(query);
-    // if (!query) {
-    //   return;
-    // }
     if (!search) {
       toast({
         title: "Please Enter something in search",
@@ -83,9 +79,6 @@ function SideDrawer() {
       };
 
       const { data } = await axios.get(`http://localhost:5001/api/user?search=${search}`, config);
-      console.log(user)
-      console.log(data)
-
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
@@ -101,10 +94,6 @@ function SideDrawer() {
   };
 
   const accessChat = async (idOfOtherUser) => {
-    console.log(idOfOtherUser);
-    console.log("accessing " + user.username + "'s chat with " + idOfOtherUser)
-    console.log("user token: " + user.userToken)
-
     try {
       setLoadingChat(true);
       const config = {
@@ -186,7 +175,7 @@ function SideDrawer() {
                 size="sm"
                 cursor="pointer"
                 name={user.username}
-                src={user.profilePicture}
+                src={picServer + "dds " + user.user.profilePicture}
               />
             </MenuButton>
             <MenuList>

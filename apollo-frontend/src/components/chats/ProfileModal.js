@@ -16,6 +16,7 @@ import {
 
 const ProfileModal = ({ user, children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const picServer = "http://localhost:5001/pictures/"
 
   return (
     <>
@@ -45,7 +46,7 @@ const ProfileModal = ({ user, children }) => {
             <Image
               borderRadius="full"
               boxSize="150px"
-              src={user.profilePicture}
+              src={picServer + user.profilePicture}
               alt={user.username}
             />
             <Text
