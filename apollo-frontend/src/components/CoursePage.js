@@ -9,7 +9,7 @@ import Pairing from './CoursePairing';
 
 import Navbar from './Navbar';
 import { useUserContext } from '../hooks/useUserContext';
-import { Collapse, Switch, Table, Spin} from 'antd';
+import { Collapse, Switch, Table, Spin, message} from 'antd';
 import Reviews from './Reviews';
 import UploadPdf from './UploadPdf';
 
@@ -86,6 +86,9 @@ export default function CoursePage() {
                     setSections(data.Sections);
                     setTypicallyOffered(data.TypicallyOffered);
                 })
+                .catch(error => {
+                    message.error('Connection Error');
+                });
         }
         fetchCourse();
 
@@ -93,15 +96,21 @@ export default function CoursePage() {
             setFavorite(true);
         }
     }, [courseName]);
+    
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
-            await fetch('http://localhost:5001/api/user/get-favCourses/' + username)
-                .then(response => response.json())
-                .then(data => {
-                    setFavCourses(data);
-                    console.log("favorite courses: ", favCourses)
-                })
+            if (username) {
+                await fetch('http://localhost:5001/api/user/get-favCourses/' + username)
+                    .then(response => response.json())
+                    .then(data => {
+                        setFavCourses(data);
+                        console.log("favorite courses: ", favCourses)
+                    })
+                    .catch(error => {
+                        message.error('Connection Error');
+                    });
+                }
             await fetch('http://localhost:5001/api/course/get/grades/' + courseName)
                 .then(response => response.json())
                 .then(data => {
@@ -116,6 +125,9 @@ export default function CoursePage() {
 
                     setcourseDist(gradeArray)
                 })
+                .catch(error => {
+                    message.error('Connection Error');
+                });
             setIsLoading(false);
         }
         fetchData();

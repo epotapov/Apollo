@@ -107,6 +107,9 @@ const AvatarBar = (props) => {
                 message.success("Friend request accepted", 2);
             }
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
     }
 
     const denyFriendRequest = (friendUsername) => {
@@ -120,6 +123,9 @@ const AvatarBar = (props) => {
                 friendUsername: friendUsername
             })
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
     }
 
     return (

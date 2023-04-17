@@ -2,7 +2,7 @@ import { React, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../img/apollo-gray.png';
 import darklogo from '../img/apollo-orange.png';
-import { Button, Avatar } from 'antd';
+import { Button, message } from 'antd';
 import SearchBar from './SearchBar';
 import { useLogout } from '../hooks/useLogout';
 import { useUserContext } from '../hooks/useUserContext';
@@ -38,7 +38,10 @@ export default function Navbar() {
             .then(response => response.json())
             .then(data => {
                 setProfilePic(data);
-            })  
+            })
+            .catch(error => {
+                message.error('Connection Error');
+            });  
         } 
     }, [user])
 

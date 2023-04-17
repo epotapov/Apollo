@@ -10,10 +10,12 @@ import EditProfile from './components/EditProfile';
 import DiningHall from './components/DiningHall';
 import CoursePage from './components/CoursePage';
 import ProfilePage from './components/ProfilePage';
+import Group from './components/Group';
 import ResetPass from './components/ResetPass';
 import ChangePass from './components/ChangePass';
 import Error from './components/Error';
 import Map from './components/Map';
+import CreateGroup from './components/CreateGroup';
 import { useState } from 'react';
 
 
@@ -29,9 +31,11 @@ function App() {
         <Route exact path='/DiningHall' element={<DiningHall/>}/>
         <Route exact path='/Course/:courseName' element={<CoursePage/>}/>
         <Route exact path='/Profile/:username' element={<ProfilePage />}/>
+        <Route exact path='/Group' element={<Group />}/>
         <Route exact path="/ResetPass/:token" element={<ResetPass />}/>
         <Route exact path="/ChangePass" element={<ChangePass />}/>
         <Route exact path="/Map" element={<Map />}/>
+        <Route exact path="/CreateGroup" element={<CreateGroup />}/>
         <Route exact path='*' element={<Error/>}/>
       </Routes>
     </div>

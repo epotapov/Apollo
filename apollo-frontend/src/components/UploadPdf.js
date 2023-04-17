@@ -52,12 +52,18 @@ export default function UploadPdf(props) {
             setSyllabi(data);
             console.log("syllabi data: " + data)
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
         fetch('http://localhost:5001/api/user/get-pdf-resource/' + name)
         .then(response => response.json())
         .then(data => {
             setResources(data);
             console.log("resource data: " + data);
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
     }
  
     useEffect(() => {
@@ -68,6 +74,9 @@ export default function UploadPdf(props) {
                 setIsProf(data);
                 console.log("prof: " + isProf)
             })
+            .catch(error => {
+                message.error('Connection Error');
+            });
         }
 	});
 
@@ -78,12 +87,18 @@ export default function UploadPdf(props) {
             setSyllabi(data);
             console.log("syllabi data: " + data)
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
         fetch('http://localhost:5001/api/user/get-pdf-resource/' + name)
         .then(response => response.json())
         .then(data => {
             setResources(data);
             console.log("resource data: " + data);
         })
+        .catch(error => {
+            message.error('Connection Error');
+        });
     }, [name])
 
     const beforeUpload = (file) => {
@@ -108,12 +123,18 @@ export default function UploadPdf(props) {
                 setSyllabi(data);
                 console.log("syllabi data: " + data)
             })
+            .catch(error => {
+                message.error('Connection Error');
+            });
             fetch('http://localhost:5001/api/user/get-pdf-resource/' + name)
             .then(response => response.json())
             .then(data => {
                 setResources(data);
                 console.log("resource data: " + data);
             })
+            .catch(error => {
+                message.error('Connection Error');
+            });
 		} else if (info.file.status === 'error') {
 			message.error(`${info.file.name} file upload failed.`);
 		}
