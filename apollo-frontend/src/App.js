@@ -1,5 +1,5 @@
 import './App.css';
-
+import { useState } from 'react';
 import { useThemeContext } from './hooks/useThemeContext';
 
 import { Route, Routes } from 'react-router-dom'
@@ -15,6 +15,7 @@ import ResetPass from './components/ResetPass';
 import ChangePass from './components/ChangePass';
 import Error from './components/Error';
 import Map from './components/Map';
+import ChatPage from './components/chats/ChatPage';
 import CreateGroup from './components/CreateGroup';
 
 
@@ -34,6 +35,7 @@ function App() {
         <Route exact path="/ResetPass/:token" element={<ResetPass />}/>
         <Route exact path="/ChangePass" element={<ChangePass />}/>
         <Route exact path="/Map" element={<Map />}/>
+        <Route exact path="/Chat" element={<ChatPage />}/>
         <Route exact path="/CreateGroup" element={<CreateGroup />}/>
         <Route exact path='*' element={<Error/>}/>
       </Routes>

@@ -12,6 +12,7 @@ const nodemailer = require('nodemailer');
 
 const fs = require('fs'); //file reader
 const { resourceLimits } = require('worker_threads');
+const generateToken = require('../config/generate-token.js');
 
 
 //Schema for a friend, friends are within the user schema
@@ -49,7 +50,7 @@ var userSchema = new Schema({
     major: {
         type: String,
         required: false, 
-        default: "Undecied"
+        default: "Undecided"
     },
 
     gradYear: {
@@ -167,11 +168,6 @@ var userSchema = new Schema({
 
     recentActivity: {
         type: Array,
-        required: false
-    },
-
-    recentActivity: {
-        type: Array,
         of: String,
         required: false,
         default: []
@@ -255,8 +251,9 @@ userSchema.statics.signup = async function(username, email, password, major,
     const salt = await bcrypt.genSalt(10);           //salt adds random string of characters on top of password
     const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
 
-
+    
     const user = await this.create({username, email, password: hashedPassword, major, gradYear, profilePicture, role, courses, aboutMe, country, gender, planOfStudy, DOB, isPrivate});
+    
 
     // User Verification method
 

@@ -79,6 +79,42 @@ const AvatarBar = (props) => {
         setFriendRequests(friendRequestList);
     }
 
+
+    useEffect(() => {
+        if (user) {
+            if (pfp === 'default' || pfp === "" || pfp === null) {
+                pfp = defpfp;
+            }
+            else {
+                pfp = props.pic;
+            }
+            formatFriendList(user.friendsList ? user.friendsList : []);
+            if (user.friendRequests && user.friendRequests.length != friendRequests.length) {
+                console.log("friend requests changed");
+                formatFriendRequests(user.friendRequests ? user.friendRequests : []);
+            }
+        }
+    }, [user]);
+
+    const recentActivity = [
+        {
+            path: "/",
+            title: "You comment on a thread in CS180!",
+            time: "1 hour ago"
+        },
+        {
+            path: "/",
+            title: "You comment on a thread in CS180!",
+            time: "1 hour ago"
+        },
+        {
+            path: "/",
+            title: "You comment on a thread in CS180!",
+            time: "1 hour ago"
+        },
+    ]
+
+
     const showDrawer = () => {
         setVisible(true);
     }

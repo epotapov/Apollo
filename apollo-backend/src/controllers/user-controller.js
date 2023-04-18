@@ -1,6 +1,7 @@
 const UserInfo = require('../models/user-model');
 const fs = require('fs'); //filereader
-
+const generateToken = require('../config/generate-token.js');
+const asyncHandler = require('express-async-handler');
 
 //login user
 
@@ -10,8 +11,8 @@ const loginUser = async (req, res) => {
 
      try {
           const user = await UserInfo.login(username, password);
-
-          res.status(200).json({ username, user });
+          const userToken = generateToken(user._id);
+          res.status(200).json({ username, user, userToken});
 
      } catch (error) {
           res.status(400).json({ error: error.message })
@@ -42,5 +43,19 @@ const signupUser = async (req, res) => {
      }
 }
 
+const allUsers = asyncHandler(async (req, res) => {
+     const keyword = req.query.search
+       ? {
+           $or: [
+             { username: { $regex: req.query.search, $options: "i" } },
+             { email: { $regex: req.query.search, $options: "i" } },
+           ],
+         }
+       : {};
+   
+     const users = await UserInfo.find(keyword).find({ _id: { $ne: req.user._id } });
+     res.send(users);
+   });
+   
 
-module.exports = { signupUser, loginUser }
+module.exports = { signupUser, loginUser, allUsers }

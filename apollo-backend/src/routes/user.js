@@ -14,6 +14,8 @@ const validator = require('validator'); // helps validate user input
 
 const CourseInfo = require('../models/course-model');
 
+const { protect } = require('../middleware/authMiddleware');
+
 // Friend schema 
 const Friend = require('../models/user-model');
 
@@ -46,7 +48,7 @@ const storage_courseInfo = multer.diskStorage({
 const uploadCourseInfo = multer({storage: storage_courseInfo});
 
 //controller functions
-const { signupUser, loginUser, addFriend, removeFriend, getFriends } = require('../controllers/user-controller');
+const { signupUser, loginUser, addFriend, removeFriend, getFriends, allUsers } = require('../controllers/user-controller');
 
 const UserInfo = require('../models/user-model');
 
@@ -57,6 +59,8 @@ router.post('/login', loginUser);
 
 //signup route - signupUser is the "method" that is executed
 router.post('/signup', signupUser);
+
+router.route('/').get(protect, allUsers);
 
 /*Send friend request route
  * API Request: "/api/user/sendFriendRequest"
@@ -259,6 +263,16 @@ router.get('/get/:username', async (req, res) => {
     console.log(userReturned);
     res.json(userReturned);
 });
+
+// ex: /api/user/friends/{username}
+router.get('/friends/:username', async (req, res) => {
+    const param = req.params.username;
+    const userReturned = await UserInfo.findOne({ username: param });
+    console.log(userReturned.friendsList);
+    res.json(userReturned.friendsList);
+});
+
+
 
 // get is professor accoutn
 router.get('/getIsProf/:username', async (req, res) => {
