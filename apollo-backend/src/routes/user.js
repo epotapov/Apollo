@@ -663,8 +663,21 @@ router.post("/clear-recent-activity", async (req, res) => {
     res.status(200).json({ message: 'Recent activity cleared!'});
 })
 
-router.post("/edit-posts/:username", async (req, res) => {
-    const userToEdit = req.params.username
+router.post("/edit-thread/:username", async (req, res) => {
+    const userEditting = req.params.username;
+
+    
+})
+
+router.post("/edit-review/:username", async (req, res) => {
+    const userEditting = req.params.username;
+
+    
+})
+
+router.post("/edit-comment/:username", async (req, res) => {
+    const userEditting = req.params.username;
+
     
 })
 
