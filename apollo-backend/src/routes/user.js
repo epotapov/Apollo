@@ -663,9 +663,12 @@ router.post("/clear-recent-activity", async (req, res) => {
     res.status(200).json({ message: 'Recent activity cleared!'});
 })
 
+const Thread = require("../models/thread-model");
+
 router.post("/edit-thread/:threadID", async (req, res) => {
     const id = req.params.threadID;
-
+    const threadFound = await Thread.findById(id)
+    console.log(threadFound)
 })
 
 router.post("/edit-review/:reviewID", async (req, res) => {
