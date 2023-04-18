@@ -193,6 +193,8 @@ router.patch('/removeFriend', async (req, res) => {
         const pendingFriend = await UserInfo.findOne({username: friendUsername});
 
         var friends = false;
+        console.log(user.friendsList);
+        console.log(friendUsername);
         for (let i = 0; i < user.friendsList.length; i++) {
             if (user.friendsList[i].username === friendUsername) {
                 friends = true;

@@ -19,8 +19,22 @@ const AvatarBar = (props) => {
     const [friendsList, setFriendsList] = useState([]);
     const [friendRequests, setFriendRequests] = useState([]);
 
+    useEffect(() => {
+        if (outerUser) {
+            const fetchUpdatedUser = async () => {
+                await fetch('http://localhost:5001/api/user/get/' + user.username)
+                .then(response => response.json())
+                .then(data => setUser(data))
+                .catch(error => {
+                message.error('Connection Error');
+                }); 
+            }
+            fetchUpdatedUser();
+        }
+    }, [outerUser]);
+
     const formatFriendList = (friends) => {
-        console.log(friends);
+        console.log(user);
         let friendList = [];
         for (let i = 0; i < friends.length; i++) {
             friendList.push({
@@ -48,6 +62,7 @@ const AvatarBar = (props) => {
             else {
                 pfp = props.pic;
             }
+            console.log(user);
             formatFriendList(user.friendsList ? user.friendsList : []);
             if (user.friendRequests.length != friendRequests.length) {
                 console.log("friend requests changed");

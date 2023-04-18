@@ -54,12 +54,29 @@ export default function ProfilePage() {
   }
 
   useEffect(() => {
+    if (outerUser) {
+        const fetchUpdatedUser = async () => {
+            await fetch('http://localhost:5001/api/user/get/' + outerUser.username)
+            .then(response => response.json())
+            .then(data => setUser(data))
+            .catch(error => {
+            message.error('Connection Error');
+            }); 
+        }
+        fetchUpdatedUser();
+    }
+}, [outerUser || user]);
+
+  useEffect(() => {
     if (!userFound || userFound.username !== usernameParam) {
       fetchUser();
     }
-    if (!user) {
-      setUser(outerUser ? outerUser.user : null);
+    if (!user && outerUser) {
+      setUser(outerUser.user);
     }
+  }, [userFound || user || usernameParam]);
+
+  useEffect(() => {
     if (user && userFound) {
       friendsList = user.friendsList ? user.friendsList : [];
       friendRequestsSent = user.friendRequestsSent ? user.friendRequestsSent : [];
@@ -80,14 +97,13 @@ export default function ProfilePage() {
         setFriendStatus(0);
       }
     }
-  }, [userFound || user || usernameParam]);
+  }, [user, userFound]);
 
   useEffect(() => {
     if (usernameParam) {
       fetchUser();
     }
   }, [usernameParam]);
-  
 
   let sameAccount = false;
   let privateAccount = false;
@@ -174,6 +190,7 @@ export default function ProfilePage() {
     .then(data =>{
       if (data.user) {
         setUser(data.user);
+        outerUser.user = data.user;
       }
       if (data.pendingFriend) {
         setUserFound(data.userFound);
@@ -201,6 +218,7 @@ export default function ProfilePage() {
     .then(data => {
       if (data.user) {
         setUser(data.user);
+        outerUser.user = data.user;
       }
       if (data.pendingFriend) {
         setUserFound(data.userFound);
@@ -249,6 +267,7 @@ export default function ProfilePage() {
       console.log (data);
       if (data.user) {
         setUser(data.user);
+        outerUser.user = data.user;
       }
       if (data.pendingFriend) {
         setUserFound(data.userFound);
