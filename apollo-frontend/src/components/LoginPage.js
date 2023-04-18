@@ -1,14 +1,15 @@
-import { React, useState} from 'react';
+import { React, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLogin } from '../hooks/useLogin';
 
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, Checkbox, Form, Input, Carousel } from 'antd';
+
 
 const onFinish = (values) => {
-  console.log('Success:', values);
+    console.log('Success:', values);
 };
 const onFinishFailed = (errorInfo) => {
-  console.log('Failed:', errorInfo);
+    console.log('Failed:', errorInfo);
 };
 
 function validatePassword(value) {
@@ -54,7 +55,7 @@ export default function LoginPage() {
 
 
     const handleLoginSubmit = async (e) => {
-        const {isLoading, error} = await login(username, password);
+        const { isLoading, error } = await login(username, password);
         setIsLoading(isLoading);
         setError(error);
         console.log(error)
@@ -65,109 +66,133 @@ export default function LoginPage() {
     }
 
     const handleResetSubmit = async (e) => {
-        const resetEmail = {email};
-    
+        const resetEmail = { email };
+
         // TODO this URL will need to change eventually (once we have the server on another machine)
         const response = await fetch('http://localhost:5001/api/user/forgot-password', {
-          method: 'POST',
-          body: JSON.stringify(resetEmail),
-          headers: {
-            'Content-Type': 'application/json'
-          }
+            method: 'POST',
+            body: JSON.stringify(resetEmail),
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
-    
+
         const json = await response.json();
         console.log(json)
-    
+
         if (!response.ok) {
-          setError(json.error);
-          setConfirm(null);
+            setError(json.error);
+            setConfirm(null);
         }
-    
+
         if (response.ok) {
-          setError(null);
-          setConfirm(json)
-          console.log('User reset password sent', json);
+            setError(null);
+            setConfirm(json)
+            console.log('User reset password sent', json);
         }
-      }
+    }
 
 
     if (!forgotPass) {
-        return(
+        return (
             <div className='Container'>
-                <Link to='/'>
-                    <Button type="primary" className="SignIn" size={size}>
-                        Back
-                    </Button>
-                </Link>
-                <Form
-                    name="basic"
-                    labelCol={{
-                    span: 8,
-                    }}
-                    wrapperCol={{
-                    span: 16,
-                    }}
-                    style={{
-                    maxWidth: 600,
-                    }}
-                    initialValues={{
-                    remember: true,
-                    }}
-                    onFinish={handleLoginSubmit}
-                    onFinishFailed={onFinishFailed}
-                    autoComplete="off"
-                >
-                    <h2>Log In</h2>
-                    <Form.Item
-                        label="Username"
-                        name="username"
-                        onChange={(e) => setUsername(e.target.value)}
-                        rules={[
-                            {
-                            required: true,
-                            message: 'Please input your username!',
-                            },
-                        ]}
-                    >
-                    <Input />
-                    </Form.Item>
+                <div className='loginContent'>
+                    <div id='loginCarousel'>
+                        <Carousel autoplay>
+                            <div>
+                                <img style={{ width: "100%" }} src={require("../img/Purdue_image_2.jpg")} alt="Purdue Image 2" />
+                            </div>
+                            <div>
+                                <img style={{ width: "100%", height: "100%" }} src={require("../img/Purdue_image_3.jpg")} alt="Purdue Image 3" />
+                            </div>
+                            <div>
+                                <img style={{ width: "100%", height: "100%" }} src={require("../img/Purdue_image_4.jpg")} alt="Purdue Image 4" />
+                            </div>
+                            <div>
+                                <img style={{ width: "100%", height: "100%" }} src={require("../img/Purdue_image_1.jpg")} alt="Purdue Image 1" />
+                            </div>
+                        </Carousel>
+                        <div style={{ marginTop: '10px', marginBottom: "50px" ,fontSize: '12px', textAlign: 'center' }}>
+                            <p> Pictures retrieved from Purdue.edu </p>
 
-                    <Form.Item
-                        label="Password"
-                        name="password"
-                        onChange={(e) => setPassword(e.target.value)}
-                        rules={[
-                            {
-                            required: true,
-                            message: 'Please input your password!',
-                            },
-                        ]}
-                    >
-                    <Input.Password />
-                    </Form.Item>
-
-                    <Link to='/SignUp'>
-                        <h3>Sign Up</h3>
+                        </div>
+                    </div>
+                    <Link to='/'>
+                        <Button type="primary" className="SignIn" size={size}>
+                            Back
+                        </Button>
                     </Link>
-
-                    <Link>
-                        <h3 onClick={() => setForgotPass(true)}>I forgot my password</h3>
-                    </Link>
-
-                    <Form.Item
-                    wrapperCol={{
-                        offset: 8,
-                        span: 16,
-                    }}
+                    <Form
+                        name="basic"
+                        labelCol={{
+                            span: 8,
+                        }}
+                        wrapperCol={{
+                            span: 16,
+                        }}
+                        style={{
+                            maxWidth: 600,
+                        }}
+                        initialValues={{
+                            remember: true,
+                        }}
+                        onFinish={handleLoginSubmit}
+                        onFinishFailed={onFinishFailed}
+                        autoComplete="off"
                     >
-                    {error && <p>{error}</p>}
-                    <Button type="primary" htmlType="submit">
-                        Submit
-                    </Button>
-                    </Form.Item>
-                </Form>
+                        <h2>Log In</h2>
+                        <Form.Item
+                            label="Username"
+                            name="username"
+                            onChange={(e) => setUsername(e.target.value)}
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please input your username!',
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
+
+                        <Form.Item
+                            label="Password"
+                            name="password"
+                            onChange={(e) => setPassword(e.target.value)}
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please input your password!',
+                                },
+                            ]}
+                        >
+                            <Input.Password />
+                        </Form.Item>
+
+                        <Link to='/SignUp'>
+                            <h3>Sign Up</h3>
+                        </Link>
+
+                        <Link>
+                            <h3 onClick={() => setForgotPass(true)}>I forgot my password</h3>
+                        </Link>
+
+                        <Form.Item
+                            wrapperCol={{
+                                offset: 8,
+                                span: 16,
+                            }}
+                        >
+                            {error && <p>{error}</p>}
+                            <Button type="primary" htmlType="submit">
+                                Submit
+                            </Button>
+                        </Form.Item>
+                    </Form>
+
+                </div>
             </div>
+
         );
     }
     else {
@@ -179,16 +204,16 @@ export default function LoginPage() {
                 <Form
                     name="basic"
                     labelCol={{
-                    span: 8,
+                        span: 8,
                     }}
                     wrapperCol={{
-                    span: 16,
+                        span: 16,
                     }}
                     style={{
-                    maxWidth: 600,
+                        maxWidth: 600,
                     }}
                     initialValues={{
-                    remember: true,
+                        remember: true,
                     }}
                     onFinish={handleResetSubmit}
                     onFinishFailed={onFinishFailed}
@@ -207,20 +232,20 @@ export default function LoginPage() {
                             },
                         ]}
                     >
-                    <Input />
+                        <Input />
                     </Form.Item>
 
                     <Form.Item
-                    wrapperCol={{
-                        offset: 8,
-                        span: 16,
-                    }}
+                        wrapperCol={{
+                            offset: 8,
+                            span: 16,
+                        }}
                     >
-                    {error && <p>{error}</p>}
-                    {confirm && <p>{confirm.message}</p>}
-                    <Button type="primary" htmlType="submit">
-                        Submit
-                    </Button>
+                        {error && <p>{error}</p>}
+                        {confirm && <p>{confirm.message}</p>}
+                        <Button type="primary" htmlType="submit">
+                            Submit
+                        </Button>
                     </Form.Item>
                 </Form>
             </div>

@@ -9,7 +9,7 @@ h1 {
 }
 
 #LoginForm h3 {
-  text-align: left;
+  text-align: right;
 }
 
 .Container {
@@ -326,4 +326,18 @@ h1 {
 .avatar-bar {
   padding-left: 10px;
   padding-right: "10px";
+}
+
+.loginContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+}
+
+#loginCarousel {
+  width: 1050px;
+  height: 800px;
+  margin-bottom: 10px;
 }
