@@ -96,24 +96,6 @@ const AvatarBar = (props) => {
         }
     }, [user]);
 
-    const recentActivity = [
-        {
-            path: "/",
-            title: "You comment on a thread in CS180!",
-            time: "1 hour ago"
-        },
-        {
-            path: "/",
-            title: "You comment on a thread in CS180!",
-            time: "1 hour ago"
-        },
-        {
-            path: "/",
-            title: "You comment on a thread in CS180!",
-            time: "1 hour ago"
-        },
-    ]
-
 
     const showDrawer = () => {
         setVisible(true);
