@@ -80,7 +80,6 @@ router.patch('/sendFriendRequest', async (req, res) => {
             throw Error("User not found");
         }
 
-        console.log(user);
         //Check if friend request has already been sent
         if (user.friendRequestsSent.includes(friendUsername)) {
             res.status(201).json({message: "Friend request already sent"})
@@ -156,14 +155,15 @@ router.patch('/acceptFriendRequest', async (req, res) => {
 router.patch('/denyFriendRequest', async (req, res) => {
     try {
         const {username, friendUsername} = req.body;
-        const user = await UserInfo.find({username: username});
-        const pendingFriend = await UserInfo.find({username: friendUsername});
+        const user = await UserInfo.findOne({username: username});
+        const pendingFriend = await UserInfo.findOne({username: friendUsername});
 
         if (user.friendRequests.includes(friendUsername)) {
             user.friendRequests.splice(user.friendRequests.indexOf(friendUsername), 1);
             pendingFriend.friendRequestsSent.splice(pendingFriend.friendRequestsSent.indexOf(username), 1);
+            await user.save();
+            await pendingFriend.save();
             res.status(200).json({user: user, pendingFriend: pendingFriend})
-
         } else {
             res.status(201).json({message: "Friend request not found"});
             return;
@@ -628,13 +628,22 @@ router.post("/block-user/:username", async (req, res) => {
     res.status(200).json({ message: 'Blocked!'});
 });
 
-router.post("/clear-recent-activity/:username", async (req, res) => {
-    const username = req.body;
-    const user = await UserInfo.findOneandUpdate({username: username});
+router.post("/clear-recent-activity", async (req, res) => {
+    const username = req.body.username;
+    console.log(username);
+    const user = await UserInfo.findOne({username: username});
 
-    while (user.recentActivity.length > 0) {
-        user.recentActivity.pop();
+    if (!user) {
+        res.status(404).json({ message: 'User not found!'});
+        return;
     }
+
+    if (user.recentActivity.length === 0) {
+        res.status(200).json({ message: 'Recent activity already cleared!'});
+        return;
+    }
+
+    user.recentActivity = [];
 
     await user.save();
     res.status(200).json({ message: 'Recent activity cleared!'});

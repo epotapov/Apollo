@@ -242,13 +242,22 @@ export default function ProfilePage() {
         friendUsername: userFound.username
       })
     })
+    .then(response => response.json())
+    .then(data => {
+        if (data.user) {
+          setUser(data.user);
+          outerUser.user = data.user;
+        }
+        if (data.pendingFriend) {
+          setUserFound(data.userFound);
+          message.success('Friend request accepted!', 3);
+          setFriendStatus(3);
+        }
+    })
     .catch(error => {
       message.error('Connection Error');
     });
 
-    if (response.status === 200) {
-      message.success('Friend request accepted!', 2);
-    }
   }
 
   const removeFriend = () => {
@@ -264,7 +273,6 @@ export default function ProfilePage() {
     })
     .then(response => response.json())
     .then(data => {
-      console.log (data);
       if (data.user) {
         setUser(data.user);
         outerUser.user = data.user;
@@ -292,14 +300,14 @@ export default function ProfilePage() {
             {friendStatus == 2 && <Button onClick={acceptFriendRequest}> Accept Friend Request </Button>}
             {friendStatus == 3 && <Button onClick={removeFriend}> Remove Friend </Button>}
             {
-              privateAccount && !sameAccount &&
+              privateAccount && !sameAccount && friendStatus != 3 &&
               <div>
                 <p> Major: {major} </p>
                 <h4>Is a Private Account</h4>
               </div>
             }
             {
-              (!privateAccount || sameAccount) &&
+              (!privateAccount || sameAccount || friendStatus == 3) &&
               <div>
                 <p> About me: {aboutMe} </p>
                 <p> Email: {email} </p>
