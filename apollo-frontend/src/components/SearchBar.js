@@ -8,7 +8,6 @@ import ProfilePage from './ProfilePage';
 
 
 const onSearch = (value) => {
-    console.log('search:', value);
 };
 
 export default function SearchBar() {
@@ -19,10 +18,7 @@ export default function SearchBar() {
     const navigate = useNavigate();
     
     const onChange = (val) => {
-        console.log('onChange:', val);
-        console.log(courseData.length)
         if (val === map[0].value) {
-            console.log("map was used")
             let path = '/Map';
             navigate(path)
             return;

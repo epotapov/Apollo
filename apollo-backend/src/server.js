@@ -25,6 +25,7 @@ const path = require('path')
 //express router setup
 const userRoutes = require('./routes/user');
 const courseRoutes = require('./routes/course');
+const groupRoutes = require('./routes/group');
 const diningHallRoutes = require('./routes/dining');
 const threadRoutes = require('./routes/thread');
 const ratingRoutes = require('./routes/ratings');
@@ -48,6 +49,7 @@ app.use((req, res, next) => {
 // attaches all the routes that we attached to the router
 app.use('/api/user', userRoutes); // when we fire request to /api/user then check userRoutes for the route
 app.use('/api/course', courseRoutes);
+app.use('/api/group', groupRoutes);
 app.use('/api/dining', diningHallRoutes);
 app.use('/pictures', express.static(path.join(__dirname, '../profile_pictures')));
 app.use('/pdfs', express.static(path.join(__dirname, '../course_info_docs')));

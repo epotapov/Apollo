@@ -19,7 +19,6 @@ import ChatPage from './components/chats/ChatPage';
 import CreateGroup from './components/CreateGroup';
 
 
-
 function App() {
   const { theme } = useThemeContext();
   return (

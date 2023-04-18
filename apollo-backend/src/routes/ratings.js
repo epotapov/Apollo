@@ -1,7 +1,7 @@
 const express = require('express');
 
 const RatingInfo = require('../models/rating-model');
-const { createReview, getCourseReviews, getCourseAverageRating, upvoteReview, downvoteReview } = require('../controllers/ratings');
+const { createReview, getCourseReviews, getCourseAverageRating, upvoteReview, downvoteReview, deleteReview } = require('../controllers/ratings');
 // TODO add method imports
 
 
@@ -18,5 +18,6 @@ router.get("/:coursename/avgRating", getCourseAverageRating);
 /* UPDATE */
 router.patch("/:id/upvote", upvoteReview);
 router.patch("/:id/downvote", downvoteReview);
+router.patch("/:id/deleteReview", deleteReview);
 
 module.exports = router;

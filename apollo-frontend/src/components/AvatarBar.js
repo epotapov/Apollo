@@ -13,14 +13,54 @@ const AvatarBar = (props) => {
     const {user: outerUser} = useUserContext();
     const [user, setUser] = useState(outerUser ? outerUser.user : null);    
     const { logout } = useLogout();
+    const [recentActivity, setRecentActivity] = useState([]);
     let pfp = props.pic;
     const navigate = useNavigate();
 
     const [friendsList, setFriendsList] = useState([]);
     const [friendRequests, setFriendRequests] = useState([]);
 
+    useEffect(() => {
+        if (user) {
+            if (pfp === 'default' || pfp === "" || pfp === null) {
+                pfp = defpfp;
+            }
+            else {
+                pfp = props.pic;
+            }
+            formatFriendList(user.friendsList ? user.friendsList : []);
+            if (user.friendRequests.length != friendRequests.length) {
+                formatFriendRequests(user.friendRequests ? user.friendRequests : []);
+            }
+            formatRecentActivity(user.recentActivity ? user.recentActivity : []);
+        }
+    }, [user]);
+    useEffect(() => {
+        if (outerUser) {
+            const fetchUpdatedUser = async () => {
+                await fetch('http://localhost:5001/api/user/get/' + user.username)
+                .then(response => response.json())
+                .then(data => setUser(data))
+                .catch(error => {
+                message.error('Connection Error');
+                }); 
+            }
+            fetchUpdatedUser();
+        }
+    }, [outerUser]);
+
+    const formatRecentActivity = (recentActivity) => {
+        let recentActivityList = [];
+        for (let i = 0; i < recentActivity.length; i++) {
+            recentActivityList.push({
+                path: "/",
+                title: recentActivity[i],
+            });
+        }
+        setRecentActivity(recentActivityList);
+    }
+
     const formatFriendList = (friends) => {
-        console.log(friends);
         let friendList = [];
         for (let i = 0; i < friends.length; i++) {
             friendList.push({
@@ -34,11 +74,11 @@ const AvatarBar = (props) => {
     const formatFriendRequests = (friendRequests) => {
         let friendRequestList = [];
         for (let i = 0; i < friendRequests.length; i++) {
-            console.log(friendRequests[i]);
             friendRequestList.push(friendRequests[i]);
         }
         setFriendRequests(friendRequestList);
     }
+
 
     useEffect(() => {
         if (user) {
@@ -74,6 +114,7 @@ const AvatarBar = (props) => {
         },
     ]
 
+
     const showDrawer = () => {
         setVisible(true);
     }
@@ -85,6 +126,25 @@ const AvatarBar = (props) => {
     const handleLogout = () => {
         logout();
         message.success("Logged out successfully");
+    }
+
+    const handleClearRecentActivity = async () => {
+        const response = await fetch(`http://localhost:5001/api/user/clear-recent-activity`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: user.username
+            })
+        })
+        .then(response => response.json())
+
+        console.log(response);
+        if (response.message == "Recent activity cleared!") {
+            message.success("Recent activity cleared", 2);
+            formatRecentActivity([]);
+        }
     }
 
     const acceptFriendRequest = (friendUsername) => {
@@ -122,6 +182,15 @@ const AvatarBar = (props) => {
                 username: user.username,
                 friendUsername: friendUsername
             })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.user) {
+                setUser(data.user);
+                formatFriendList(user.friendsList);
+                formatFriendRequests(user.friendRequests);
+                message.success("Friend request denied", 2);
+            }
         })
         .catch(error => {
             message.error('Connection Error');
@@ -170,11 +239,16 @@ const AvatarBar = (props) => {
                     </Panel>
                     <Panel header="Recent Activity" key="3">
                         {recentActivity.map((activity) => (
-                            <div>
-                                <a target="_blank" href={activity.path}> {activity.title}: </a> - {activity.time}
-                                key={activity.title}
+                            <div key={activity.title}
+                            >
+                                <a target="_blank" href={activity.path}> {activity.title}: </a>
                             </div>
                         ))}
+                        {recentActivity.length > 0 && (
+                            <div style={{ marginTop: '1em' }}>
+                                <Button onClick={handleClearRecentActivity}>Clear Recent Activity</Button>
+                            </div>
+                        )}
                     </Panel>
                 </Collapse>
                 <Button onClick={() => {
