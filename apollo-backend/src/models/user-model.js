@@ -168,11 +168,6 @@ var userSchema = new Schema({
 
     recentActivity: {
         type: Array,
-        required: false
-    },
-
-    recentActivity: {
-        type: Array,
         of: String,
         required: false,
         default: []

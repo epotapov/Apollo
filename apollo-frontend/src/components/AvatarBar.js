@@ -49,7 +49,7 @@ const AvatarBar = (props) => {
                 pfp = props.pic;
             }
             formatFriendList(user.friendsList ? user.friendsList : []);
-            if (user.friendRequests.length != friendRequests.length) {
+            if (user.friendRequests && user.friendRequests.length != friendRequests.length) {
                 console.log("friend requests changed");
                 formatFriendRequests(user.friendRequests ? user.friendRequests : []);
             }
