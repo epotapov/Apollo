@@ -45,21 +45,28 @@ import {
       setSelectedUsers([...selectedUsers, userToAdd]);
     };
   
-    const handleSearch = async (query) => {
-      setSearch(query);
-      if (!query) {
+    const handleSearch = async () => {
+      if (!search) {
+        toast({
+          title: "Please Enter something in search",
+          status: "warning",
+          duration: 5000,
+          isClosable: true,
+          position: "top-left",
+        });
         return;
       }
   
       try {
         setLoading(true);
+  
         const config = {
           headers: {
             Authorization: `Bearer ${user.userToken}`,
           },
         };
+  
         const { data } = await axios.get(`http://localhost:5001/api/user?search=${search}`, config);
-        console.log(data);
         setLoading(false);
         setSearchResult(data);
       } catch (error) {
@@ -126,7 +133,13 @@ import {
         });
       }
     };
-  
+
+    const handleKeyPress = (event) => {
+      if (event.key === "Enter") {
+        handleSearch();
+      }
+    }; 
+    
     return (
       <>
         <span onClick={onOpen}>{children}</span>
@@ -144,21 +157,24 @@ import {
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody d="flex" flexDir="column" alignItems="center">
-              <FormControl>
+              <Box w="90%" d="flex" pb={2}>
                 <Input
                   placeholder="Chat Name"
                   mb={3}
                   onChange={(e) => setGroupChatName(e.target.value)}
                 />
-              </FormControl>
-              <FormControl>
-                <Input
-                  placeholder="Add Users eg: John, Piyush, Jane"
-                  mb={1}
-                  onChange={(e) => handleSearch(e.target.value)}
-                />
-              </FormControl>
-              <Box w="100%" d="flex" flexWrap="wrap">
+              </Box>
+              <Box d="flex" pb={2}>
+              <Input
+                placeholder="Search by name or email"
+                mr={2}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyPress={handleKeyPress}
+              />
+              <Button onClick={handleSearch}>Go</Button>
+              </Box> 
+              <Box w="90%" d="flex" pb={2}>
                 {selectedUsers.map((u) => (
                   <UserBadgeItem
                     key={u._id}

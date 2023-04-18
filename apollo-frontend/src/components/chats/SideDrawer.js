@@ -121,6 +121,12 @@ function SideDrawer() {
     }
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   return (
     <>
       <Box
@@ -132,11 +138,11 @@ function SideDrawer() {
         p="5px 10px 5px 10px"
         borderWidth="5px"
       >
-        <Tooltip label="Search Users to chat" hasArrow placement="bottom-end">
+        <Tooltip label="Search Friends to chat" hasArrow placement="bottom-end">
           <Button variant="ghost" onClick={onOpen}>
             <i className="fas fa-search"></i>
             <Text d={{ base: "none", md: "flex" }} px={4}>
-              Search User
+              Search Friends
             </Text>
           </Button>
         </Tooltip>
@@ -192,18 +198,17 @@ function SideDrawer() {
       <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
         <DrawerOverlay />
         <DrawerContent>
-          <DrawerHeader borderBottomWidth="1px">Search Users</DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px">Search Friends</DrawerHeader>
           <DrawerBody>
             <Box d="flex" pb={2}>
-            {/* <FormControl> */}
               <Input
                 placeholder="Search by name or email"
                 mr={2}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                onKeyPress={handleKeyPress}
               />
               <Button onClick={handleSearch}>Go</Button>
-            {/* </FormControl> */}
             </Box>
             {loading ? (
               <ChatLoading />
