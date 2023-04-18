@@ -483,5 +483,94 @@ async function recentActivity (username, activity) {
 
 }
 
+/* DELETE */
+
+/* deleteThread
+ *
+ * API Requ: /api/thread/:threadId/deleteThread
+ * Req Body: none
+ * Response: deleted thread object or JSON error message
+ *
+ * Status Codes:
+ *   OK = 200
+ *   NOT FOUND = 404
+ */
+const deleteThread = async (req, res) => {
+  console.log("hi");
+  try {
+    const { id } = req.params;
+
+    const thread = await Thread.findById(id);
+    if (!thread) {
+      throw Error("Thread " + id + " was not found! Check that the ID provided is correct.");
+    }
+    console.log(id);
+    console.log(thread);
+    const deletedThread = await Thread.findByIdAndDelete(id);
+    console.log(deletedThread);
+    res.status(200).json(deletedThread);
+
+  } catch (err) {
+    if (err instanceof mongoose.Error.CastError) {
+      console.log("Check that the ID provided is correct.");
+      res.status(400).json({ message: "Check that the ID provided is correct." });
+    } else {
+      console.log(err.message);
+      res.status(404).json({ message: err.message });
+    }
+  }
+}
+
+/* DELETE */
+
+/* removeComment
+*
+
+API Requ: /api/thread/:threadId/remove-comment
+Req Body: commentId, username
+Response: updated thread object or JSON error message
+Status Codes:
+OK = 200
+NOT FOUND = 404
+UNAUTHORIZED = 401
+*/
+const removeComment = async (req, res) => {
+  try {
+  const { threadId, commentId } = req.params;
+  console.log(commentId);
+
+  //const { commentId} = req.params.commentId;
+  
+  console.log(threadId);
+  const thread = await Thread.findById(threadId);
+  if (!thread) {
+    throw Error("Thread " + threadId + " was not found! Check that the ID provided is correct.");
+  }
+  
+  //const comment = await Comment.findById(commentId);
+  const commentIndex = thread.comments.findIndex((comment) => comment._id.equals(commentId));
+  console.log(commentIndex);
+  if (commentIndex == -1) {
+    throw Error("Comment " + commentId + " was not found! Check that the ID provided is correct.");
+  }
+  //console.log(commentId);
+  const updatedThread = await Thread.findByIdAndUpdate(
+    threadId,
+    { $pull: { comments: { _id: commentId } } },
+    { new: true }
+  );
+  
+  res.status(200).json(updatedThread);
+} catch (err) {
+  if (err instanceof mongoose.Error.CastError) {
+  console.log("Check that the ID provided is correct.");
+  res.status(400).json({ message: "Check that the ID provided is correct." });
+  } else {
+  console.log(err.message);
+  res.status(401).json({ message: err.message });
+  }
+  }
+  }  
+
 // export functions so they can be imported & used elsewhere
-module.exports = { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment, subscribeToThread, recentActivity};
+module.exports = { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment, subscribeToThread, recentActivity, deleteThread, removeComment};
