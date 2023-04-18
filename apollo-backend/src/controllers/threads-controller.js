@@ -498,7 +498,6 @@ async function recentActivity (username, activity) {
 const deleteThread = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id)
 
     const thread = await Thread.findById(id);
     if (!thread) {
@@ -544,11 +543,9 @@ const removeComment = async (req, res) => {
   
   //const comment = await Comment.findById(commentId);
   const commentIndex = thread.comments.findIndex((comment) => comment._id.equals(commentId));
-  console.log(commentIndex);
   if (commentIndex == -1) {
     throw Error("Comment " + commentId + " was not found! Check that the ID provided is correct.");
   }
-  //console.log(commentId);
   const updatedThread = await Thread.findByIdAndUpdate(
     threadId,
     { $pull: { comments: { _id: commentId } } },
