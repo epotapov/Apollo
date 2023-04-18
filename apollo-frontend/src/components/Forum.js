@@ -2,7 +2,6 @@ import { React, useState, useEffect } from 'react';
 import { Collapse, Form, Input, Button, Typography, Space, message, Avatar, Modal, Select, Tag } from "antd";
 import { LikeOutlined, DislikeOutlined, PlusOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
-import { useNavigate } from 'react-router-dom';
 import { useUserContext } from '../hooks/useUserContext';
 import defpfp from '../img/defaultpfp.png';
 
@@ -14,7 +13,6 @@ const tagPair = { "General": "magenta", "Homework": "purple", "Projects": "orang
                   "Other": "blue" }; 
 
 const Forum = (props) => {
-    const navigate = useNavigate();
     const courseName = props.courseName ? props.courseName : '';
     const isProf = props.type === 'Professor' ? true : false;
     const [threads, setThreads] = useState([]);
@@ -28,36 +26,38 @@ const Forum = (props) => {
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [modalText, setModalText] = useState('Are you sure you want to delete this thread?');
+    const [deletedThread, setDeletedThread] = useState("");
 
     //comment modal
     const [openComment, setOpenComment] = useState(false);
     const [confirmCommentLoading, setConfirmCommentLoading] = useState(false);
     const [modalCommentText, setModalCommentText] = useState('Are you sure you want to delete this comment?');
+    const [deletedComment, setDeletedComment] = useState("");
 
     const showModal = () => {
+        setModalText('Are you sure you want to delete this thread?')
         setOpen(true);
     };
 
     const showCommentModal = () => {
+        setModalCommentText('Are you sure you want to delete this comment?')
         setOpenComment(true);
     };
 
     const handleOk = () => {
         setModalText('Deleting Thread...');
         setConfirmLoading(true);
-        setTimeout(() => {
-            setOpen(false);
-            setConfirmLoading(false);
-        }, 2000);
+        deleteThread(deletedThread);
+        setOpen(false);
+        setConfirmLoading(false);
     };
 
     const handleCommentOk = () => {
         setModalCommentText('Deleting Comment...');
         setConfirmCommentLoading(true);
-        setTimeout(() => {
-            setOpenComment(false);
-            setConfirmCommentLoading(false);
-        }, 2000);
+        deleteComment(deletedThread, deletedComment);
+        setOpenComment(false);
+        setConfirmCommentLoading(false);
     };
 
     const handleCancel = () => {
@@ -339,7 +339,7 @@ const Forum = (props) => {
     }
 
     const deleteThread = async (threadId) => {
-        const response = await fetch(`http://localhost:5001/api/thread/${threadId}/delete`, {
+        const response = await fetch(`http://localhost:5001/api/thread/${threadId}/deleteThread`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
@@ -360,10 +360,33 @@ const Forum = (props) => {
         .catch(error => {
             message.error('Error data:', error);
         });
+        message.success("Thread was deleted")
     }
 
     const deleteComment = async (threadId, CommentId) => {
-        
+        const response = await fetch(`http://localhost:5001/api/thread/${threadId}/${CommentId}/removeComment`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({username: user.username})
+        })
+
+        if (!response.ok) {
+            message.error(`Comment delete failed.`);
+            return;
+        }
+
+        fetch("http://localhost:5001/api/thread/" + courseName)
+        .then(response => response.json())
+        .then(data => {
+            setThreads([]);
+            formatThreads(data);
+        })
+        .catch(error => {
+            message.error('Error data:', error);
+        });
+        message.success("Comment was deleted")
     }
 
     return (
@@ -429,7 +452,10 @@ const Forum = (props) => {
                                         {
                                             user && user.username == thread.username &&
                                             <span>
-                                                <Button shape="Circle" icon={<DeleteOutlined />} onClick={showModal} />
+                                                <Button shape="Circle" icon={<DeleteOutlined />} onClick={() => {
+                                                    showModal();
+                                                    setDeletedThread(thread.id);
+                                                }} />
                                                 <Modal
                                                     title="Deleting Thread"
                                                     open={open}
@@ -461,7 +487,11 @@ const Forum = (props) => {
                                                     {
                                                         user && user.username == comment.username &&
                                                         <span>
-                                                            <Button shape="Circle" icon={<DeleteOutlined />} onClick={showCommentModal} />
+                                                            <Button shape="Circle" icon={<DeleteOutlined />} onClick={() => {
+                                                                showCommentModal();
+                                                                setDeletedComment(comment._id);
+                                                                setDeletedThread(thread.id);
+                                                            }} />
                                                             <Modal
                                                                 title="Deleting Comment"
                                                                 open={openComment}

@@ -83,10 +83,19 @@ export default function LandingPage() {
         let path = '/Profile/' + user.username;
         navigate(path);
     }
+
+    const goToCreateGroup = () => {
+        let path = '/CreateGroup';
+        navigate(path);
+    }
+
     return(
         <div className='Container'>
             <div className='Corner'>
                 <div className='CornerButtons'>
+                    <Button type="primary" id='createGroup' onClick={goToCreateGroup} size={size}>
+                        Create Group                
+                    </Button>
                     <div id='ThemeButtonContainer'>
                         <Switch checked={theme === "dark"} id="themeSwitch" onChange={() => changeTheme()} />
                     </div>

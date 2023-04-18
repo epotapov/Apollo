@@ -496,18 +496,15 @@ async function recentActivity (username, activity) {
  *   NOT FOUND = 404
  */
 const deleteThread = async (req, res) => {
-  console.log("hi");
   try {
     const { id } = req.params;
+    console.log(id)
 
     const thread = await Thread.findById(id);
     if (!thread) {
       throw Error("Thread " + id + " was not found! Check that the ID provided is correct.");
     }
-    console.log(id);
-    console.log(thread);
     const deletedThread = await Thread.findByIdAndDelete(id);
-    console.log(deletedThread);
     res.status(200).json(deletedThread);
 
   } catch (err) {
@@ -537,11 +534,9 @@ UNAUTHORIZED = 401
 const removeComment = async (req, res) => {
   try {
   const { threadId, commentId } = req.params;
-  console.log(commentId);
 
   //const { commentId} = req.params.commentId;
   
-  console.log(threadId);
   const thread = await Thread.findById(threadId);
   if (!thread) {
     throw Error("Thread " + threadId + " was not found! Check that the ID provided is correct.");

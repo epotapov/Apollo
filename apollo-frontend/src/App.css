@@ -105,6 +105,10 @@ h1 {
   padding-top: 10px;
 }
 
+#createGroup {
+  margin-right: 20px;
+}
+
 
 #ThemeButtonContainer {
   display: flex;

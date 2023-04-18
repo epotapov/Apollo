@@ -22,18 +22,19 @@ export default function Reviews(props) {
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [modalText, setModalText] = useState('Are you sure you want to delete this review?');
+    const [deletedReview, setDeletedReview] = useState("");
 
     const showModal = () => {
+        setModalText('Are you sure you want to delete this review?')
         setOpen(true);
     };
 
     const handleOk = () => {
         setModalText('Deleting Review...');
         setConfirmLoading(true);
-        setTimeout(() => {
-            setOpen(false);
-            setConfirmLoading(false);
-        }, 2000);
+        handleDelete(deletedReview);
+        setOpen(false);
+        setConfirmLoading(false);
     };
 
     const handleCancel = () => {
@@ -257,24 +258,37 @@ export default function Reviews(props) {
     }
 
     const handleDelete = async (reviewId) => {
-        if (!user) {
-            alert("Please login to delete");
-            return;
-        }
-        const response = await fetch(`http://localhost:5001/api/ratings/${reviewId}/downvote`, {
+        const response = await fetch(`http://localhost:5001/api/ratings/${reviewId}/deleteReview`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({username: user.username})
         })
+
+        if (!response.ok) {
+            message.error(`Review delete failed.`);
+            return;
+        }
+        let path = `http://localhost:5001/api/ratings/${name}`
+        fetch(path)
+        .then(response => response.json())
+        .then(data => {
+            formatReviews(data);
+        })
         .catch(error => {
             message.error('Connection Error');
         });
-
-        if (!response.ok) {
-            return;
-        }
+        fetch("http://localhost:5001/api/ratings/" + name + "/avgRating")
+        .then(response => response.json())
+        .then(data => {
+            setAverageReview(data);
+        })
+        .catch(error => {
+            message.error('Connection Error');
+        });
+        message.success("Review was deleted");
+        setWriteReviewEnabled(false);
     }
 
     const handleReviewFilterChange = (value) => {
@@ -325,7 +339,10 @@ export default function Reviews(props) {
                                         {
                                             user && user.username == review.username &&
                                             <span>
-                                                <Button shape="Circle" icon={<DeleteOutlined />} onClick={showModal} />
+                                                <Button shape="Circle" icon={<DeleteOutlined />} onClick={() => {
+                                                    showModal();
+                                                    setDeletedReview(review.id);
+                                                }} />
                                                 <Modal
                                                     title="Deleting Review"
                                                     open={open}
