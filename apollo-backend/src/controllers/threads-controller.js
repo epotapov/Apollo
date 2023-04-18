@@ -562,15 +562,16 @@ const removeComment = async (req, res) => {
   
   res.status(200).json(updatedThread);
 } catch (err) {
-  if (err instanceof mongoose.Error.CastError) {
-  console.log("Check that the ID provided is correct.");
-  res.status(400).json({ message: "Check that the ID provided is correct." });
+    if (err instanceof mongoose.Error.CastError) {
+    console.log("Check that the ID provided is correct.");
+    res.status(400).json({ message: "Check that the ID provided is correct." });
   } else {
-  console.log(err.message);
-  res.status(401).json({ message: err.message });
+    console.log(err.message);
+    res.status(401).json({ message: err.message });
+    }
   }
-  }
-  }  
+} 
+  
 
 // export functions so they can be imported & used elsewhere
 module.exports = { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment, subscribeToThread, recentActivity, deleteThread, removeComment};
