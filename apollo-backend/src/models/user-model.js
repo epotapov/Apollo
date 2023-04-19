@@ -193,7 +193,13 @@ var userSchema = new Schema({
         type: Array,
         of: String,
         default: []
-    }
+    },
+
+    isGroupAdmin: {
+        type: Boolean,
+        required: false,
+        default: false
+    },
 }, { timestamps: true});
 
 
