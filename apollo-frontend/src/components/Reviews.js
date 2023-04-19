@@ -38,7 +38,6 @@ export default function Reviews(props) {
     };
 
     const handleCancel = () => {
-        console.log('Clicked cancel button');
         setOpen(false);
     };
 

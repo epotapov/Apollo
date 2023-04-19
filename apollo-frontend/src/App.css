@@ -105,6 +105,12 @@ h1 {
   padding-top: 10px;
 }
 
+.CornerButtonsNav {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+}
+
 #createGroup {
   margin-right: 20px;
 }
@@ -377,4 +383,8 @@ h1 {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+#groupButtons Button {
+  margin-right: 10px;
 }

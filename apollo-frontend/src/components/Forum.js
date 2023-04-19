@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { Collapse, Form, Input, Button, Typography, Space, message, Avatar, Modal, Select, Tag } from "antd";
-import { LikeOutlined, DislikeOutlined, PlusOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons';
+import { LikeOutlined, DislikeOutlined, PlusOutlined, CheckOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import { useUserContext } from '../hooks/useUserContext';
 import defpfp from '../img/defaultpfp.png';
@@ -34,6 +34,18 @@ const Forum = (props) => {
     const [modalCommentText, setModalCommentText] = useState('Are you sure you want to delete this comment?');
     const [deletedComment, setDeletedComment] = useState("");
 
+    // Edit Thread
+    const [openEdit, setOpenEdit] = useState(false);
+    const [confirmLoadingEdit, setConfirmLoadingEdit] = useState(false);
+    const [editThreadTitle, setEditThreadTitle] = useState("");
+    const [editThreadContent, setEditThreadContent] = useState("");
+
+    // Comment Edit
+    const [openCommentEdit, setOpenCommentEdit] = useState(false);
+    const [confirmCommentLoadingEdit, setConfirmCommentLoadingEdit] = useState(false);
+    const [editComment, setEditComment] = useState("");
+
+
     const showModal = () => {
         setModalText('Are you sure you want to delete this thread?')
         setOpen(true);
@@ -61,13 +73,41 @@ const Forum = (props) => {
     };
 
     const handleCancel = () => {
-        console.log('Clicked cancel button');
         setOpen(false);
     };
 
     const handleCommentCancel = () => {
-        console.log('Clicked cancel button');
         setOpenComment(false);
+    };
+
+    const showModalEdit = () => {
+        setOpenEdit(true);
+    };
+
+    const showCommentModalEdit = () => {
+        setOpenCommentEdit(true);
+    };
+
+    const handleOkEdit = () => {
+        setConfirmLoadingEdit(true);
+        //deleteThread(deletedThread);
+        setOpenEdit(false);
+        setConfirmLoadingEdit(false);
+    };
+
+    const handleCommentOkEdit = () => {
+        setConfirmCommentLoadingEdit(true);
+        //deleteComment(deletedThread, deletedComment);
+        setOpenCommentEdit(false);
+        setConfirmCommentLoadingEdit(false);
+    };
+
+    const handleCancelEdit = () => {
+        setOpenEdit(false);
+    };
+
+    const handleCommentCancelEdit = () => {
+        setOpenCommentEdit(false);
     };
 
     const formatThreads = (data) => {
@@ -452,18 +492,45 @@ const Forum = (props) => {
                                         {
                                             user && user.username == thread.username &&
                                             <span>
-                                                <Button shape="Circle" icon={<DeleteOutlined />} onClick={() => {
-                                                    showModal();
-                                                    setDeletedThread(thread.id);
+                                                    <Button shape="Circle" icon={<DeleteOutlined />} onClick={() => {
+                                                        showModal();
+                                                        setDeletedThread(thread.id);
+                                                    }} />
+                                                    <Modal
+                                                        title="Deleting Thread"
+                                                        open={open}
+                                                        onOk={handleOk}
+                                                        confirmLoading={confirmLoading}
+                                                        onCancel={handleCancel}
+                                                    >
+                                                        <p>{modalText}</p>
+                                                    </Modal>
+                                                    
+                                            </span>
+                                        }
+                                        {
+                                            user && user.username == thread.username &&
+                                            <span>
+                                                <Button shape="Circle" icon={<EditOutlined />} onClick={() => {
+                                                    showModalEdit();
+                                                    setEditThreadTitle(thread.title);
+                                                    setEditThreadContent(thread.description);
                                                 }} />
                                                 <Modal
-                                                    title="Deleting Thread"
-                                                    open={open}
-                                                    onOk={handleOk}
-                                                    confirmLoading={confirmLoading}
-                                                    onCancel={handleCancel}
+                                                    title="Edit Thread"
+                                                    open={openEdit}
+                                                    onOk={handleOkEdit}
+                                                    confirmLoading={confirmLoadingEdit}
+                                                    onCancel={handleCancelEdit}
                                                 >
-                                                    <p>{modalText}</p>
+                                                    <Form name="editThread">
+                                                    <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
+                                                        <Input placeholder="Title"  defaultValue={editThreadTitle}/>
+                                                    </Form.Item>
+                                                    <Form.Item name="content" rules={[{ required: true, message: "Please enter your description" }]}>
+                                                        <Input.TextArea rows={4} placeholder="Enter Description" defaultValue={editThreadContent}/>
+                                                    </Form.Item>
+                                                    </Form>
                                                 </Modal>
                                             </span>
                                         }
@@ -500,6 +567,23 @@ const Forum = (props) => {
                                                                 onCancel={handleCommentCancel}
                                                             >
                                                                 <p>{modalCommentText}</p>
+                                                            </Modal>
+                                                            <Button shape="Circle" icon={<EditOutlined />} onClick={() => {
+                                                                showCommentModalEdit();
+                                                                setEditComment(comment.description)
+                                                            }} />
+                                                            <Modal
+                                                                title="Edit Comment"
+                                                                open={openCommentEdit}
+                                                                onOk={handleCommentOkEdit}
+                                                                confirmLoading={confirmCommentLoadingEdit}
+                                                                onCancel={handleCommentCancelEdit}
+                                                            >
+                                                                <Form name="editComment">
+                                                                    <Form.Item name="commentEdit" rules={[{ required: true, message: "Please enter your comment" }]}>
+                                                                        <Input.TextArea defaultValue={editComment} rows={3} placeholder="Edit Comment"/>
+                                                                    </Form.Item>
+                                                                </Form>
                                                             </Modal>
                                                         </span>
                                                     }

@@ -59,14 +59,9 @@ export default function Navbar() {
                 {theme === "dark" && <img src={darklogo} alt="logo" />}
             </Link>
             <SearchBar/>
-            <div className='CornerButtons'>
+            <div className='CornerButtonsNav'>
                 {user && (
                     <div>
-                        {/*
-                        <Avatar onClick={goToProfile} size={35} className="avatar" shape="circle" src={pfp} />
-                        <Button type="primary" onClick={() => logout()} size={size}>
-                            Log Out
-                        </Button> */}
                         <AvatarBar pic={getpfp()} />
                     </div>
                 )}
