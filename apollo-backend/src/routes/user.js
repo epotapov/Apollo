@@ -642,6 +642,11 @@ router.post("/block-user/:username", async (req, res) => {
             userReturned.friendsList.splice(i, 1)
         }
     }
+    for (let j = 0; j < userReturned.blockList.length; j++) {
+        if (userReturned.blockList[j].username === userToBlock) {
+            userReturned.blockList.splice(j, 1)
+        }
+    }
     userReturned.blockedList.push(userToBlock)
     await userReturned.save()
     res.status(200).json({ message: 'Blocked!'});
