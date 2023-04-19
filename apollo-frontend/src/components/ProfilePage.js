@@ -346,20 +346,22 @@ export default function ProfilePage() {
     );
   }
 
-  if (userFoundBlocked && user && userFound) {
+  if (userFoundBlocked && user && userFound && !blocked) {
     return (
       <div>
         <Navbar />
-        <Card id="ProfileCard" title="Profile" bordered={true}>
-            <Avatar src={pfp} size={150} shape="circle" alt="Profile Picture" />
-            <h3> Username: {username}</h3>
-            <Button onClick={unblockUser} >Unblock</Button>
-        </Card>
+        <div id="ProfilePage">
+          <Card id="ProfileCard" title="Profile" bordered={true}>
+              <Avatar src={pfp} size={150} shape="circle" alt="Profile Picture" />
+              <h3> Username: {username}</h3>
+              <Button onClick={unblockUser} >Unblock</Button>
+          </Card>
+        </div>
       </div>
     )
   }
 
-  if (blocked && user && userFound) {
+  if (blocked && user && userFound && !userFoundBlocked) {
     return (
       <div>
         <Navbar />
@@ -375,6 +377,21 @@ export default function ProfilePage() {
     )
   }
 
+  if (blocked && userFoundBlocked && user && userFound) {
+    return ( 
+      <div>
+        <Navbar />
+        <div id="ProfilePage">
+          <Card id="ProfileCard" title="Profile" bordered={true}>
+              <h3> {username} </h3>
+              <h3> This user has blocked you </h3>
+              <Button onClick={unblockUser}>Unblock</Button>
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
       <Navbar/>
@@ -382,11 +399,11 @@ export default function ProfilePage() {
         <Card id="ProfileCard" title="Profile" bordered={true}>
           <Avatar src={pfp} size={150} shape="circle" alt="Profile Picture" />
           <h3> Username: {username}</h3>
-          {!sameAccount && !userFoundBlocked && <Button onClick={blockUser}> Block </Button>}
           {friendStatus == 0 && <Button onClick={sendFriendRequest}> Add Friend </Button>}
           {friendStatus == 1 && <Button onClick={cancelFriendRequest}> Cancel Friend Request </Button>}
           {friendStatus == 2 && <Button onClick={acceptFriendRequest}> Accept Friend Request </Button>}
           {friendStatus == 3 && <Button onClick={removeFriend}> Remove Friend </Button>}
+          {!sameAccount && !userFoundBlocked && <Button onClick={blockUser}> Block </Button>}
           {
             privateAccount && !sameAccount && friendStatus != 3 &&
             <div>
