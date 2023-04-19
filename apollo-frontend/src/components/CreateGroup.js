@@ -1,9 +1,42 @@
-import { React, useState, useEffect } from "react";
-import { Avatar, Button, Drawer, message, Badge, Collapse, Form, Input } from "antd";
+import { React, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button, message, Form, Input } from "antd";
 
 import Navbar from "./Navbar";
+import { useUserContext } from '../hooks/useUserContext';
 
 export default function CreateGroup() {
+    const navigate = useNavigate();
+    const { user } = useUserContext();
+
+    const handleSubmit = async (values) => {
+        const title = values.title;
+        const description = values.description;
+
+        const payload = {title, description};
+
+        const response = await fetch('http://localhost:5001/api/group/create', {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${user.userToken}`
+            }
+        });
+
+        const json = await response.json();
+        console.log(json)
+
+        if (!response.ok) {
+            message.error(json.message)
+        }
+
+        if (response.ok) {
+            message.success(`${title} was created!`)
+            navigate('/Group');
+        }
+    }
+
     return(
         <>
             <Navbar/>
@@ -11,14 +44,17 @@ export default function CreateGroup() {
                 <h1> Create Group: </h1>
             </div>
             <div className='bodyPage'>
+                {!user &&
                     <div className='namePage'>
-                        <h2>Cannot Create a Group! Delete your current group to make another!</h2>
+                        <h2>Sign in to Create a Group!</h2>
                     </div>
-                    <Form id='create-thread'>
+                }
+                {user &&
+                    <Form onFinish={handleSubmit} id='create-thread'>
                         <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
                             <Input placeholder="Title" />
                         </Form.Item>
-                        <Form.Item name="content" rules={[{ required: true, message: "Please enter your group description" }]}>
+                        <Form.Item name="description" rules={[{ required: true, message: "Please enter your group description" }]}>
                             <Input.TextArea rows={4} placeholder="Enter Description"/>
                         </Form.Item>
                         <Form.Item>
@@ -26,7 +62,8 @@ export default function CreateGroup() {
                                 Create Group
                             </Button>
                         </Form.Item>
-                    </Form>  
+                    </Form>
+                }
             </div>
         </>
     )

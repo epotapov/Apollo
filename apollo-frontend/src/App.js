@@ -31,7 +31,7 @@ function App() {
         <Route exact path='/DiningHall' element={<DiningHall/>}/>
         <Route exact path='/Course/:courseName' element={<CoursePage/>}/>
         <Route exact path='/Profile/:username' element={<ProfilePage />}/>
-        <Route exact path='/Group' element={<Group />}/>
+        <Route exact path='/Group/:groupName' element={<Group />}/>
         <Route exact path="/ResetPass/:token" element={<ResetPass />}/>
         <Route exact path="/ChangePass" element={<ChangePass />}/>
         <Route exact path="/Map" element={<Map />}/>
