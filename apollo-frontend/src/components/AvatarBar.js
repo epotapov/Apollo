@@ -4,7 +4,7 @@ import { useLogout } from '../hooks/useLogout';
 import { useUserContext } from '../hooks/useUserContext';
 import { useNavigate } from 'react-router-dom';
 import defpfp from '../img/defaultpfp.png';
-import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined, CloseCircleOutlined, LinkOutlined  } from "@ant-design/icons";
 
 const { Panel } = Collapse;
 
@@ -52,9 +52,10 @@ const AvatarBar = (props) => {
     const formatRecentActivity = (recentActivity) => {
         let recentActivityList = [];
         for (let i = 0; i < recentActivity.length; i++) {
+            console.log(recentActivity[i]);
             recentActivityList.push({
-                path: "/",
-                title: recentActivity[i],
+                path: recentActivity[i].path,
+                title: recentActivity[i].title,
             });
         }
         setRecentActivity(recentActivityList);
@@ -122,7 +123,6 @@ const AvatarBar = (props) => {
         })
         .then(response => response.json())
 
-        console.log(response);
         if (response.message == "Recent activity cleared!") {
             message.success("Recent activity cleared", 2);
             formatRecentActivity([]);
@@ -179,6 +179,22 @@ const AvatarBar = (props) => {
         });
     }
 
+    const activityPath = (path) => {
+        // Path will be `/Profile/${username}` where username is stored in path after semi-colon
+        let fullPath = "/";
+        if (path.includes("Profile")) {
+            fullPath = `/Profile/${path.split(";")[1]}`;
+        } else if (path.includes("Course")) {
+            fullPath = `/Course/${path.split(";")[1]}`;
+        } else if (path.includes("Group")) {
+            fullPath = `/Group/${path.split(";")[1]}`;
+        } else {
+            fullPath = "/";
+        }
+
+        return fullPath;
+    }
+
     return (
         <div className="avatar-bar">
             <Badge count={3}>
@@ -198,8 +214,8 @@ const AvatarBar = (props) => {
                 onClose={onClose}
                 open={visible}
             >
-                <Collapse>
-                    <Panel header={"Friend Requests (" + friendRequests.length + ")"} key="1" >
+                <Collapse defaultActiveKey={0}>
+                    <Panel header={"Friend Requests (" + friendRequests.length + ")"} key="1" collapsible={friendRequests.length > 0}>
                         {friendRequests.map((friend) => (
                             <div key={friend}>
                                 <a target="_blank" href={`/Profile/${friend}`}> {friend}: </a>
@@ -208,7 +224,7 @@ const AvatarBar = (props) => {
                             </div>
                         ))}
                     </Panel>
-                    <Panel header="Friends" key="2">
+                    <Panel header="Friends" key="2" collapsible={friendsList.length > 0}>
                         {friendsList.map((friend) => (
                             <div key={friend.username}>
                                 <Avatar 
@@ -219,12 +235,16 @@ const AvatarBar = (props) => {
                             </div>
                         ))}
                     </Panel>
-                    <Panel header="Recent Activity" key="3">
+                    <Panel header="Recent Activity" key="3" collapsible={recentActivity.length > 0}>
                         {recentActivity.map((activity) => (
-                            <div key={activity.title}
-                            >
-                                <a target="_blank" href={activity.path}> {activity.title}: </a>
-                            </div>
+                            <div key={activity.title} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}> 
+                                <div>
+                                    <p> {activity.title} </p>
+                                </div>
+                                <div>
+                                    <LinkOutlined onClick={() => {window.open(activityPath(activity.path));}}/>
+                                </div>
+                            </div> 
                         ))}
                         {recentActivity.length > 0 && (
                             <div style={{ marginTop: '1em' }}>

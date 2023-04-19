@@ -15,6 +15,9 @@ const Thread = require("../models/thread-model");
 // imports comments (yes it's inside thread-model)
 const Comment = require("../models/thread-model");
 
+// Import recent activity
+const RecentActivity = require("../models/user-model");
+
 // imports user model - used for user verification
 const User = require("../models/user-model");
 
@@ -75,7 +78,7 @@ const createThread = async (req, res) => {
     // returns courseName threads
     const thread = await Thread.find({ courseName });
 
-    recentActivity(username, username + " created a new thread in " + courseName)
+    recentActivity(username, " created a new thread in " + courseName, courseName)
 
     res.status(201).json(thread);
 
@@ -169,7 +172,7 @@ const upvoteThread = async (req, res) => {
       thread.upvotes.set(username, true);
     }
 
-    recentActivity(username, username + " upvoted a thread in " + thread.courseName)
+    recentActivity(username,  " upvoted a thread in " + thread.courseName, thread.courseName)
 
     const updatedThread = await Thread.findByIdAndUpdate(
       id,
@@ -248,7 +251,7 @@ const downvoteThread = async (req, res) => {
       thread.downvotes.set(username, true);
     }
 
-    recentActivity(username, username + " downvoted a thread in " + thread.courseName)
+    recentActivity(username, " downvoted a thread in " + thread.courseName, thread.courseName)
 
     const updatedThread = await Thread.findByIdAndUpdate(
       id,
@@ -362,7 +365,7 @@ const createComment = async (req, res) => {
 
     // success
     console.log(username + " commented and subscribed to thread " + thread.title + "!");
-    recentActivity(username, username + " commented to a thread in " + thread.courseName)
+    recentActivity(username, " commented to a thread in " + thread.courseName, thread.courseName)
     res.status(201).json(updatedThread);
 
   } catch (err) {
@@ -419,7 +422,7 @@ const subscribeToThread = async (req, res) => {
       thread.subscribed.delete(username);
       doubleSubscribe = true;
     } else {
-      recentActivity(username, username + " subscribed to a thread in " + thread.courseName)
+      recentActivity(username, " subscribed to a thread in " + thread.courseName, thread.courseName)
       console.log(username + " subscribed to this thread!");
       thread.subscribed.set(username, userExist.email);
     }
@@ -454,7 +457,7 @@ const subscribeToThread = async (req, res) => {
 
 //Recent Activity Function  
 
-async function recentActivity (username, activity) {
+async function recentActivity (username, activity, path) {
 
   try {
     const user = await User.findOne({ username });
@@ -463,7 +466,14 @@ async function recentActivity (username, activity) {
       throw Error(username + " is not a registered user!");
     }
 
-    user.recentActivity.unshift(activity);
+    const newRecentActivity = new RecentActivity ({
+      path: "Course;" + path,
+      title: activity,
+    })
+
+    user.recentActivity.unshift(newRecentActivity);
+
+    console.log(user.recentActivity);
 
     if (user.recentActivity.length > 5) {
       user.recentActivity.pop();

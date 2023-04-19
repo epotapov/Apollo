@@ -14,9 +14,8 @@ const fs = require('fs'); //file reader
 const { resourceLimits } = require('worker_threads');
 const generateToken = require('../config/generate-token.js');
 
-
 //Schema for a friend, friends are within the user schema
-const friendSchema = new Schema({
+const friendSchema = mongoose.Schema({
     username: {
         type: String,
         required: true
@@ -27,6 +26,24 @@ const friendSchema = new Schema({
         default: "default"
     }
 })
+
+// Schema for recent activity, recent activity is within the user schema
+const recentActivitySchema = mongoose.Schema({
+    // Path is the path to the course page
+    path: {
+        type: String,
+        default: "/",
+        required: true
+    },
+    // Title is what the activity is
+    title: {
+        type: String,
+        required: true,
+        default: ""
+    }
+})
+
+// title:path 
 
 // a schema is similar to an object
 var userSchema = new Schema({
@@ -167,8 +184,7 @@ var userSchema = new Schema({
     },
 
     recentActivity: {
-        type: Array,
-        of: String,
+        type: [recentActivitySchema],
         required: false,
         default: []
     },
