@@ -46,25 +46,34 @@ const signupUser = async (req, res) => {
 
 // this returns a users friends - used for dms
 const allUsers = asyncHandler(async (req, res) => {
+     const user = await UserInfo.findById(req.user._id);
+     const friends = user.friendsList;
+
      const keyword = req.query.search
        ? {
-              username: { $regex: req.query.search, $options: "i" }
+           $or: [
+             { username: { $regex: req.query.search, $options: "i" } },
+             { email: { $regex: req.query.search, $options: "i" } },
+           ],
          }
        : {};
-   
-     // Get the user object using UserInfo.findById() method
-     const user = await UserInfo.findById(req.user._id);
-     const friendUsernames = user.friendsList.map((friend) => friend.username);
 
-     // using keyword and friendUsernames, grab those friends from the database
-     const users = await UserInfo.find({
-         ...keyword,
-         username: { $in: friendUsernames },
-         _id: { $ne: req.user._id }
+     const users = await UserInfo.find(keyword).find({ _id: { $ne: req.user._id } });
+     var ihateapollo = [];
+     users.forEach((user) => {
+          friends.forEach((friend) => {
+               if (friend.username === user.username) {
+                    ihateapollo.push(user);
+               }
+          })
      });
+     console.log(ihateapollo)
+     res.send(ihateapollo);
+   }); 
    
-     res.send(users);
-});
+   
+   
+
 
    
    
