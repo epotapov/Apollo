@@ -35,6 +35,8 @@ export default function ProfilePage() {
   const [user, setUser] = useState(outerUser ? outerUser.user : null);
   const [userFound, setUserFound] = useState(null);
   const [friendStatus, setFriendStatus] = useState(null);
+  const [userFoundBlocked, setUserFoundBlocked] = useState(false);
+  const [blocked, setBlocked] = useState(false);
 
   // Track the friend status of the current user and viewed user
   // 0: Not friends 1: Current user sent a friend request 2: Current user received a friend request 3: Friends
@@ -96,6 +98,13 @@ export default function ProfilePage() {
       } else if (user.username !== userFound.username) {
         setFriendStatus(0);
       }
+
+      if (user.blockedList.includes(userFound.username)) {
+        setUserFoundBlocked(true);
+      }
+      if (userFound.blockedList.includes(user.username)) {
+        setBlocked(true);
+      }
     }
   }, [user, userFound]);
 
@@ -104,6 +113,31 @@ export default function ProfilePage() {
       fetchUser();
     }
   }, [usernameParam]);
+
+  const unblockUser = async () => {
+    const response = await fetch(`http://localhost:5001/api/user//block-user/${userFound.username}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: user.username,
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.user) {
+        setUser(data.user);
+        outerUser.user = data.user;
+        message.success('User unblocked!', 3);
+        setUserFoundBlocked(false);
+      }
+    })
+    .catch(error => {
+      message.error('Connection Error');
+    }
+    );
+  }
 
   let sameAccount = false;
   let privateAccount = false;
@@ -257,7 +291,6 @@ export default function ProfilePage() {
     .catch(error => {
       message.error('Connection Error');
     });
-
   }
 
   const removeFriend = () => {
@@ -288,85 +321,140 @@ export default function ProfilePage() {
     });
   }
 
+  const blockUser = async () => {
+    const response = await fetch(`http://localhost:5001/api/user//block-user/${userFound.username}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: user.username,
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.user) {
+        setUser(data.user);
+        outerUser.user = data.user;
+        message.success('User blocked!', 3);
+        setUserFoundBlocked(true);
+      }
+    })
+    .catch(error => {
+      message.error('Connection Error');
+    }
+    );
+  }
+
+  if (userFoundBlocked && user && userFound) {
     return (
       <div>
-        <Navbar/>
-        <div id="ProfilePage">
-          <Card id="ProfileCard" title="Profile" bordered={true}>
+        <Navbar />
+        <Card id="ProfileCard" title="Profile" bordered={true}>
             <Avatar src={pfp} size={150} shape="circle" alt="Profile Picture" />
             <h3> Username: {username}</h3>
-            {friendStatus == 0 && <Button onClick={sendFriendRequest}> Add Friend </Button>}
-            {friendStatus == 1 && <Button onClick={cancelFriendRequest}> Cancel Friend Request </Button>}
-            {friendStatus == 2 && <Button onClick={acceptFriendRequest}> Accept Friend Request </Button>}
-            {friendStatus == 3 && <Button onClick={removeFriend}> Remove Friend </Button>}
-            {
-              privateAccount && !sameAccount && friendStatus != 3 &&
-              <div>
-                <p> Major: {major} </p>
-                <h4>Is a Private Account</h4>
-              </div>
-            }
-            {
-              (!privateAccount || sameAccount || friendStatus == 3) &&
-              <div>
-                <p> About me: {aboutMe} </p>
-                <p> Email: {email} </p>
-                <p> Date of Birth: {dob} </p>
-                <p> Role: {role} </p>
-                <p> Country: {country} </p>
-                <p> Gender: {gender} </p>
-                {role == "Student" ? (
-                  <div>
-                    <p> Major: {major} </p>
-                    <p> Year: {year} </p>
-                    <p> Courses: {displayArray(courses)} </p>
-                    <p> Plan of Study: {displayArray(planOfStudy)} </p>
-                    <p> Graduation year: {gradYear} </p>
-                  </div>
-                ) : (
-                  <div>
-                  <p> Currently Teaching: {displayArray(courses)} </p>
-                  <p> Planning To teach: {displayArray(planOfStudy)}  </p>
-                  <p> Department: {major} </p>
-                </div>
-                )}
-                <Card title="Social media Links" bordered={false} style={{ width: 200 }}>
-                {
-                  instagramLink.length != 0 &&
-                  <a target="_blank" href={instagramLink}>
-                    <InstagramFilled style={{ fontSize: '30px', color: '#08c' }}/>
-                  </a>
-                }
-                {
-                  linkedinLink.length != 0 &&
-                  <a target="_blank" href={linkedinLink}> 
-                    <LinkedinFilled style={{ fontSize: '30px', color: '#08c' }}/>
-                  </a>
-                }  
-                {
-                  twitterLink.length != 0 &&
-                  <a target="_blank" href={twitterLink}>
-                    <TwitterCircleFilled style={{ fontSize: '30px', color: '#08c' }}/>
-                  </a>
-                }     
-              </Card>
-              </div>
-            }
-            {user && sameAccount &&
-              <div>
-                <Button type="primary" shape="round" size="large" onClick={editProfile}>
-                  Edit Profile
-                </Button>
-                <Button type="primary" shape="round" size="large" onClick={() => navigate('/ChangePass')}>
-                  Change Password
-                </Button>
-                <Button type="primary" shape="round" size="large" onClick={() => logout()}>
-                  Log Out
-                </Button>
-              </div>
-            }
-          </Card>
-        </div>  
+            <Button onClick={unblockUser} >Unblock</Button>
+        </Card>
       </div>
-    );
+    )
+  }
+
+  if (blocked && user && userFound) {
+    return (
+      <div>
+        <Navbar />
+        <div id="ProfilePage">
+          <Card id="ProfileCard" title="Profile" bordered={true}>
+              <h3> {username} </h3>
+              <h3> This user has blocked you </h3>
+              {userFoundBlocked && <Button onClick={unblockUser}>Unblock</Button>}
+              {!userFoundBlocked && <Button onClick={blockUser}> Block </Button>}
+          </Card>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <Navbar/>
+      <div id="ProfilePage">
+        <Card id="ProfileCard" title="Profile" bordered={true}>
+          <Avatar src={pfp} size={150} shape="circle" alt="Profile Picture" />
+          <h3> Username: {username}</h3>
+          {!sameAccount && !userFoundBlocked && <Button onClick={blockUser}> Block </Button>}
+          {friendStatus == 0 && <Button onClick={sendFriendRequest}> Add Friend </Button>}
+          {friendStatus == 1 && <Button onClick={cancelFriendRequest}> Cancel Friend Request </Button>}
+          {friendStatus == 2 && <Button onClick={acceptFriendRequest}> Accept Friend Request </Button>}
+          {friendStatus == 3 && <Button onClick={removeFriend}> Remove Friend </Button>}
+          {
+            privateAccount && !sameAccount && friendStatus != 3 &&
+            <div>
+              <p> Major: {major} </p>
+              <h4>Is a Private Account</h4>
+            </div>
+          }
+          {
+            (!privateAccount || sameAccount || friendStatus == 3) &&
+            <div>
+              <p> About me: {aboutMe} </p>
+              <p> Email: {email} </p>
+              <p> Date of Birth: {dob} </p>
+              <p> Role: {role} </p>
+              <p> Country: {country} </p>
+              <p> Gender: {gender} </p>
+              {role == "Student" ? (
+                <div>
+                  <p> Major: {major} </p>
+                  <p> Year: {year} </p>
+                  <p> Courses: {displayArray(courses)} </p>
+                  <p> Plan of Study: {displayArray(planOfStudy)} </p>
+                  <p> Graduation year: {gradYear} </p>
+                </div>
+              ) : (
+                <div>
+                <p> Currently Teaching: {displayArray(courses)} </p>
+                <p> Planning To teach: {displayArray(planOfStudy)}  </p>
+                <p> Department: {major} </p>
+              </div>
+              )}
+              <Card title="Social media Links" bordered={false} style={{ width: 200 }}>
+              {
+                instagramLink.length != 0 &&
+                <a target="_blank" href={instagramLink}>
+                  <InstagramFilled style={{ fontSize: '30px', color: '#08c' }}/>
+                </a>
+              }
+              {
+                linkedinLink.length != 0 &&
+                <a target="_blank" href={linkedinLink}> 
+                  <LinkedinFilled style={{ fontSize: '30px', color: '#08c' }}/>
+                </a>
+              }  
+              {
+                twitterLink.length != 0 &&
+                <a target="_blank" href={twitterLink}>
+                  <TwitterCircleFilled style={{ fontSize: '30px', color: '#08c' }}/>
+                </a>
+              }     
+            </Card>
+            </div>
+          }
+          {user && sameAccount &&
+            <div>
+              <Button type="primary" shape="round" size="large" onClick={editProfile}>
+                Edit Profile
+              </Button>
+              <Button type="primary" shape="round" size="large" onClick={() => navigate('/ChangePass')}>
+                Change Password
+              </Button>
+              <Button type="primary" shape="round" size="large" onClick={() => logout()}>
+                Log Out
+              </Button>
+            </div>
+          }
+        </Card>
+      </div>  
+    </div>
+  );
 }

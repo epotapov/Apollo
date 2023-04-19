@@ -197,8 +197,6 @@ router.patch('/removeFriend', async (req, res) => {
         const pendingFriend = await UserInfo.findOne({username: friendUsername});
 
         var friends = false;
-        console.log(user.friendsList);
-        console.log(friendUsername);
         for (let i = 0; i < user.friendsList.length; i++) {
             if (user.friendsList[i].username === friendUsername) {
                 friends = true;
@@ -633,23 +631,54 @@ router.get("/get-favCourses/:username", async (req, res) => {
     res.status(200).json(userReturned.favCourses);
 });
 
+/* Block a user
+    * @param username: username of the user to block
+    * @body username: username of the user who is blocking
+    * 
+    * @return 200: success
+    * @return 404: user not found
+*/
+
 router.post("/block-user/:username", async (req, res) => {
-    const user = req.params.username;
-    const userReturned = await UserInfo.findOne({username : user});
-    const {userToBlock} = req.body;
-    for (let i = 0; i < userReturned.friendsList.length; i++) {
-        if (userReturned.friendsList[i].username === userToBlock) {
-            userReturned.friendsList.splice(i, 1)
+    const pendingBlock = await UserInfo.findOne({ username: req.params.username });
+    const user = await UserInfo.findOne({ username: req.body.username });
+
+    let isBlocked = false;
+    for (let i = 0; i < user.blockedList.length; i++) {
+        if (user.blockedList[i] == pendingBlock.username) {
+            isBlocked = true;
         }
     }
-    for (let j = 0; j < userReturned.blockList.length; j++) {
-        if (userReturned.blockList[j].username === userToBlock) {
-            userReturned.blockList.splice(j, 1)
+
+    if (!isBlocked) {
+        var friends = false;
+        for (let i = 0; i < user.friendsList.length; i++) {
+            if (user.friendsList[i].username === pendingBlock.username) {
+                friends = true;
+            }
         }
+        if (friends) {
+            user.friendsList.splice(user.friendsList.indexOf(pendingBlock.username), 1);
+            pendingBlock.friendsList.splice(pendingBlock.friendsList.indexOf(user.username), 1); 
+        }
+        if (user.friendRequests.includes(pendingBlock.username)) {
+            user.friendRequests.splice(user.friendRequests.indexOf(pendingBlock.username), 1);
+            pendingBlock.friendRequestsSent.splice(pendingBlock.friendRequestsSent.indexOf(user.username), 1);
+        }
+        if (user.friendRequestsSent.includes(pendingBlock.username)) {
+            user.friendRequestsSent.splice(user.friendRequestsSent.indexOf(pendingBlock.username), 1);
+            pendingBlock.friendRequests.splice(pendingBlock.friendRequests.indexOf(user.username), 1);
+        }
+        user.blockedList.push(pendingBlock.username);
+        await user.save();
+        await pendingBlock.save();
+        res.status(200).json({user: user, pendingBlock: pendingBlock});
+    } else {
+        // Unblock the user
+        user.blockedList.splice(user.blockedList.indexOf(pendingBlock.username), 1);
+        await user.save();
+        res.status(200).json({user: user, pendingBlock: pendingBlock});
     }
-    userReturned.blockedList.push(userToBlock)
-    await userReturned.save()
-    res.status(200).json({ message: 'Blocked!'});
 });
 
 router.post("/clear-recent-activity", async (req, res) => {
