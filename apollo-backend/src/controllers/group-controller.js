@@ -366,7 +366,7 @@ const deleteGroup = async (req, res) => {
  */
 const getGroupMembers = async (req, res) => {
     const { groupId } = req.params;
-    const token = req.user._id;
+    //const token = req.user._id;
 
     try {
         const group = await Group.findOne({ groupId })
@@ -376,10 +376,10 @@ const getGroupMembers = async (req, res) => {
             throw new Error("Group not found.");
         }
 
-        const user = User.findOne({ _id: token });
+        /*const user = User.findOne({ _id: token });
         if (!user) {
             throw new Error("User not found.");
-        }
+        }*/
 
         res.status(200).json(group.members);
     } catch (err) {
