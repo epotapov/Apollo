@@ -194,6 +194,7 @@ const joinGroup = async (req, res) => {
     try {
         // check if group exists
         const group = await Group.findOne({ _id: groupId });
+        console.log(group)
         if (!group) {
             throw new Error("Group not found.");
         }
@@ -352,36 +353,26 @@ const deleteGroup = async (req, res) => {
  * 
  * /api/group/members/:groupId
  * 
- * authorization token required. it is stored in user context.
- * implement something like this for the frontend req:
- * 
- * const config = {
- *   headers: {
- *     Authorization: `Bearer ${user.userToken}`,
- *   },
- * };
- *
- * const { data } = await axios.get(
- *      `http://localhost:5001/api/group/members/:groupId`, config);
  */
 const getGroupMembers = async (req, res) => {
     const { groupId } = req.params;
-    //const token = req.user._id;
 
     try {
-        const group = await Group.findOne({ groupId })
-            .populate('members', 'username email profilePicture');
+        const group = await Group.findOne({ _id: groupId })
+            .populate('members', 'username profilePicture');
 
         if (!group) {
             throw new Error("Group not found.");
         }
 
-        /*const user = User.findOne({ _id: token });
-        if (!user) {
-            throw new Error("User not found.");
-        }*/
+        const admin = await User.findOne({ _id: group.groupAdmin })
+        const adminReturn = {
+            _id: admin._id,
+            username: admin.username,
+            profilePicture: admin.profilePicture,
+        }
 
-        res.status(200).json(group.members);
+        res.status(200).json({ admin: adminReturn, members: group.members.splice(1) });
     } catch (err) {
         res.status(404).json({ message: err.message });
     }

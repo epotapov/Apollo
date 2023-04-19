@@ -38,6 +38,6 @@ router.route("/leave/:groupId").patch(protect, leaveGroup);
 router.route("/delete/:groupId").patch(protect, deleteGroup);
 
 // get req for members
-router.route("/members/:groupId").get(protect, getGroupMembers);
+router.route("/members/:groupId").get(getGroupMembers);
 
 module.exports = router;
