@@ -670,13 +670,14 @@ router.post("/edit-thread/:threadID", async (req, res) => {
     const id = req.params.threadID;
     const threadFound = await Thread.findById(id)
     console.log(threadFound)
+    // edit : title, description, tag
 })
 
 router.post("/edit-review/:reviewID", async (req, res) => {
     const id = req.params.reviewID;
     const reviewFound = await Rating.findById(id)
     console.log(reviewFound)
-
+    // edit: Description, stars, title, enjoyability, difficulty, attendanceRequired, professor, semester
 })
 
 router.post("/edit-comment/:threadID/:commentID", async (req, res) => {
@@ -685,6 +686,7 @@ router.post("/edit-comment/:threadID/:commentID", async (req, res) => {
     const threadFound = await Thread.findById(thrId)
     const commentFound = threadFound.comments.find(x => x._id + "x" === id + "x");
     console.log(commentFound)
+    // edit : description
 })
 
 module.exports = router;
