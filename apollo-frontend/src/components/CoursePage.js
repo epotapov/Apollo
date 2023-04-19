@@ -323,6 +323,7 @@ export default function CoursePage() {
             },
         },
     };
+    
 
     return (
         <div id='cont'>

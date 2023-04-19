@@ -4,7 +4,8 @@ import { useLogout } from '../hooks/useLogout';
 import { useUserContext } from '../hooks/useUserContext';
 import { useNavigate } from 'react-router-dom';
 import defpfp from '../img/defaultpfp.png';
-import { CheckCircleOutlined, CloseCircleOutlined, LinkOutlined  } from "@ant-design/icons";
+import { CheckCircleOutlined, CloseCircleOutlined, LinkOutlined} from "@ant-design/icons";
+import FriendRecentActivity from './FriendRecentActivity';
 
 const { Panel } = Collapse;
 
@@ -19,6 +20,7 @@ const AvatarBar = (props) => {
 
     const [friendsList, setFriendsList] = useState([]);
     const [friendRequests, setFriendRequests] = useState([]);
+    const [timeline, setTimeline] = useState([]);
 
     useEffect(() => {
         if (user) {
@@ -29,6 +31,7 @@ const AvatarBar = (props) => {
                 pfp = props.pic;
             }
             formatFriendList(user.friendsList ? user.friendsList : []);
+            formatTimeLine(user.friendsList ? user.friendsList : []);
             if (user.friendRequests && user.friendRequests.length != friendRequests.length) {
                 formatFriendRequests(user.friendRequests ? user.friendRequests : []);
             }
@@ -48,6 +51,30 @@ const AvatarBar = (props) => {
             fetchUpdatedUser();
         }
     }, [outerUser]);
+
+    const formatTimeLine = async (friends) => {
+
+        let timelineList = [];
+        for (let i = 0; i < friends.length; i++) {
+            const response = await fetch('http://localhost:5001/api/user/get/' + friends[i].username);
+            const data = await response.json();
+            let currTimeLine = [];
+
+            for (let j = 0; j < data.recentActivity.length; j++) {
+                currTimeLine.push({
+                    title: data.recentActivity[j].split(":")[0],
+                    type: data.recentActivity[j].split(":")[1],
+                    path: data.recentActivity[j].split(":")[2]
+                });
+            }
+            timelineList.push({
+                username: friends[i].username,
+                profilePicture: friends[i].profilePicture,
+                recentActivity: currTimeLine
+            });
+        }
+        setTimeline(timelineList);
+    }
 
     const formatRecentActivity = (recentActivity) => {
         let recentActivityList = [];
@@ -257,6 +284,14 @@ const AvatarBar = (props) => {
                                 <Button onClick={handleClearRecentActivity}>Clear Recent Activity</Button>
                             </div>
                         )}
+                    </Panel>
+                    <Panel header="Friend's Timeline" key="4" collapsible={friendsList.length > 0}>
+                        {timeline.map((friend) => (
+                            friend.recentActivity.length > 0 &&
+                            <div key={friend.username} style={{ display: 'flex', marginBottom:'10px', paddingBottom: '5px',  justifyContent: 'space-between', alignItems: 'center'}}>
+                                <FriendRecentActivity friend={friend} />
+                            </div>
+                        ))}
                     </Panel>
                 </Collapse>
                 <Button onClick={() => {
