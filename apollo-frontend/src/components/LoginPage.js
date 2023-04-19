@@ -100,16 +100,16 @@ export default function LoginPage() {
                     <div>
                         <Carousel autoplay className="my-carousel">
                             <div>
-                                <img src={require("../img/Purdue_image_2.jpg")} alt="Purdue Image 2" style={{maxWidth: '100%', maxHeight: '100%', height: 'auto' }}/>
+                                <img src={require("../img/Purdue_image_2.jpg")} alt="Purdue Image 2" style={{maxWidth: '100%', maxHeight: '100%', height: 'auto', borderRadius: '10px'}}/>
                             </div>
                             <div>
-                                <img  src={require("../img/Purdue_image_3.jpg")} alt="Purdue Image 3" style={{ maxWidth: '100%', maxHeight: '100%', height: 'auto' }}/>
+                                <img  src={require("../img/Purdue_image_3.jpg")} alt="Purdue Image 3" style={{ maxWidth: '100%', maxHeight: '100%', height: 'auto', borderRadius: '10px' }}/>
                             </div>
                             <div>
-                                <img src={require("../img/Purdue_image_4.jpg")} alt="Purdue Image 4" style={{ maxWidth: '100%', maxHeight: '100%', height: 'auto' }}/>
+                                <img src={require("../img/Purdue_image_4.jpg")} alt="Purdue Image 4" style={{ maxWidth: '100%', maxHeight: '100%', height: 'auto', borderRadius: '10px' }}/>
                             </div>
                             <div>
-                                <img  src={require("../img/Purdue_image_1.jpg")} alt="Purdue Image 1" style={{ maxWidth: '100%', maxHeight: '100%', height: 'auto' }}/>
+                                <img  src={require("../img/Purdue_image_1.jpg")} alt="Purdue Image 1" style={{ maxWidth: '100%', maxHeight: '100%', height: 'auto', borderRadius: '10px' }}/>
                             </div>
                         </Carousel>
                         <div style={{ marginTop: '10px', marginBottom: "10px" ,fontSize: '12px', textAlign: 'center' }}>
