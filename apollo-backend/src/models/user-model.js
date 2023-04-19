@@ -15,7 +15,7 @@ const { resourceLimits } = require('worker_threads');
 const generateToken = require('../config/generate-token.js');
 
 //Schema for a friend, friends are within the user schema
-const friendSchema = mongoose.Schema({
+const friendSchema = new Schema({
     username: {
         type: String,
         required: true

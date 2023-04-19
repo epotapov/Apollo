@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const UserInfo = require('../models/user-model');
 const fs = require('fs'); //filereader
 const generateToken = require('../config/generate-token.js');
@@ -45,28 +46,28 @@ const signupUser = async (req, res) => {
 
 // this returns a users friends - used for dms
 const allUsers = asyncHandler(async (req, res) => {
-     const friends = (await UserInfo.findOne(req.user._id)).friendsList;
-
-     // this matches friends that are relevant from the search query
      const keyword = req.query.search
-          ? {
-               $and: [
-                    { _id: { $in: friends } },
-                    {
-                         $or: [
-                              { username: { $regex: req.query.search, $options: "i" } },
-                              { email: { $regex: req.query.search, $options: "i" } },
-                         ],
-                    },
-               ],
-          }
-          : {};
+       ? {
+              username: { $regex: req.query.search, $options: "i" }
+         }
+       : {};
+   
+     // Get the user object using UserInfo.findById() method
+     const user = await UserInfo.findById(req.user._id);
+     const friendUsernames = user.friendsList.map((friend) => friend.username);
 
-     // using keyword we grab those friends from the database
-     const users = await UserInfo.find(keyword).find({ _id: { $ne: req.user._id } });
-
+     // using keyword and friendUsernames, grab those friends from the database
+     const users = await UserInfo.find({
+         ...keyword,
+         username: { $in: friendUsernames },
+         _id: { $ne: req.user._id }
+     });
+   
      res.send(users);
 });
+
+   
+   
 
 
 module.exports = { signupUser, loginUser, allUsers }
