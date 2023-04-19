@@ -40,7 +40,7 @@ const CoursePairing = (course) => {
         .catch(error => {
             message.error('Connection Error');
         });
-    }, []);
+    }, [courseName]);
 
     const showDrawer = () => {
         setVisible(true);
