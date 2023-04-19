@@ -664,6 +664,7 @@ router.post("/clear-recent-activity", async (req, res) => {
 })
 
 const Thread = require("../models/thread-model");
+const Rating = require("../models/rating-model");
 
 router.post("/edit-thread/:threadID", async (req, res) => {
     const id = req.params.threadID;
@@ -673,12 +674,17 @@ router.post("/edit-thread/:threadID", async (req, res) => {
 
 router.post("/edit-review/:reviewID", async (req, res) => {
     const id = req.params.reviewID;
+    const reviewFound = await Rating.findById(id)
+    console.log(reviewFound)
 
 })
 
-router.post("/edit-comment/:commentID", async (req, res) => {
-    const id = req.params.commentID;
-
+router.post("/edit-comment/:threadID/:commentID", async (req, res) => {
+    const thrId = req.params.threadID
+    var id = req.params.commentID;
+    const threadFound = await Thread.findById(thrId)
+    const commentFound = threadFound.comments.find(x => x._id + "x" === id + "x");
+    console.log(commentFound)
 })
 
 module.exports = router;
