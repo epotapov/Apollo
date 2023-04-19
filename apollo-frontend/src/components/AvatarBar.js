@@ -52,10 +52,11 @@ const AvatarBar = (props) => {
     const formatRecentActivity = (recentActivity) => {
         let recentActivityList = [];
         for (let i = 0; i < recentActivity.length; i++) {
-            console.log(recentActivity[i]);
+            // recentActivity[i] is in format "title:type:path"
             recentActivityList.push({
-                path: recentActivity[i].path,
-                title: recentActivity[i].title,
+                title: recentActivity[i].split(":")[0],
+                type: recentActivity[i].split(":")[1],
+                path: recentActivity[i].split(":")[2]
             });
         }
         setRecentActivity(recentActivityList);
@@ -179,15 +180,17 @@ const AvatarBar = (props) => {
         });
     }
 
-    const activityPath = (path) => {
+    const activityPath = (activity) => {
+        const type = activity.type;
+        const path = activity.path;
         // Path will be `/Profile/${username}` where username is stored in path after semi-colon
         let fullPath = "/";
-        if (path.includes("Profile")) {
-            fullPath = `/Profile/${path.split(";")[1]}`;
-        } else if (path.includes("Course")) {
-            fullPath = `/Course/${path.split(";")[1]}`;
-        } else if (path.includes("Group")) {
-            fullPath = `/Group/${path.split(";")[1]}`;
+        if (type === "Profile") {
+            fullPath = `/Profile/${path}`;
+        } else if (type === "Course") {
+            fullPath = `/Course/${path}`;
+        } else if (type === "Group") {
+            fullPath = `/Group/${path}`;
         } else {
             fullPath = "/";
         }
@@ -237,12 +240,15 @@ const AvatarBar = (props) => {
                     </Panel>
                     <Panel header="Recent Activity" key="3" collapsible={recentActivity.length > 0}>
                         {recentActivity.map((activity) => (
-                            <div key={activity.title} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}> 
+                            <div key={activity.title} 
+                                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #d9d9d9'}}
+                            > 
                                 <div>
-                                    <p> {activity.title} </p>
+                                    <p
+                                    > {activity.title} </p>
                                 </div>
                                 <div>
-                                    <LinkOutlined onClick={() => {window.open(activityPath(activity.path));}}/>
+                                    <LinkOutlined onClick={() => {window.open(activityPath(activity));}}/>
                                 </div>
                             </div> 
                         ))}

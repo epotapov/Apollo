@@ -27,24 +27,6 @@ const friendSchema = mongoose.Schema({
     }
 })
 
-// Schema for recent activity, recent activity is within the user schema
-const recentActivitySchema = mongoose.Schema({
-    // Path is the path to the course page
-    path: {
-        type: String,
-        default: "/",
-        required: true
-    },
-    // Title is what the activity is
-    title: {
-        type: String,
-        required: true,
-        default: ""
-    }
-})
-
-// title:path 
-
 // a schema is similar to an object
 var userSchema = new Schema({
 
@@ -183,8 +165,10 @@ var userSchema = new Schema({
         required: false
     },
 
+    // Recent activity of the user, each string is title:path
     recentActivity: {
-        type: [recentActivitySchema],
+        type: Array,
+        of: String,
         required: false,
         default: []
     },

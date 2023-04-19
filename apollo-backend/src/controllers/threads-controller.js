@@ -15,11 +15,11 @@ const Thread = require("../models/thread-model");
 // imports comments (yes it's inside thread-model)
 const Comment = require("../models/thread-model");
 
-// Import recent activity
-const RecentActivity = require("../models/user-model");
-
 // imports user model - used for user verification
-const User = require("../models/user-model");
+const UserInfo = require("../models/user-model");
+
+// Import recent activity
+const recentActivitySchema = require("../models/user-model");
 
 // imports course model - used for course verification
 const Course = require("../models/course-model");
@@ -45,7 +45,7 @@ const createThread = async (req, res) => {
     const { courseName, username, title, description, tag, isProfThread, pfp } = req.body;
 
     // verify user exists before we let them create a thread
-    const user = await User.findOne({ username });
+    const user = await UserInfo.findOne({ username });
     if (!user) {
       throw Error(username + " is not a registered user!");
     }
@@ -78,7 +78,7 @@ const createThread = async (req, res) => {
     // returns courseName threads
     const thread = await Thread.find({ courseName });
 
-    recentActivity(username, " created a new thread in " + courseName, courseName)
+    recentActivity(username, ` created thread ${thread.title} in ${thread.courseName}`, courseName)
 
     res.status(201).json(thread);
 
@@ -143,7 +143,7 @@ const upvoteThread = async (req, res) => {
     const { id } = req.params;
     const { username } = req.body;
 
-    const userExist = await User.findOne({ username });
+    const userExist = await UserInfo.findOne({ username });
     if (!userExist) {
       throw Error(username + " is not a registered user!");
     }
@@ -158,21 +158,26 @@ const upvoteThread = async (req, res) => {
     var doubleUpvoteAttempt = false;
     var downvoteUpvoteAttempt = false;
 
+    var recentActivityMessage = "";
+
     if (isUpvoted) {
       console.log(username + " removed their upvote from this thread!");
+      recentActivityMessage = ` removed upvote from thread ${thread.title} in `;
       thread.upvotes.delete(username);
       doubleUpvoteAttempt = true;
     } else if (isDownvoted) {
       console.log(username + " changed their downvote to an upvote!");
+      recentActivityMessage = ` changed downvote to upvote on thread ${thread.title} in `;
       thread.downvotes.delete(username);
       thread.upvotes.set(username, true);
       downvoteUpvoteAttempt = true;
     } else {
       console.log(username + " upvoted this thread!");
+      recentActivityMessage = ` upvoted thread ${thread.title} in `;
       thread.upvotes.set(username, true);
     }
 
-    recentActivity(username,  " upvoted a thread in " + thread.courseName, thread.courseName)
+    recentActivity(username, recentActivityMessage + thread.courseName, thread.courseName)
 
     const updatedThread = await Thread.findByIdAndUpdate(
       id,
@@ -222,7 +227,7 @@ const downvoteThread = async (req, res) => {
     const { id } = req.params;
     const { username } = req.body;
 
-    const userExist = await User.findOne({ username });
+    const userExist = await UserInfo.findOne({ username });
     if (!userExist) {
       throw Error(username + " is not a registered user!");
     }
@@ -237,21 +242,26 @@ const downvoteThread = async (req, res) => {
     var doubleDownvoteAttempt = false;
     var downvoteUpvoteAttempt = false;
 
+    var recentActivityMessage = "";
+
     if (isDownvoted) {
       console.log(username + " removed their downvote from this thread!");
+      recentActivityMessage = ` removed downvote from thread ${thread.title} in `;
       thread.downvotes.delete(username);
       doubleDownvoteAttempt = true;
     } else if (isUpvoted) {
       console.log(username + " changed their upvote to a downvote!");
+      recentActivityMessage = ` changed upvote to downvote on thread ${thread.title} in `;
       thread.upvotes.delete(username);
       thread.downvotes.set(username, true);
       downvoteUpvoteAttempt = true;
     } else {
       console.log(username + " downvoted this thread!");
+      recentActivityMessage = ` downvoted thread ${thread.title} in `;
       thread.downvotes.set(username, true);
     }
 
-    recentActivity(username, " downvoted a thread in " + thread.courseName, thread.courseName)
+    recentActivity(username, recentActivityMessage + thread.courseName, thread.courseName)
 
     const updatedThread = await Thread.findByIdAndUpdate(
       id,
@@ -259,7 +269,6 @@ const downvoteThread = async (req, res) => {
       { new: true }
     );
 
-    console.log("downvotes: " + updatedThread.downvotes.size);
     if (doubleDownvoteAttempt) {
       res.status(209).json(updatedThread);
     } else if (downvoteUpvoteAttempt) {
@@ -297,7 +306,7 @@ const createComment = async (req, res) => {
     const { username, description, pfp } = req.body;
 
     // does user exist
-    const userExist = await User.findOne({ username });
+    const userExist = await UserInfo.findOne({ username });
     if (!userExist) {
       throw Error(username + " is not a registered user!");
     }
@@ -339,7 +348,7 @@ const createComment = async (req, res) => {
 
     for (const [key, value] of thread.subscribed) {
 
-      const findUser = await User.findOne({username: key})
+      const findUser = await UserInfo.findOne({username: key})
 
       if (findUser.emailNotif) {
         const mailOptions = {
@@ -365,7 +374,7 @@ const createComment = async (req, res) => {
 
     // success
     console.log(username + " commented and subscribed to thread " + thread.title + "!");
-    recentActivity(username, " commented to a thread in " + thread.courseName, thread.courseName)
+    recentActivity(username, ` commented to thread ${thread.title} in ${thread.courseName}`, thread.courseName)
     res.status(201).json(updatedThread);
 
   } catch (err) {
@@ -398,7 +407,7 @@ const subscribeToThread = async (req, res) => {
     const { id } = req.params;
     const { username } = req.body;
 
-    const userExist = await User.findOne({ username });
+    const userExist = await UserInfo.findOne({ username });
     if (!userExist) {
       throw Error(username + " is not a registered user!");
     }
@@ -419,10 +428,11 @@ const subscribeToThread = async (req, res) => {
 
     if (isSubscribed) {
       console.log(username + " unsubscribed from this thread!");
+      recentActivity(username, `unsubscribed from thread ${thread.title} in  ${thread.courseName}`, thread.courseName)
       thread.subscribed.delete(username);
       doubleSubscribe = true;
     } else {
-      recentActivity(username, " subscribed to a thread in " + thread.courseName, thread.courseName)
+      recentActivity(username, `subscribed to thread ${thread.title} in  ${thread.courseName}`, thread.courseName)
       console.log(username + " subscribed to this thread!");
       thread.subscribed.set(username, userExist.email);
     }
@@ -453,34 +463,26 @@ const subscribeToThread = async (req, res) => {
   }
 }
 
-
-
 //Recent Activity Function  
 
 async function recentActivity (username, activity, path) {
 
   try {
-    const user = await User.findOne({ username });
+    const user = await UserInfo.findOne({ username });
 
     if (!user) {
       throw Error(username + " is not a registered user!");
     }
 
-    const newRecentActivity = new RecentActivity ({
-      path: "Course;" + path,
-      title: activity,
-    })
+    const newRecentActivity = activity + ":" + "Course:" + path;
 
     user.recentActivity.unshift(newRecentActivity);
-
-    console.log(user.recentActivity);
 
     if (user.recentActivity.length > 5) {
       user.recentActivity.pop();
     }
 
     await user.save();
-
   } catch (err) {
     if (err instanceof mongoose.Error.CastError) {
       console.log("RECENT ACTIVITY ERROR");
