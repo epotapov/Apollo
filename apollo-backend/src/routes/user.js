@@ -667,24 +667,41 @@ const Thread = require("../models/thread-model");
 const Rating = require("../models/rating-model");
 
 router.post("/edit-thread/:threadID", async (req, res) => {
+    const {title, description, tag} = req.body
     const id = req.params.threadID;
     const threadFound = await Thread.findById(id)
+    threadFound.title = title;
+    threadFound.description = description;
+    threadFound.tag = tag;
+    await threadFound.save();
     console.log(threadFound)
-    // edit : title, description, tag
 })
 
 router.post("/edit-review/:reviewID", async (req, res) => {
+    const {description, stars, title, enjoyability, difficulty, attendanceRequired, professor, semester} = req.body
     const id = req.params.reviewID;
     const reviewFound = await Rating.findById(id)
+    reviewFound.title = title;
+    reviewFound.stars = stars;
+    reviewFound.description = description;
+    reviewFound.enjoyability = enjoyability;
+    reviewFound.difficulty = difficulty;
+    reviewFound.attendanceRequired = attendanceRequired;
+    reviewFound.professor = professor;
+    reviewFound.semester = semester;
+    await reviewFound.save();
     console.log(reviewFound)
     // edit: Description, stars, title, enjoyability, difficulty, attendanceRequired, professor, semester
 })
 
 router.post("/edit-comment/:threadID/:commentID", async (req, res) => {
+    const {description} = req.body
     const thrId = req.params.threadID
     var id = req.params.commentID;
     const threadFound = await Thread.findById(thrId)
     const commentFound = threadFound.comments.find(x => x._id + "x" === id + "x");
+    commentFound.description = description;
+    await threadFound.save();
     console.log(commentFound)
     // edit : description
 })
