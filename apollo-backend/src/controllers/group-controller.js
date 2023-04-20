@@ -40,7 +40,8 @@ const getGroup = async (req, res) => {
     const { groupId } = req.params;
 
     try {
-        const group = await Group.findOne({ groupId });
+        const group = await Group.findOne({ _id: groupId });
+        console.log(group)
         if (!group) {
             throw new Error("Group not found.");
         }
@@ -96,7 +97,10 @@ const createGroup = async (req, res) => {
         const newGroup = new Group({ title, description, groupAdmin: token, members: [token] });
 
         await newGroup.save();
-        res.status(201).json(newGroup);
+        // find new group in mongodb
+        const mongoGroup = await Group.findOne({ title: newGroup.title });
+
+        res.status(201).json(mongoGroup);
     } catch (error) {
         res.status(409).json({ message: error.message });
     }
@@ -142,6 +146,11 @@ const updateGroup = async (req, res) => {
         // check if admin is a user or if admin is this group's admin
         if (!group.groupAdmin.equals(token)) {
             throw Error("The user provided is not authorized to update this group.");
+        }
+
+        // check if title is empty 
+        if (title === "") {
+            throw Error("The title is empty!");
         }
 
         // update title if provided
