@@ -280,7 +280,6 @@ router.patch('/cancelFriendRequest', async (req, res) => {
 router.get('/getAll', async function (req, res) {
 
     const allUsers = await UserInfo.find();
-    console.log("Responding with all users");
     res.json(allUsers);
 
 });
@@ -289,7 +288,6 @@ router.get('/getAll', async function (req, res) {
 router.get('/get/:username', async (req, res) => {
     const param = req.params.username;
     const userReturned = await UserInfo.findOne({ username: param });
-    console.log(userReturned);
     res.json(userReturned);
 });
 
@@ -297,7 +295,6 @@ router.get('/get/:username', async (req, res) => {
 router.get('/friends/:username', async (req, res) => {
     const param = req.params.username;
     const userReturned = await UserInfo.findOne({ username: param });
-    console.log(userReturned.friendsList);
     res.json(userReturned.friendsList);
 });
 
@@ -307,7 +304,6 @@ router.get('/friends/:username', async (req, res) => {
 router.get('/getIsProf/:username', async (req, res) => {
     const param = req.params.username;
     const userReturned = await UserInfo.findOne({ username: param });
-    console.log(userReturned);
     res.send(userReturned.isProf);
 });
 
@@ -338,14 +334,12 @@ router.get('/verify', async (req, res) => {
                 if (error) { throw error };
                 if (data.includes(user.email)) {
                     user.isProf = true;
-                    console.log("user is professor");
                 }
                 user.isVerified = true;
                 await user.save();
             })
             res.send('Account verification successful! Please return to the ' + 'login page'.link('http://localhost:3000/Login'));
         }
-        console.log(decoded);
     });
 });
 
@@ -446,7 +440,6 @@ router.post('/forgot-password', async (req, res) => {
 
 // reset password api
 router.post('/reset-password', async (req, res) => {
-    console.log(req);
     const token = decodeURIComponent(req.query.token);
 
     const salt = await bcrypt.genSalt(10);           //salt adds random string of characters on top of password
@@ -637,10 +630,16 @@ router.post("/delete-pdf-resource/:Course", async (req, res) => {
 
 router.post("/add-favCourse", async (req, res) => {
     const {username, favCourses} = req.body;
-    console.log({username, favCourses});
+
     const user = await UserInfo.findOne({ username: username });
     user.favCourses = favCourses;
     await user.save();
+
+    const course = await CourseInfo.findOneAndUpdate(
+        { Course: favCourses.at(favCourses.length - 1) },
+        { $addToSet: { Favorited: user._id } },
+        { new: true });
+    console.log(course)
     res.status(200).json({ message: 'Success!'});
 });
 
