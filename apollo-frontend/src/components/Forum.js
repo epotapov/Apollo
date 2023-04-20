@@ -345,7 +345,7 @@ const Forum = (props) => {
         ];
     
         setThreads(updatedThreads); 
-        commentForm.resetFields();
+        document.getElementById("commentForm").reset();
     }
 
     const handleUpVote = async (threadId) => {
@@ -581,10 +581,10 @@ const Forum = (props) => {
                                             user && user.username == thread.username &&
                                             <span>
                                                 <Button shape="Circle" icon={<EditOutlined />} onClick={() => {
-                                                    showModalEdit();
                                                     setEditThreadId(thread.id);
                                                     setEditThreadTitle(thread.title);
                                                     setEditThreadContent(thread.description);
+                                                    showModalEdit();
                                                 }} />
                                                 <Modal
                                                     title="Edit Thread"
@@ -593,7 +593,7 @@ const Forum = (props) => {
                                                     confirmLoading={confirmLoadingEdit}
                                                     onCancel={handleCancelEdit}
                                                 >
-                                                    <Form form={editThreadform} initialValues={{title: thread.title, description: thread.description}} name="editThread">
+                                                    <Form form={editThreadform} initialValues={{title: editThreadTitle, description: editThreadContent}} name="editThread">
                                                         <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
                                                             <Input placeholder="Title" onChange={(e) => {
                                                                 setEditThreadTitle(e.target.value);
@@ -669,22 +669,21 @@ const Forum = (props) => {
                                         ))}
                                     </ul>
                                 )}
-                                <Collapse collapsible='icon'>
-                                    {user && (
-                                        <Panel header="Add Comment">
-                                            <Form form={commentForm} name="comment" onFinish={(values) => handleAddComment(values, thread.id)}>
-                                                <Form.Item name="content" rules={[{ required: true, message: "Please enter your comment" }]}>
+                                {user && (
+                                    <>
+                                        <h3>Add comment:</h3>
+                                        <Form id="commentForm" name="comment" onFinish={(values) => handleAddComment(values, thread.id)}>
+                                            <Form.Item name="content" rules={[{ required: true, message: "Please enter your comment" }]}>
                                                 <Input.TextArea rows={4} placeholder="Comment" />
-                                                </Form.Item>
-                                                <Form.Item>
-                                                <Button type="primary" htmlType="submit">
-                                                    Add Comment
-                                                </Button>
-                                                </Form.Item>
-                                            </Form>
-                                        </Panel>
-                                    )}
-                                </Collapse>
+                                            </Form.Item>
+                                            <Form.Item>
+                                            <Button type="primary" htmlType="submit">
+                                                Add Comment
+                                            </Button>
+                                            </Form.Item>
+                                        </Form>
+                                    </>
+                                )}
                         </Panel>         
                         ))}
                     </Collapse>

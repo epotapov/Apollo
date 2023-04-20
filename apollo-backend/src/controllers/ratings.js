@@ -260,6 +260,10 @@ const downvoteReview = async (req, res) => {
         throw Error("Rating " + id + " was not found! Check that the ID provided is correct.");
       }
 
+      if ( title === "" || semester === "" || professor === "" || description === "") {
+        throw Error("Text fields cannot be left blank!");
+      }
+
       // update review
       const updatedReview = await Rating.findByIdAndUpdate(
       id,

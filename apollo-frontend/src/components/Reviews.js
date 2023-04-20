@@ -18,7 +18,7 @@ export default function Reviews(props) {
     const [reviewForm] = useForm();
     const [filterReviewAmount, setFilterReviewAmount] = useState(1);
 
-    //modal stuff
+    //modal stuff for delete
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [modalText, setModalText] = useState('Are you sure you want to delete this review?');
@@ -28,6 +28,11 @@ export default function Reviews(props) {
     const [openEdit, setOpenEdit] = useState(false);
     const [confirmLoadingEdit, setConfirmLoadingEdit] = useState(false);
     const [editForm] = Form.useForm();
+    const [ReviewId, setReviewId] = useState("");
+    const [editStars, setEditStars] = useState(0);
+    const [editAttendanceRequired, setEditAttendanceRequired] = useState(false);
+    const [formData, setFormData] = useState({title: "", professor: "", semester: "",
+                    difficulty: 0, enjoyability: 0, description: ""})
 
     const showModal = () => {
         setModalText('Are you sure you want to delete this review?')
@@ -52,6 +57,7 @@ export default function Reviews(props) {
 
     const handleEditOk = () => {
         setConfirmLoadingEdit(true);
+        handleEditReview();
         setOpenEdit(false);
         setConfirmLoadingEdit(false);
     };
@@ -121,6 +127,11 @@ export default function Reviews(props) {
                 username: username,
                 userPfp: pfp
             }
+            setFormData({title: review.title, professor: review.professor, semester: review.semester,
+                difficulty: review.difficulty, enjoyability: review.enjoyability, 
+                description: review.description});
+            setEditStars(review.stars);
+            setEditAttendanceRequired(review.attendanceRequired);
             setReviews(reviews => [...reviews, review]);
         }
     }
@@ -310,6 +321,47 @@ export default function Reviews(props) {
         setWriteReviewEnabled(false);
     }
 
+    const handleEditReview = async () => {
+        const payload = {...formData, attendanceRequired: editAttendanceRequired, stars: editStars}
+        const response = await fetch(`http://localhost:5001/api/ratings/${ReviewId}/editReview`, {
+            method: 'PATCH',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const json = await response.json();
+
+        if (!response.ok) {
+            editForm.resetFields();
+            setEditStars(editAttendanceRequired);
+            setEditAttendanceRequired(editStars);
+            message.error(json.message)
+        }
+
+        if (response.ok) {
+            message.success(`You edited your review!`);
+            let path = `http://localhost:5001/api/ratings/${name}`
+            fetch(path)
+            .then(response => response.json())
+            .then(data => {
+                formatReviews(data);
+            })
+            .catch(error => {
+                message.error(error.message);
+            });
+            fetch("http://localhost:5001/api/ratings/" + name + "/avgRating")
+            .then(response => response.json())
+            .then(data => {
+                setAverageReview(data);
+            })
+            .catch(error => {
+                message.error('Connection Error');
+            });
+        }
+    }
+
     const handleReviewFilterChange = (value) => {
         setFilterReviewAmount(value);    
     }
@@ -376,6 +428,9 @@ export default function Reviews(props) {
                                                 <span>
                                                     <Button shape="Circle" icon={<EditOutlined />} onClick={() => {
                                                         showEditModal();
+                                                        setEditStars(review.stars);
+                                                        setEditAttendanceRequired(review.attendanceRequired);
+                                                        setReviewId(review.id);
                                                     }} />
                                                     <Modal
                                                         title="Edit review"
@@ -384,31 +439,33 @@ export default function Reviews(props) {
                                                         confirmLoading={confirmLoadingEdit}
                                                         onCancel={handleEditCancel}
                                                     >
-                                                        <Form form={editForm} name="editReview">
-                                                        <Rate name="stars" onChange={(value) => {setRating(value)}} className='rate' rules={[{ required: true, message: "Please enter a Rating" }]}/>
-                                                        <br/>
-                                                        <br/>
-                                                        <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
-                                                            <Input placeholder="Title" />
-                                                        </Form.Item>
-                                                        <Form.Item name="professor" rules={[{ required: true, message: "Please enter a professor" }]}>
-                                                            <Input placeholder="Professor" />
-                                                        </Form.Item>
-                                                        <Form.Item name="semester" rules={[{ required: true, message: "Please enter a semester" }]}>
-                                                            <Input placeholder="Semester" />
-                                                        </Form.Item>
-                                                        <Form.Item label="Difficulty" name="difficulty" rules={[{ required: true, message: "Please enter a difficulty" }]}>
-                                                            <InputNumber min={1} max={5}/> 
-                                                        </Form.Item>
-                                                        <Form.Item label="Enjoyablility" name="enjoyability" rules={[{ required: true, message: "Please enter a enjoyability" }]}>
-                                                            <InputNumber min={1} max={5}/> 
-                                                        </Form.Item>
-                                                        <Form.Item name="attendanceRequired">
-                                                            <Checkbox onChange={() => setAttendance(!attendance)}>Attendance Required</Checkbox>
-                                                        </Form.Item>
-                                                        <Form.Item name="description" rules={[{ required: true, message: "Please enter your post description" }]}>
-                                                            <Input.TextArea rows={4} placeholder="Post Description"/>
-                                                        </Form.Item>
+                                                        <Form form={editForm} initialValues={{title: review.title, professor: review.professor, semester: review.semester,
+                                                                                             difficulty: review.difficulty, enjoyability: review.enjoyability, attendanceRequired: review.attendanceRequired,
+                                                                                             description: review.description}} name="editReview">
+                                                            <Rate name="stars" value={editStars} onChange={(value) => {setEditStars(value)}} className='rate' rules={[{ required: true, message: "Please enter a Rating" }]}/>
+                                                            <br/>
+                                                            <br/>
+                                                            <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
+                                                                <Input placeholder="Title" onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
+                                                            </Form.Item>
+                                                            <Form.Item name="professor" rules={[{ required: true, message: "Please enter a professor" }]}>
+                                                                <Input placeholder="Professor" onChange={(e) => setFormData({ ...formData, professor: e.target.value })} />
+                                                            </Form.Item>
+                                                            <Form.Item name="semester" rules={[{ required: true, message: "Please enter a semester" }]}>
+                                                                <Input placeholder="Semester"  onChange={(e) => setFormData({ ...formData, semester: e.target.value })} />
+                                                            </Form.Item>
+                                                            <Form.Item label="Difficulty" name="difficulty" rules={[{ required: true, message: "Please enter a difficulty" }]}>
+                                                                <InputNumber min={1} max={5} onChange={(e) => setFormData({ ...formData, difficulty: e})}/> 
+                                                            </Form.Item>
+                                                            <Form.Item label="Enjoyablility" name="enjoyability" rules={[{ required: true, message: "Please enter a enjoyability" }]}>
+                                                                <InputNumber min={1} max={5} onChange={(e) => setFormData({ ...formData, enjoyability: e})}/> 
+                                                            </Form.Item>
+                                                            <Form.Item name="attendanceRequired">
+                                                                <Checkbox checked={editAttendanceRequired} onChange={(e) => setEditAttendanceRequired(e.target.checked)}>Attendance Required</Checkbox>
+                                                            </Form.Item>
+                                                            <Form.Item name="description" rules={[{ required: true, message: "Please enter your post description" }]}>
+                                                                <Input.TextArea rows={4} placeholder="Post Description" onChange={(e) => setFormData({ ...formData, description: e.target.value })}/>
+                                                            </Form.Item>
                                                         </Form>
                                                     </Modal>
                                                 </span>

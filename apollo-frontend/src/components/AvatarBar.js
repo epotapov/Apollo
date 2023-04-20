@@ -294,6 +294,7 @@ const AvatarBar = (props) => {
                         ))}
                     </Panel>
                 </Collapse>
+                <br/>
                 <Button onClick={() => {
                     onClose();
                     navigate(`/Profile/${user.username}`);
