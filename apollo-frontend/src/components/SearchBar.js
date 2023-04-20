@@ -14,6 +14,8 @@ export default function SearchBar() {
     const [courseData, setCourseData] = useState([]);
     const [diningHallData, setDiningHallData] = useState([]);
     const [userData, setUserData] = useState([]);
+    const [groupData, setGroupData] = useState([]);
+    
     const map = [{value: "Map", label: "Map", group: 'Map'}];
     const navigate = useNavigate();
     
@@ -44,6 +46,13 @@ export default function SearchBar() {
         for (let i = 0; i < userData.length; i++) {
             if (userData[i].value === val) {
                 let path = '/Profile/' + val;
+                navigate(path)
+                return;
+            }
+        }
+        for (let i = 0; i < groupData.length; i++) {
+            if (groupData[i].value === val) {
+                let path = '/Group/' + val;
                 navigate(path)
                 return;
             }
@@ -89,13 +98,26 @@ export default function SearchBar() {
         .catch(error => {
             message.error('Connection Error');
         });
+        fetch('http://localhost:5001/api/group/')
+        .then(response => response.json())
+        .then(data => {
+            for (let i = 0; i < data.length; i++) {
+                let id = data[i]._id;
+                let title = data[i].title;
+                const element = {value: id, label: title, group: 'Groups'};
+                setGroupData(groupData => groupData.concat(element))
+            }
+        })
+        .catch(error => {
+            message.error('Connection Error');
+        });
     }, []);
 
     const [size, setSize] = useState('large');
     return(
         <Select
             showSearch
-            placeholder="Search for a course, dining hall, or user"
+            placeholder="Search for a course, dining hall, group, or user"
             optionFilterProp="children"
             onChange={onChange}
             onSearch={onSearch}
@@ -123,7 +145,11 @@ export default function SearchBar() {
                     {
                         label: 'Map',
                         options: map
-                    }
+                    },
+                    {
+                        label: 'Groups',
+                        options: groupData
+                    },
                 ]
             }
       />        

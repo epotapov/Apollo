@@ -25,7 +25,6 @@ export default function CreateGroup() {
         });
 
         const json = await response.json();
-        console.log(json)
 
         if (!response.ok) {
             message.error(json.message)
@@ -33,7 +32,7 @@ export default function CreateGroup() {
 
         if (response.ok) {
             message.success(`${title} was created!`)
-            navigate('/Group');
+            navigate('/Group/' + json._id);
         }
     }
 

@@ -86,9 +86,6 @@ export default function CoursePage() {
                     setSections(data.Sections);
                     setTypicallyOffered(data.TypicallyOffered);
                 })
-                .catch(error => {
-                    message.error('Connection Error');
-                });
         }
         fetchCourse();
 
@@ -132,6 +129,8 @@ export default function CoursePage() {
         }
         fetchData();
     }, [courseName]);
+
+    
     useEffect(() => {
         let found = false;
         for (let i = 0; i < favCourses.length; i++) {
