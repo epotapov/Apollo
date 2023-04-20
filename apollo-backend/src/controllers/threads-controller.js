@@ -674,10 +674,20 @@ const editThread = async (req, res) => {
   const { threadId } = req.params;
   const thread = await Thread.findOne({ _id: threadId });
   const { title, description } = req.body;
+  console.log(title)
+  console.log(description)
 
   try {
     if (!thread) {
       throw Error("Thread " + threadId + " was not found! Check that the ID provided is correct.");
+    }
+
+    if (title === "") {
+      throw Error("Title cannot be blank!");
+    }
+
+    if (description === "") {
+      throw Error("Description cannot be blank!");
     }
 
     const updatedThread = await Thread.findByIdAndUpdate(
@@ -708,6 +718,10 @@ const editComment = async (req, res) => {
   try {
     if (!thread) {
       throw Error("Thread " + threadId + " was not found! Check that the ID provided is correct.");
+    }
+
+    if (description === "") {
+      throw Error("Comment cannot be blank!");
     }
 
     const commentIndex = thread.comments.findIndex((comment) => comment._id.equals(commentId));

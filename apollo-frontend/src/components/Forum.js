@@ -39,11 +39,15 @@ const Forum = (props) => {
     const [confirmLoadingEdit, setConfirmLoadingEdit] = useState(false);
     const [editThreadTitle, setEditThreadTitle] = useState("");
     const [editThreadContent, setEditThreadContent] = useState("");
+    const [editThreadId, setEditThreadId] = useState("");
+    const [editThreadform] = Form.useForm();
 
     // Comment Edit
     const [openCommentEdit, setOpenCommentEdit] = useState(false);
     const [confirmCommentLoadingEdit, setConfirmCommentLoadingEdit] = useState(false);
     const [editComment, setEditComment] = useState("");
+    const [editCommentId, setEditCommentId] = useState("");
+    const [editCommentform] = Form.useForm();
 
 
     const showModal = () => {
@@ -90,25 +94,90 @@ const Forum = (props) => {
 
     const handleOkEdit = () => {
         setConfirmLoadingEdit(true);
-        //deleteThread(deletedThread);
+        handleEditThread();
         setOpenEdit(false);
         setConfirmLoadingEdit(false);
     };
 
     const handleCommentOkEdit = () => {
         setConfirmCommentLoadingEdit(true);
-        //deleteComment(deletedThread, deletedComment);
+        handleEditComment();
         setOpenCommentEdit(false);
         setConfirmCommentLoadingEdit(false);
     };
 
     const handleCancelEdit = () => {
+        editThreadform.resetFields();
         setOpenEdit(false);
     };
 
     const handleCommentCancelEdit = () => {
+        editCommentform.resetFields();
         setOpenCommentEdit(false);
     };
+
+
+    const handleEditComment = async () => {
+        const payload = {description: editComment}
+        const response = await fetch(`http://localhost:5001/api/thread/${editThreadId}/${editCommentId}/edit`, {
+            method: 'PATCH',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const json = await response.json();
+
+        if (!response.ok) {
+            editCommentform.resetFields();
+            message.error(json.message)
+        }
+
+        if (response.ok) {
+            message.success(`You edited your comment!`);
+            fetch("http://localhost:5001/api/thread/" + courseName)
+            .then(response => response.json())
+            .then(data => {
+                setThreads([]);
+                formatThreads(data);
+            })
+            .catch(error => {
+                message.error('Error data:', error);
+            });
+        }
+    }
+
+    const handleEditThread = async () => {
+        const payload = {title: editThreadTitle, description: editThreadContent}
+        const response = await fetch(`http://localhost:5001/api/thread/${editThreadId}/edit`, {
+            method: 'PATCH',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const json = await response.json();
+
+        if (!response.ok) {
+            editThreadform.resetFields();
+            message.error(json.message)
+        }
+
+        if (response.ok) {
+            message.success(`You edited your thread!`);
+            fetch("http://localhost:5001/api/thread/" + courseName)
+            .then(response => response.json())
+            .then(data => {
+                setThreads([]);
+                formatThreads(data);
+            })
+            .catch(error => {
+                message.error('Error data:', error);
+            });
+        }
+    }
 
     const formatThreads = (data) => {
         setThreads([]);
@@ -513,6 +582,7 @@ const Forum = (props) => {
                                             <span>
                                                 <Button shape="Circle" icon={<EditOutlined />} onClick={() => {
                                                     showModalEdit();
+                                                    setEditThreadId(thread.id);
                                                     setEditThreadTitle(thread.title);
                                                     setEditThreadContent(thread.description);
                                                 }} />
@@ -523,13 +593,15 @@ const Forum = (props) => {
                                                     confirmLoading={confirmLoadingEdit}
                                                     onCancel={handleCancelEdit}
                                                 >
-                                                    <Form name="editThread">
-                                                    <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
-                                                        <Input placeholder="Title"  defaultValue={editThreadTitle}/>
-                                                    </Form.Item>
-                                                    <Form.Item name="content" rules={[{ required: true, message: "Please enter your description" }]}>
-                                                        <Input.TextArea rows={4} placeholder="Enter Description" defaultValue={editThreadContent}/>
-                                                    </Form.Item>
+                                                    <Form form={editThreadform} initialValues={{title: thread.title, description: thread.description}} name="editThread">
+                                                        <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
+                                                            <Input placeholder="Title" onChange={(e) => {
+                                                                setEditThreadTitle(e.target.value);
+                                                            }}/>
+                                                        </Form.Item>
+                                                        <Form.Item name="description" rules={[{ required: true, message: "Please enter your description" }]}>
+                                                            <Input.TextArea rows={4} placeholder="Enter Description" onChange={(e) => setEditThreadContent(e.target.value)}/>
+                                                        </Form.Item>
                                                     </Form>
                                                 </Modal>
                                             </span>
@@ -571,6 +643,8 @@ const Forum = (props) => {
                                                             <Button shape="Circle" icon={<EditOutlined />} onClick={() => {
                                                                 showCommentModalEdit();
                                                                 setEditComment(comment.description)
+                                                                setEditCommentId(comment._id);
+                                                                setEditThreadId(thread.id)
                                                             }} />
                                                             <Modal
                                                                 title="Edit Comment"
@@ -579,9 +653,11 @@ const Forum = (props) => {
                                                                 confirmLoading={confirmCommentLoadingEdit}
                                                                 onCancel={handleCommentCancelEdit}
                                                             >
-                                                                <Form name="editComment">
+                                                                <Form form={editCommentform} initialValues={{commentEdit: comment.description}} name="editComment">
                                                                     <Form.Item name="commentEdit" rules={[{ required: true, message: "Please enter your comment" }]}>
-                                                                        <Input.TextArea defaultValue={editComment} rows={3} placeholder="Edit Comment"/>
+                                                                        <Input.TextArea rows={3} placeholder="Edit Comment" onChange={(e) => {
+                                                                            setEditComment(e.target.value)
+                                                                        }}/>
                                                                     </Form.Item>
                                                                 </Form>
                                                             </Modal>
