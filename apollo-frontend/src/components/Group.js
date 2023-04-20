@@ -32,7 +32,6 @@ export default function Group() {
             .then(response => response.json())
             .then(data => {
                 setTitle(data.title);
-                console.log(data.title)
                 setDescription(data.description);
                 setFormData({ title: data.title, description: data.description });
                 setIsLoading(false);
@@ -63,6 +62,7 @@ export default function Group() {
     const handleOk = () => {
         setConfirmLoading(true);
         setOpen(false);
+        handleEdit();
         setConfirmLoading(false);
     };
 
@@ -91,7 +91,6 @@ export default function Group() {
         });
 
         const json = await response.json();
-        console.log(json)
 
         if (!response.ok) {
             message.error(json.message)
@@ -122,7 +121,6 @@ export default function Group() {
         });
 
         const json = await response.json();
-        console.log(json)
 
         if (!response.ok) {
             message.error(json.message)
@@ -153,7 +151,6 @@ export default function Group() {
         });
 
         const json = await response.json();
-        console.log(json)
 
         if (!response.ok) {
             message.error(json.message)
@@ -166,7 +163,44 @@ export default function Group() {
     }
 
     const handleEdit = async () => {
+        const payload = {title: formData.title, description: formData.description};
+        const response = await fetch('http://localhost:5001/api/group/update/' + groupName, {
+            method: 'PUT',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${user.userToken}`
+            }
+        });
 
+        const json = await response.json();
+
+        if (!response.ok) {
+            message.error(json.message)
+        }
+
+        if (response.ok) {
+            message.success(`You edited ${title}!`);
+            await fetch('http://localhost:5001/api/group/' + groupName)
+            .then(response => response.json())
+            .then(data => {
+                setTitle(data.title);
+                setDescription(data.description);
+                setFormData({ title: data.title, description: data.description });
+            })
+            .catch(error => {
+                message.error('Connection Error');
+            });
+            await fetch('http://localhost:5001/api/group/members/' + groupName)
+            .then(response => response.json())
+            .then(data => {
+                setAdmin(data.admin)
+                setGroupList(data.members);
+            })
+            .catch(error => {
+                message.error('Connection Error');
+            });
+        }
     }
 
 
@@ -239,16 +273,20 @@ export default function Group() {
                         <a target="_blank" href={`/Profile/${admin.username}`}> {admin.username}</a>                                        
                     </span>
                     <p>{/*Title*/}</p>
-                    <h2>Group Members: </h2>
-                    {groupList.map((member) => (
-                        <div key={member.username}>
-                            <Avatar 
-                                src={member.profilePicture !== "default" ? `http://localhost:5001/pictures/${member.profilePicture}` : defpfp } 
-                                onClick={() => {window.open(`/Profile/${member.username}`);}}
-                            />
-                            <a target="_blank" href={`/Profile/${member.username}`}> {member.username} </a>
-                        </div>
-                    ))}
+                    { groupList.length != 0 && 
+                        <>
+                            <h2>Group Members: </h2>
+                            {groupList.map((member) => (
+                                <div key={member.username}>
+                                    <Avatar 
+                                        src={member.profilePicture !== "default" ? `http://localhost:5001/pictures/${member.profilePicture}` : defpfp } 
+                                        onClick={() => {window.open(`/Profile/${member.username}`);}}
+                                    />
+                                    <a target="_blank" href={`/Profile/${member.username}`}> {member.username} </a>
+                                </div>
+                            ))}
+                        </>
+                    }
                 </div>
                 
                 {/*<Forum courseName={courseName} type={'Public'}  />*/}
