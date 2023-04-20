@@ -19,7 +19,7 @@ router.post("/createGroupThread", createGroupThread);
 
 /* READ */
 router.get("/:courseName", getCourseThreads);
-router.get("/group/:courseName", getCourseThreads);
+router.get("/group/:courseName", getGroupThreads);
 
 /* UPDATE */
 router.patch("/:id/upvote", upvoteThread);
