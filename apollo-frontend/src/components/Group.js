@@ -2,8 +2,9 @@ import { React, useState, useEffect } from "react";
 import { Avatar, Button, message, Form, Input, Modal, Spin } from "antd";
 
 import { useUserContext } from '../hooks/useUserContext';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Forum from './Forum';
+import defpfp from '../img/defaultpfp.png';
 
 
 import Navbar from "./Navbar";
@@ -16,20 +17,41 @@ export default function Group() {
     const [deletedThread, setDeletedThread] = useState("");
     const [description, setDescription] = useState("");
     const [title, setTitle] = useState("");
+    const [admin, setAdmin] = useState({});
+    const { user } = useUserContext();
+    const [groupList, setGroupList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
+    const [form] = Form.useForm();
+    const [formData, setFormData] = useState({ title: '', description: '' });
 
     useEffect(() => {
         const fetchGroup = async () => {
-            console.log("help")
             setIsLoading(true);
-            await fetch('http://localhost:5001/api/group/get/' + groupName)
+            await fetch('http://localhost:5001/api/group/' + groupName)
             .then(response => response.json())
             .then(data => {
                 setTitle(data.title);
                 console.log(data.title)
                 setDescription(data.description);
+                setFormData({ title: data.title, description: data.description });
+                setIsLoading(false);
             })
-            setIsLoading(false);
+            .catch(error => {
+                message.error('Connection Error');
+                setIsLoading(true);
+            });
+            await fetch('http://localhost:5001/api/group/members/' + groupName)
+            .then(response => response.json())
+            .then(data => {
+                setAdmin(data.admin)
+                setGroupList(data.members);
+                setIsLoading(false);
+            })
+            .catch(error => {
+                message.error('Connection Error');
+                setIsLoading(true);
+            });
         }
         fetchGroup();
     }, [groupName]);
@@ -47,7 +69,108 @@ export default function Group() {
 
     const handleCancel = () => {
         setOpen(false);
+        setFormData({ title: '', description: '' });
+        form.setFieldsValue(formData);
     };
+
+    const checkList = (username) => {
+        for (let i = 0; i < groupList.length; i++) {
+            if (username === groupList[i].username) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    const handleLeave = async () => {
+
+        const response = await fetch('http://localhost:5001/api/group/leave/' + groupName, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${user.userToken}`
+            }
+        });
+
+        const json = await response.json();
+        console.log(json)
+
+        if (!response.ok) {
+            message.error(json.message)
+        }
+
+        if (response.ok) {
+            message.success(`You left ${title}!`);
+            await fetch('http://localhost:5001/api/group/members/' + groupName)
+            .then(response => response.json())
+            .then(data => {
+                setAdmin(data.admin)
+                setGroupList(data.members);
+            })
+            .catch(error => {
+                message.error('Connection Error');
+            });
+        }
+    }
+
+    const handleJoin = async () => {
+
+        const response = await fetch('http://localhost:5001/api/group/join/' + groupName, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${user.userToken}`
+            }
+        });
+
+        const json = await response.json();
+        console.log(json)
+
+        if (!response.ok) {
+            message.error(json.message)
+        }
+
+        if (response.ok) {
+            message.success(`You joined ${title}!`);
+            await fetch('http://localhost:5001/api/group/members/' + groupName)
+            .then(response => response.json())
+            .then(data => {
+                setAdmin(data.admin)
+                setGroupList(data.members);
+            })
+            .catch(error => {
+                message.error('Connection Error');
+            });
+        }
+    }
+
+    const handleDelete = async () => {
+
+        const response = await fetch('http://localhost:5001/api/group/delete/' + groupName, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${user.userToken}`
+            }
+        });
+
+        const json = await response.json();
+        console.log(json)
+
+        if (!response.ok) {
+            message.error(json.message)
+        }
+
+        if (response.ok) {
+            message.success(`You deleted ${title}!`);
+            navigate("/");
+        }
+    }
+
+    const handleEdit = async () => {
+
+    }
+
 
     if (title === '') {
         return (
@@ -66,57 +189,72 @@ export default function Group() {
             </div>
         )
     }
-    else 
-        return(
-            <>
-                <Navbar/>
-                <div className='namePage'>
-                    <h1> {title} </h1>
-                </div>
-                <div className='bodyPage'>
-                    <h2>Description: </h2>
-                    <p> {description} </p>
+ 
+    return(
+        <>
+            <Navbar/>
+            <div className='namePage'>
+                <h1> {title} </h1>
+            </div>
+            <div className='bodyPage'>
+                <h2>Description: </h2>
+                <p> {description} </p>
+                <span id="groupButtons">
+                    { user && admin.username === user.username &&
+                        <>
+                            <Button type="primary" onClick={() => {
+                                showModal();
+                            }}>Edit Group</Button>
+                            <Modal
+                                title="Edit Group"
+                                open={open}
+                                onOk={handleOk}
+                                confirmLoading={confirmLoading}
+                                onCancel={handleCancel}
+                            >
+                                <Form name="editGroup">
+                                    <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
+                                        <Input placeholder="Title" defaultValue={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
+                                    </Form.Item>
+                                    <Form.Item name="description" rules={[{ required: true, message: "Please enter your post description" }]}>
+                                        <Input.TextArea rows={4} defaultValue={formData.description} placeholder="Post Description" onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+                                    </Form.Item>
+                                </Form>
+                            </Modal>
+                            <Button onClick={handleDelete} type="primary" danger>Delete Group</Button>
+                        </>
+                    }
+                    { user && !checkList(user.username) && user.username !== admin.username &&
+                        <Button onClick={handleJoin} type="primary">Join Group</Button>
+                    }
+                    { user && checkList(user.username) && user.username !== admin.username &&
+                        <Button onClick={handleLeave} type="primary" danger>Leave Group</Button> 
+                    }
+                </span>
+                <div className="GroupLinks">
                     <h2>Group Owner: </h2>
+                    <span> 
+                        <Avatar 
+                            src={admin.profilePicture !== "default" ? `http://localhost:5001/pictures/${admin.profilePicture}` : defpfp } 
+                            onClick={() => {window.open(`/Profile/${admin.username}`);}}
+                        />
+                        <a target="_blank" href={`/Profile/${admin.username}`}> {admin.username}</a>                                        
+                    </span>
                     <p>{/*Title*/}</p>
                     <h2>Group Members: </h2>
-                    {/*<span> 
-                        <Avatar 
-                            src={thread.userPfp !== "default" ? `http://localhost:5001/pictures/${thread.userPfp}` : defpfp } 
-                            onClick={() => {window.open(`/Profile/${thread.username}`);}}
-                        />
-                        <a target="_blank" href={`/Profile/${thread.username}`}> {thread.username}: </a>
-                        <span> {thread.title} </span>                                        
-                    </span>*/}
-                    <p>{/*Title*/}</p>
-                    <span id="groupButtons">
-                        <Button type="primary" onClick={() => {
-                            showModal();
-                        }}>Edit Group</Button>
-                        <Modal
-                            title="Edit Group"
-                            open={open}
-                            onOk={handleOk}
-                            confirmLoading={confirmLoading}
-                            onCancel={handleCancel}
-                        >
-                            <Form name="editGroup">
-                                <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
-                                    <Input placeholder="Title" />
-                                </Form.Item>
-                                <Form.Item name="description" rules={[{ required: true, message: "Please enter your post description" }]}>
-                                    <Input.TextArea rows={4} placeholder="Post Description"/>
-                                </Form.Item>
-                                <Form.Item>
-                                </Form.Item>
-                            </Form>
-                        </Modal>
-                        <Button type="primary">Join Group</Button>
-                        <Button type="primary" danger>Delete Group</Button>
-                        <Button type="primary" danger>Leave Group</Button> 
-                    </span>
-                    
-                    {/*<Forum courseName={courseName} type={'Public'}  />*/}
+                    {groupList.map((member) => (
+                        <div key={member.username}>
+                            <Avatar 
+                                src={member.profilePicture !== "default" ? `http://localhost:5001/pictures/${member.profilePicture}` : defpfp } 
+                                onClick={() => {window.open(`/Profile/${member.username}`);}}
+                            />
+                            <a target="_blank" href={`/Profile/${member.username}`}> {member.username} </a>
+                        </div>
+                    ))}
                 </div>
-            </>
-        )
+                
+                {/*<Forum courseName={courseName} type={'Public'}  />*/}
+            </div>
+        </>
+    )
 }

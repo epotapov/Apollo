@@ -388,3 +388,7 @@ h1 {
 #groupButtons Button {
   margin-right: 10px;
 }
+
+.GroupLinks a {
+  text-decoration: none;
+}
