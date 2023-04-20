@@ -111,6 +111,9 @@ export default function LoginPage() {
                             <div>
                                 <img  src={require("../img/Purdue_image_1.jpg")} alt="Purdue Image 1" style={{ maxWidth: '100%', maxHeight: '100%', height: 'auto', borderRadius: '10px' }}/>
                             </div>
+                            <div>
+                                <img src={require("../img/purdue5.jpg")} alt="Purdue Image" style={{maxWidth: '100%', maxHeight: '100%', height: 'auto', borderRadius: '10px'}}/>
+                            </div>
                         </Carousel>
                         <div style={{ marginTop: '10px', marginBottom: "10px" ,fontSize: '12px', textAlign: 'center' }}>
                             <p> Pictures retrieved from Purdue.edu </p>
