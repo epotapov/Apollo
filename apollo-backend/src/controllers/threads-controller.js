@@ -27,6 +27,8 @@ const Course = require("../models/course-model");
 // imports nodemailer - used for email notification
 const nodemailer = require('nodemailer');
 
+const Group = require("../models/group-model");
+
 /* CREATE */
 
 /* createThread
@@ -88,6 +90,65 @@ const createThread = async (req, res) => {
   }
 }
 
+/* createThread
+ *
+ * API Requ: /api/thread/create
+ * Req Body: courseName, username, title, description
+ * Response: all threads for courseName or JSON error message
+ *
+ * Status Codes:
+ *   CREATED = 201
+ *   CONFLICT = 409
+ */
+const createGroupThread = async (req, res) => {
+  console.log(req.body);
+  try {
+    const { courseName, username, title, description, tag, isProfThread, pfp } = req.body;
+
+    // verify user exists before we let them create a thread
+    const user = await UserInfo.findOne({ username });
+    if (!user) {
+      throw Error(username + " is not a registered user!");
+    }
+
+    const userEmail = user.email;
+
+    // verify course exists before creating thread
+    const groupExist = await Group.findOne({ title: courseName });
+    if (!courseExist) {
+      throw Error(courseName + " does not exist!");
+    }
+
+    const newThread = new Thread({
+      courseName,
+      username,
+      title,
+      description,
+      tag,
+      isProfThread,
+      upvotes: {},
+      downvotes: {},
+      comments: [],
+      subscribed: {
+        [username]: userEmail
+      },
+      userPfp: pfp,
+    })
+    await newThread.save();
+
+    // returns courseName threads
+    const thread = await Thread.find({ courseName });
+
+    recentActivity(username, ` created thread ${thread.title} in ${thread.courseName}`, courseName)
+
+    res.status(201).json(thread);
+
+  } catch (err) {
+    console.log(err.message);
+    res.status(409).json({ message: err.message });
+  }
+}
+
 /* READ */
 
 /* getCourseThreads
@@ -113,6 +174,37 @@ const getCourseThreads = async (req, res) => {
     }
 
     res.status(200).json(courseThreads);
+  } catch (err) {
+    console.log(err.message);
+    res.status(404).json({ message: err.message });
+  }
+}
+
+/* getGroupThreads
+ *
+ * API Requ: /api/thread/:groupId
+ * Req Body: groupId but call it courseName
+ * Response: all threads for courseName or JSON error message
+ *
+ * Status Codes:
+ *   OK = 200
+ *   NOT FOUND = 404
+ */
+const getGroupThreads = async (req, res) => {
+  // yes i know this is HELLA scuffed just trust me
+  const { courseName } = req.params;
+  const groupId = courseName;
+
+  try {
+    const groupExist = await Group.findById({ _id: groupId });
+
+    // verify course exists
+    if (!groupExist) {
+      throw Error("Group " + groupId + " does not exist!");
+    }
+
+    const groupThreads = await Thread.find({ courseName: groupId });
+    res.status(200).json(groupThreads);
   } catch (err) {
     console.log(err.message);
     res.status(404).json({ message: err.message });
@@ -641,4 +733,4 @@ const editComment = async (req, res) => {
 
 
 // export functions so they can be imported & used elsewhere
-module.exports = { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment, subscribeToThread, recentActivity, deleteThread, removeComment, editThread, editComment};
+module.exports = { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment, subscribeToThread, recentActivity, deleteThread, removeComment, editThread, editComment, getGroupThreads, createGroupThread};
