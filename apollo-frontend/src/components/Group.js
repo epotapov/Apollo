@@ -62,15 +62,13 @@ export default function Group() {
 
     const handleOk = () => {
         setConfirmLoading(true);
-        //deleteThread(deletedThread);
         setOpen(false);
         setConfirmLoading(false);
     };
 
     const handleCancel = () => {
+        form.resetFields();
         setOpen(false);
-        setFormData({ title: '', description: '' });
-        form.setFieldsValue(formData);
     };
 
     const checkList = (username) => {
@@ -212,12 +210,12 @@ export default function Group() {
                                 confirmLoading={confirmLoading}
                                 onCancel={handleCancel}
                             >
-                                <Form name="editGroup">
+                                <Form form={form} initialValues={{title: title, description: description}} name="editGroup">
                                     <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
-                                        <Input placeholder="Title" defaultValue={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
+                                        <Input placeholder="Title" onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
                                     </Form.Item>
                                     <Form.Item name="description" rules={[{ required: true, message: "Please enter your post description" }]}>
-                                        <Input.TextArea rows={4} defaultValue={formData.description} placeholder="Post Description" onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+                                        <Input.TextArea rows={4} placeholder="Post Description" onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
                                     </Form.Item>
                                 </Form>
                             </Modal>
