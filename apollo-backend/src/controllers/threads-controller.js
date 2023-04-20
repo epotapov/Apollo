@@ -566,11 +566,12 @@ async function recentActivity(username, activity, path) {
       throw Error(username + " is not a registered user!");
     }
 
+    // Title:type:path
     const newRecentActivity = activity + ":" + "Course:" + path;
 
     user.recentActivity.unshift(newRecentActivity);
 
-    if (user.recentActivity.length > 5) {
+    if (user.recentActivity.length > 10) {
       user.recentActivity.pop();
     }
 

@@ -12,6 +12,38 @@ const Group = require('../models/group-model');
 const User = require('../models/user-model');
 
 /**
+ * Append to recent activity
+ * 
+ * 
+ */
+
+async function addRecentActivity(username, activity, path) {
+    try {
+        const user = await User.findOne({ username: username });
+        if (!user) {
+            throw new Error("User not found.");
+        }
+
+        const newActivity = activity + ":" + "Group" + ":" + path;
+
+        user.recentActivity.push(newActivity);
+        if (user.recentActivity.length > 10) {
+            user.recentActivity.pop();
+          }
+      
+          await user.save();
+        } catch (err) {
+          if (err instanceof mongoose.Error.CastError) {
+            console.log("RECENT ACTIVITY ERROR");
+            res.status(400).json({ message: "RECENT ACTIVITY ERROR" });
+          } else {
+            console.log(err.message);
+            res.status(404).json({ message: err.message });
+          }
+    }
+}
+
+/**
  * get all groups
  * 
  * /api/group/
@@ -100,6 +132,7 @@ const createGroup = async (req, res) => {
         // find new group in mongodb
         const mongoGroup = await Group.findOne({ title: newGroup.title });
 
+        addRecentActivity(admin.username, `Created group ${Group.title}`, mongoGroup._id);
         res.status(201).json(mongoGroup);
     } catch (error) {
         res.status(409).json({ message: error.message });
@@ -227,6 +260,7 @@ const joinGroup = async (req, res) => {
             })
 
         // send updatedGroup back
+        addRecentActivity(user.username, `Joined group ${group.title}`, group._id);
         res.status(200).json(updatedGroup);
 
     } catch (err) {
@@ -290,6 +324,7 @@ const leaveGroup = async (req, res) => {
             })
 
         // send updatedGroup back
+        addRecentActivity(user.username, `Left group ${group.title}`, group._id);
         res.status(200).json(updatedGroup);
 
     } catch (err) {
@@ -343,7 +378,7 @@ const deleteGroup = async (req, res) => {
         // update user to be a group admin
         user.isGroupAdmin = false;
         await user.save();
-
+        addRecentActivity(user.username, `Deleted group ${group.title}`, group._id);
         res.status(200).json(deletedGroup);
 
     } catch (err) {
