@@ -348,7 +348,7 @@ const createComment = async (req, res) => {
 
     for (const [key, value] of thread.subscribed) {
 
-      const findUser = await UserInfo.findOne({username: key})
+      const findUser = await UserInfo.findOne({ username: key })
 
       if (findUser.emailNotif) {
         const mailOptions = {
@@ -370,7 +370,7 @@ const createComment = async (req, res) => {
       } else {
         console.log('This user has notifications turned off');
       }
-    } 
+    }
 
     // success
     console.log(username + " commented and subscribed to thread " + thread.title + "!");
@@ -465,7 +465,7 @@ const subscribeToThread = async (req, res) => {
 
 //Recent Activity Function  
 
-async function recentActivity (username, activity, path) {
+async function recentActivity(username, activity, path) {
 
   try {
     const user = await UserInfo.findOne({ username });
@@ -544,38 +544,101 @@ UNAUTHORIZED = 401
 */
 const removeComment = async (req, res) => {
   try {
-  const { threadId, commentId } = req.params;
+    const { threadId, commentId } = req.params;
 
-  //const { commentId} = req.params.commentId;
-  
-  const thread = await Thread.findById(threadId);
-  if (!thread) {
-    throw Error("Thread " + threadId + " was not found! Check that the ID provided is correct.");
-  }
-  
-  //const comment = await Comment.findById(commentId);
-  const commentIndex = thread.comments.findIndex((comment) => comment._id.equals(commentId));
-  if (commentIndex == -1) {
-    throw Error("Comment " + commentId + " was not found! Check that the ID provided is correct.");
-  }
-  const updatedThread = await Thread.findByIdAndUpdate(
-    threadId,
-    { $pull: { comments: { _id: commentId } } },
-    { new: true }
-  );
-  
-  res.status(200).json(updatedThread);
-} catch (err) {
+    //const { commentId} = req.params.commentId;
+
+    const thread = await Thread.findById(threadId);
+    if (!thread) {
+      throw Error("Thread " + threadId + " was not found! Check that the ID provided is correct.");
+    }
+
+    //const comment = await Comment.findById(commentId);
+    const commentIndex = thread.comments.findIndex((comment) => comment._id.equals(commentId));
+    if (commentIndex == -1) {
+      throw Error("Comment " + commentId + " was not found! Check that the ID provided is correct.");
+    }
+    const updatedThread = await Thread.findByIdAndUpdate(
+      threadId,
+      { $pull: { comments: { _id: commentId } } },
+      { new: true }
+    );
+
+    res.status(200).json(updatedThread);
+  } catch (err) {
     if (err instanceof mongoose.Error.CastError) {
-    console.log("Check that the ID provided is correct.");
-    res.status(400).json({ message: "Check that the ID provided is correct." });
-  } else {
-    console.log(err.message);
-    res.status(401).json({ message: err.message });
+      console.log("Check that the ID provided is correct.");
+      res.status(400).json({ message: "Check that the ID provided is correct." });
+    } else {
+      console.log(err.message);
+      res.status(401).json({ message: err.message });
     }
   }
-} 
-  
+}
+
+
+const editThread = async (req, res) => {
+  const { threadId } = req.params;
+  const thread = await Thread.findOne({ _id: threadId });
+  const { title, description } = req.body;
+
+  try {
+    if (!thread) {
+      throw Error("Thread " + threadId + " was not found! Check that the ID provided is correct.");
+    }
+
+    const updatedThread = await Thread.findByIdAndUpdate(
+      threadId,
+      { title: title, description: description },
+      { new: true }
+    );
+
+    res.status(200).json(updatedThread);
+  } catch (err) {
+    if (err instanceof mongoose.Error.CastError) {
+      console.log("Check that the ID provided is correct.");
+      res.status(400).json({ message: "Check that the ID provided is correct." });
+    } else {
+      console.log(err.message);
+      res.status(401).json({ message: err.message });
+    }
+  }
+}
+
+const editComment = async (req, res) => {
+  const { threadId } = req.params;
+  const { commentId } = req.params;
+  const thread = await Thread.findOne({ _id: threadId });
+
+  const { description } = req.body;
+
+  try {
+    if (!thread) {
+      throw Error("Thread " + threadId + " was not found! Check that the ID provided is correct.");
+    }
+
+    const commentIndex = thread.comments.findIndex((comment) => comment._id.equals(commentId));
+    console.log(commentIndex)
+    if (commentIndex == -1) {
+      throw Error("Comment " + commentId + " was not found! Check that the ID provided is correct.");
+    }
+
+    thread.comments[commentIndex].description = description; // Update the comment description
+
+    const updatedThread = await thread.save(); // Save the updated thread
+
+    res.status(200).json(updatedThread);
+  } catch (err) {
+    if (err instanceof mongoose.Error.CastError) {
+      console.log("Check that the ID provided is correct.");
+      res.status(400).json({ message: "Check that the ID provided is correct." });
+    } else {
+      console.log(err.message);
+      res.status(401).json({ message: err.message });
+    }
+  }
+}
+
 
 // export functions so they can be imported & used elsewhere
-module.exports = { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment, subscribeToThread, recentActivity, deleteThread, removeComment};
+module.exports = { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment, subscribeToThread, recentActivity, deleteThread, removeComment, editThread, editComment};

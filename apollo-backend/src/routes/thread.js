@@ -9,7 +9,7 @@
 // requires
 const express = require('express');
 const ThreadInfo = require('../models/thread-model');
-const { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment, subscribeToThread, deleteThread, removeComment, deleteReview } = require('../controllers/threads-controller');
+const { createThread, getCourseThreads, upvoteThread, downvoteThread, createComment, subscribeToThread, deleteThread, removeComment, editThread, editComment } = require('../controllers/threads-controller');
 
 const router = express.Router();
 
@@ -26,5 +26,7 @@ router.patch("/:id/createComment", createComment);
 router.patch("/:id/subscribeToThread", subscribeToThread);
 router.patch("/:id/deleteThread", deleteThread);
 router.patch("/:threadId/:commentId/removeComment", removeComment);
-//router.patch("/:id/deleteReview", deleteReview);
+router.patch("/:threadId/edit", editThread)
+router.patch("/:threadId/:commentId/edit", editComment)
+
 module.exports = router;
