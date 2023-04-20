@@ -1,7 +1,10 @@
 import { React, useState, useEffect } from "react";
 import { Avatar, Button, message, Form, Input, Modal, Spin } from "antd";
+
 import { useUserContext } from '../hooks/useUserContext';
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import Forum from './Forum';
+import defpfp from '../img/defaultpfp.png';
 
 
 import Navbar from "./Navbar";
@@ -9,13 +12,18 @@ import Navbar from "./Navbar";
 export default function Group() {
     const { groupName } = useParams();
     const [open, setOpen] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+    const [modalText, setModalText] = useState('Are you sure you want to delete this thread?');
+    const [deletedThread, setDeletedThread] = useState("");
     const [description, setDescription] = useState("");
     const [title, setTitle] = useState("");
-    const [groupOwner, setGroupOwner] = useState("");
-    const [groupMembers, setGroupMembers] = useState([]);
-    const [isOwner, setIsOwner] = useState(false);
+    const [admin, setAdmin] = useState({});
+    const { user } = useUserContext();
+    const [groupList, setGroupList] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-    const form = Form.useForm();
+    const navigate = useNavigate();
+    const [form] = Form.useForm();
+    const [formData, setFormData] = useState({ title: '', description: '' });
 
     useEffect(() => {
         const fetchGroup = async () => {
@@ -23,11 +31,11 @@ export default function Group() {
             await fetch('http://localhost:5001/api/group/' + groupName)
             .then(response => response.json())
             .then(data => {
-                console.log(data);
                 setTitle(data.title);
+                console.log(data.title)
                 setDescription(data.description);
-                setGroupOwner(data.admin);
-                setGroupMembers(data.members);
+                setFormData({ title: data.title, description: data.description });
+                setIsLoading(false);
             })
             .catch(error => {
                 message.error('Connection Error');
@@ -53,13 +61,16 @@ export default function Group() {
     };
 
     const handleOk = () => {
+        setConfirmLoading(true);
+        //deleteThread(deletedThread);
         setOpen(false);
-        form.resetFields();
+        setConfirmLoading(false);
     };
 
     const handleCancel = () => {
         setOpen(false);
-        form.resetFields();
+        setFormData({ title: '', description: '' });
+        form.setFieldsValue(formData);
     };
 
     const checkList = (username) => {
@@ -178,9 +189,9 @@ export default function Group() {
             </div>
         )
     }
-     
+ 
     return(
-        <div>
+        <>
             <Navbar/>
             <div className='namePage'>
                 <h1> {title} </h1>
@@ -188,44 +199,62 @@ export default function Group() {
             <div className='bodyPage'>
                 <h2>Description: </h2>
                 <p> {description} </p>
-                <h2>Group Owner: </h2>
-                <p>{/*Title*/}</p>
-                <h2>Group Members: </h2>
-                {/*<span> 
-                    <Avatar 
-                        src={thread.userPfp !== "default" ? `http://localhost:5001/pictures/${thread.userPfp}` : defpfp } 
-                        onClick={() => {window.open(`/Profile/${thread.username}`);}}
-                    />
-                    <a target="_blank" href={`/Profile/${thread.username}`}> {thread.username}: </a>
-                    <span> {thread.title} </span>                                        
-                </span>*/}
-                <p>{/*Title*/}</p>
                 <span id="groupButtons">
-                    <Button type="primary" onClick={() => {
-                        showModal();
-                    }}>Edit Group</Button>
-                    <Modal
-                        title="Edit Group"
-                        open={open}
-                        onOk={handleOk}
-                        onCancel={handleCancel}
-                    >
-                        <Form name="editGroup">
-                            <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
-                                <Input placeholder="Title" defaultValue={title} />
-                            </Form.Item>
-                            <Form.Item name="description" rules={[{ required: true, message: "Please enter your post description" }]}>
-                                <Input.TextArea rows={4} placeholder="Post Description" defaultValue={description}/>
-                            </Form.Item>
-                        </Form>
-                    </Modal>
-                    <Button type="primary">Join Group</Button>
-                    <Button type="primary" danger>Delete Group</Button>
-                    <Button type="primary" danger>Leave Group</Button> 
+                    { user && admin.username === user.username &&
+                        <>
+                            <Button type="primary" onClick={() => {
+                                showModal();
+                            }}>Edit Group</Button>
+                            <Modal
+                                title="Edit Group"
+                                open={open}
+                                onOk={handleOk}
+                                confirmLoading={confirmLoading}
+                                onCancel={handleCancel}
+                            >
+                                <Form name="editGroup">
+                                    <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
+                                        <Input placeholder="Title" defaultValue={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
+                                    </Form.Item>
+                                    <Form.Item name="description" rules={[{ required: true, message: "Please enter your post description" }]}>
+                                        <Input.TextArea rows={4} defaultValue={formData.description} placeholder="Post Description" onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+                                    </Form.Item>
+                                </Form>
+                            </Modal>
+                            <Button onClick={handleDelete} type="primary" danger>Delete Group</Button>
+                        </>
+                    }
+                    { user && !checkList(user.username) && user.username !== admin.username &&
+                        <Button onClick={handleJoin} type="primary">Join Group</Button>
+                    }
+                    { user && checkList(user.username) && user.username !== admin.username &&
+                        <Button onClick={handleLeave} type="primary" danger>Leave Group</Button> 
+                    }
                 </span>
+                <div className="GroupLinks">
+                    <h2>Group Owner: </h2>
+                    <span> 
+                        <Avatar 
+                            src={admin.profilePicture !== "default" ? `http://localhost:5001/pictures/${admin.profilePicture}` : defpfp } 
+                            onClick={() => {window.open(`/Profile/${admin.username}`);}}
+                        />
+                        <a target="_blank" href={`/Profile/${admin.username}`}> {admin.username}</a>                                        
+                    </span>
+                    <p>{/*Title*/}</p>
+                    <h2>Group Members: </h2>
+                    {groupList.map((member) => (
+                        <div key={member.username}>
+                            <Avatar 
+                                src={member.profilePicture !== "default" ? `http://localhost:5001/pictures/${member.profilePicture}` : defpfp } 
+                                onClick={() => {window.open(`/Profile/${member.username}`);}}
+                            />
+                            <a target="_blank" href={`/Profile/${member.username}`}> {member.username} </a>
+                        </div>
+                    ))}
+                </div>
                 
                 {/*<Forum courseName={courseName} type={'Public'}  />*/}
             </div>
-        </div>
+        </>
     )
 }
