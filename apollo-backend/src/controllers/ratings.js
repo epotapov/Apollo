@@ -248,6 +248,37 @@ const downvoteReview = async (req, res) => {
   }
 }
 
+// edit review
+
+  const editReview = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { title, semester, professor, stars, description, difficulty, enjoyability, attendanceRequired } = req.body;
+      const rating = await Rating.findById(id);
+
+      if (!rating) {
+        throw Error("Rating " + id + " was not found! Check that the ID provided is correct.");
+      }
+
+      // update review
+      const updatedReview = await Rating.findByIdAndUpdate(
+      id,
+      { title: title, semester: semester, professor: professor, stars: stars, description: description, difficulty: difficulty, enjoyability: enjoyability, attendanceRequired: attendanceRequired },
+      { new: true }
+      );
+      res.status(200).json(updatedReview);
+  
+    } catch (err) {
+      if (err instanceof mongoose.Error.CastError) {
+        console.log("Check that the ID provided is correct.");
+        res.status(400).json({ message: "Check that the ID provided is correct." });
+      } else {
+        console.log(err.message);
+        res.status(404).json({ message: err.message });
+      }
+    }
+  }
+
 /* DELETE */
 
   //delete review
@@ -274,4 +305,4 @@ const downvoteReview = async (req, res) => {
     }
   }
 
-module.exports = {createReview, getCourseReviews, getCourseAverageRating, upvoteReview, downvoteReview, deleteReview};
+module.exports = {createReview, getCourseReviews, getCourseAverageRating, upvoteReview, downvoteReview, deleteReview, editReview};
