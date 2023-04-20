@@ -13,8 +13,6 @@ export default function Group() {
     const { groupName } = useParams();
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
-    const [modalText, setModalText] = useState('Are you sure you want to delete this thread?');
-    const [deletedThread, setDeletedThread] = useState("");
     const [description, setDescription] = useState("");
     const [title, setTitle] = useState("");
     const [admin, setAdmin] = useState({});

@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import { useUserContext } from '../hooks/useUserContext';
-import { Collapse, Form, Input, Button, Typography, Space, Rate, InputNumber, Avatar, message, Checkbox, Modal } from "antd";
-import { LikeOutlined, DislikeOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Collapse, Form, Input, Button, Space, Rate, InputNumber, Avatar, message, Checkbox, Modal } from "antd";
+import { LikeOutlined, DislikeOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useForm } from 'antd/lib/form/Form';
 import defpfp from '../img/defaultpfp.png';
 
@@ -24,6 +24,11 @@ export default function Reviews(props) {
     const [modalText, setModalText] = useState('Are you sure you want to delete this review?');
     const [deletedReview, setDeletedReview] = useState("");
 
+    //edit review stuff
+    const [openEdit, setOpenEdit] = useState(false);
+    const [confirmLoadingEdit, setConfirmLoadingEdit] = useState(false);
+    const [editForm] = Form.useForm();
+
     const showModal = () => {
         setModalText('Are you sure you want to delete this review?')
         setOpen(true);
@@ -39,6 +44,21 @@ export default function Reviews(props) {
 
     const handleCancel = () => {
         setOpen(false);
+    };
+
+    const showEditModal = () => {
+        setOpenEdit(true);
+    };
+
+    const handleEditOk = () => {
+        setConfirmLoadingEdit(true);
+        setOpenEdit(false);
+        setConfirmLoadingEdit(false);
+    };
+
+    const handleEditCancel = () => {
+        editForm.resetFields();
+        setOpenEdit(false);
     };
 
     useEffect(() => {
@@ -337,21 +357,62 @@ export default function Reviews(props) {
                                         </span>
                                         {
                                             user && user.username == review.username &&
-                                            <span>
-                                                <Button shape="Circle" icon={<DeleteOutlined />} onClick={() => {
-                                                    showModal();
-                                                    setDeletedReview(review.id);
-                                                }} />
-                                                <Modal
-                                                    title="Deleting Review"
-                                                    open={open}
-                                                    onOk={handleOk}
-                                                    confirmLoading={confirmLoading}
-                                                    onCancel={handleCancel}
-                                                >
-                                                    <p>{modalText}</p>
-                                                </Modal>
-                                            </span>
+                                            <>
+                                                <span>
+                                                    <Button shape="Circle" icon={<DeleteOutlined />} onClick={() => {
+                                                        showModal();
+                                                        setDeletedReview(review.id);
+                                                    }} />
+                                                    <Modal
+                                                        title="Deleting Review"
+                                                        open={open}
+                                                        onOk={handleOk}
+                                                        confirmLoading={confirmLoading}
+                                                        onCancel={handleCancel}
+                                                    >
+                                                        <p>{modalText}</p>
+                                                    </Modal>
+                                                </span>
+                                                <span>
+                                                    <Button shape="Circle" icon={<EditOutlined />} onClick={() => {
+                                                        showEditModal();
+                                                    }} />
+                                                    <Modal
+                                                        title="Edit review"
+                                                        open={openEdit}
+                                                        onOk={handleEditOk}
+                                                        confirmLoading={confirmLoadingEdit}
+                                                        onCancel={handleEditCancel}
+                                                    >
+                                                        <Form form={editForm} name="editReview">
+                                                        <Rate name="stars" onChange={(value) => {setRating(value)}} className='rate' rules={[{ required: true, message: "Please enter a Rating" }]}/>
+                                                        <br/>
+                                                        <br/>
+                                                        <Form.Item name="title" rules={[{ required: true, message: "Please enter a title" }]}>
+                                                            <Input placeholder="Title" />
+                                                        </Form.Item>
+                                                        <Form.Item name="professor" rules={[{ required: true, message: "Please enter a professor" }]}>
+                                                            <Input placeholder="Professor" />
+                                                        </Form.Item>
+                                                        <Form.Item name="semester" rules={[{ required: true, message: "Please enter a semester" }]}>
+                                                            <Input placeholder="Semester" />
+                                                        </Form.Item>
+                                                        <Form.Item label="Difficulty" name="difficulty" rules={[{ required: true, message: "Please enter a difficulty" }]}>
+                                                            <InputNumber min={1} max={5}/> 
+                                                        </Form.Item>
+                                                        <Form.Item label="Enjoyablility" name="enjoyability" rules={[{ required: true, message: "Please enter a enjoyability" }]}>
+                                                            <InputNumber min={1} max={5}/> 
+                                                        </Form.Item>
+                                                        <Form.Item name="attendanceRequired">
+                                                            <Checkbox onChange={() => setAttendance(!attendance)}>Attendance Required</Checkbox>
+                                                        </Form.Item>
+                                                        <Form.Item name="description" rules={[{ required: true, message: "Please enter your post description" }]}>
+                                                            <Input.TextArea rows={4} placeholder="Post Description"/>
+                                                        </Form.Item>
+                                                        </Form>
+                                                    </Modal>
+                                                </span>
+                                            </>
                                         }
                                     </Space>
                                 }

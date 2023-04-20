@@ -126,7 +126,7 @@ export default function SearchBar() {
             dropdownMatchSelectWidth={500}
             defaultOpen={false}
             filterOption={(input, option) =>
-                (option?.value ?? '').toLowerCase().includes(input.toLowerCase())
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
             }
             options= {
                 [
