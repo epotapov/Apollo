@@ -83,6 +83,13 @@ router.patch('/addNotification', async (req, res) => {
         });
 
         User.notifications.push(newNotification);
+
+        if (User.notifications.filter(notification => notification.isRead === false).length % 5 === 0) {
+            // Send email here, smth like:
+            // You have 5 new notifications, you have {User.notifications.filter(notification => notification.isRead === false).length} unread notifications
+            // You can view and mark notifications as read by clicking at your profile picture in the top right corner! 
+            
+        }
         await User.save();
         res.status(200).json({user: User});
     } catch (error) {
