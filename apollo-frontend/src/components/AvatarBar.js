@@ -1,26 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { Avatar, Button, Drawer, message, Badge, Collapse} from "antd";
+import { Avatar, Button, Drawer, message, Badge, Collapse, Card, Typography, Popover} from "antd";
 import { useLogout } from '../hooks/useLogout';
 import { useUserContext } from '../hooks/useUserContext';
 import { useNavigate } from 'react-router-dom';
 import defpfp from '../img/defaultpfp.png';
 import { CheckCircleOutlined, CloseCircleOutlined, LinkOutlined} from "@ant-design/icons";
 import FriendRecentActivity from './FriendRecentActivity';
+import NotificationHandler from './NotificationHandler';
 
 const { Panel } = Collapse;
+const { Text } = Typography;
 
 const AvatarBar = (props) => {
     const [visible, setVisible] = useState(false);
-    const {user: outerUser} = useUserContext();
+    let {user: outerUser} = useUserContext();
     const [user, setUser] = useState(outerUser ? outerUser.user : null);    
     const { logout } = useLogout();
-    const [recentActivity, setRecentActivity] = useState([]);
     let pfp = props.pic;
     const navigate = useNavigate();
 
+    const [recentActivity, setRecentActivity] = useState([]);
+    const [notifications, setNotifications] = useState([]);
     const [friendsList, setFriendsList] = useState([]);
     const [friendRequests, setFriendRequests] = useState([]);
     const [timeline, setTimeline] = useState([]);
+
 
     useEffect(() => {
         if (user) {
@@ -32,12 +36,14 @@ const AvatarBar = (props) => {
             }
             formatFriendList(user.friendsList ? user.friendsList : []);
             formatTimeLine(user.friendsList ? user.friendsList : []);
+            formatNotifications(user.notifications ? user.notifications : []);
             if (user.friendRequests && user.friendRequests.length != friendRequests.length) {
                 formatFriendRequests(user.friendRequests ? user.friendRequests : []);
             }
             formatRecentActivity(user.recentActivity ? user.recentActivity : []);
         }
     }, [user]);
+
     useEffect(() => {
         if (outerUser) {
             const fetchUpdatedUser = async () => {
@@ -52,8 +58,33 @@ const AvatarBar = (props) => {
         }
     }, [outerUser]);
 
-    const formatTimeLine = async (friends) => {
+    const formatNotifications = (notifications) => {
+        let notificationList = [];
+        for (let i = 0; i < notifications.length; i++) {
+            let path = "/";
+            if (notifications[i].type === "Friend Request") {
+                path = "/Profile/" + notifications[i].sender;
+            } else if (notifications[i].type === "Chat") {
+                path = "/Chat/";
+            } else if (notifications[i].type === "Course") {
+                path = "/Course/" + notifications[i].path;
+            } else if (notifications[i].type === "Group") {
+                path = "/Group/" + notifications[i].path;
+            }
 
+            notificationList.push({
+                title: notifications[i].title,
+                type: notifications[i].type,
+                path: path,
+                sender: notifications[i].sender ? notifications[i].sender : "",
+                isRead: notifications[i].isRead,
+                id: notifications[i]._id
+            });
+        }
+        setNotifications(notificationList);
+    }
+
+    const formatTimeLine = async (friends) => {
         let timelineList = [];
         for (let i = 0; i < friends.length; i++) {
             const response = await fetch('http://localhost:5001/api/user/get/' + friends[i].username);
@@ -124,6 +155,7 @@ const AvatarBar = (props) => {
             }
         }
     }, [user]);
+    
 
 
     const showDrawer = () => {
@@ -225,9 +257,74 @@ const AvatarBar = (props) => {
         return fullPath;
     }
 
+    const updateUser = (newUser) => {
+        setUser(newUser);
+    } 
+
+    const markAllAsRead = async () => {
+        const updatedNotifications = notifications.map((n) => {
+            return {
+                ...n,
+                isRead: true,
+            };
+        }
+        );
+        setNotifications(updatedNotifications);
+        message.success("Marked all as read", 2);
+    }
+
+    const markAsRead = async (notification) => {
+        const updatedNotifications = notifications.map((n) => {
+            if (n.id === notification.id) {
+              return {
+                ...n,
+                isRead: true,
+              };
+            }
+            return n;
+        });
+        setNotifications(updatedNotifications);
+    }
+
+    const NotificationCard = ({ notification }) => {
+        const { id, title, path, isRead } = notification;
+        return (
+            <Card
+            key={id}
+            hoverable={!isRead}
+            style={{ marginBottom: 10 }}
+            bodyStyle={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            >
+            <div>
+                <Text strong={!isRead}>{title}</Text>
+            </div>
+            <div>
+                {path && (
+                    <Popover content={"Navigate"} trigger={"hover"}>
+                        <LinkOutlined
+                        style={{ marginRight: 10 }}
+                        onClick={() => window.open(path)}
+                        />
+                    </Popover>
+                )}
+                {!isRead && (
+                <Text
+                    type="secondary"
+                    style={{ cursor: 'pointer', textDecoration: 'underline', color: '#1890ff'}}
+                    onClick={() => markAsRead(notification)}
+                >
+                    Mark as read
+                </Text>
+                )}
+            </div>
+            </Card>
+        );
+    };
+
     return (
         <div className="avatar-bar">
-            <Badge count={3}>
+            <NotificationHandler update={updateUser} user={outerUser} />
+            <Badge count={notifications.filter(notification => !notification.isRead).length}>
                 <Avatar 
                     className="avatar"
                     size={35}
@@ -244,7 +341,21 @@ const AvatarBar = (props) => {
                 onClose={onClose}
                 open={visible}
             >
-                <Collapse defaultActiveKey={0}>
+                <Collapse>
+                    {user && user.inAppNotifs && (
+                    <Panel header="Notifications" key="0" collapsible={notifications.length > 0}>
+                        {notifications.filter(notification => !notification.isRead).length > 0 && (
+                            <div style={{ marginTop: '1em' }}>
+                                <Button onClick={markAllAsRead}>Mark all as read</Button>
+                            </div>
+                        )}
+                        <div style={{ maxHeight: '50vh', overflowY: 'auto' }}>
+                            {notifications.map((notifcation) => (
+                                <NotificationCard notification={notifcation} />
+                            ))}
+                        </div>
+                    </Panel>
+                    )}
                     <Panel header={"Friend Requests (" + friendRequests.length + ")"} key="1" collapsible={friendRequests.length > 0}>
                         {friendRequests.map((friend) => (
                             <div key={friend}>
@@ -275,7 +386,9 @@ const AvatarBar = (props) => {
                                     > {activity.title} </p>
                                 </div>
                                 <div>
-                                    <LinkOutlined onClick={() => {window.open(activityPath(activity));}}/>
+                                    <Popover content={"Navigate"} trigger={"hover"}>
+                                        <LinkOutlined onClick={() => {window.open(activityPath(activity));}}/>
+                                    </Popover>
                                 </div>
                             </div> 
                         ))}

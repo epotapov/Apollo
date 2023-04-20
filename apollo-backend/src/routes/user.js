@@ -16,6 +16,8 @@ const CourseInfo = require('../models/course-model');
 
 const { protect } = require('../middleware/authMiddleware');
 
+const mongoose = require('mongoose');
+
 // Friend schema 
 const Friend = require('../models/user-model');
 
@@ -48,9 +50,10 @@ const storage_courseInfo = multer.diskStorage({
 const uploadCourseInfo = multer({storage: storage_courseInfo});
 
 //controller functions
-const { signupUser, loginUser, addFriend, removeFriend, getFriends, allUsers } = require('../controllers/user-controller');
+const { signupUser, loginUser, allUsers } = require('../controllers/user-controller');
 
 const UserInfo = require('../models/user-model');
+const Notification = mongoose.model('Notification', UserInfo.schema.paths.notifications.schema);
 
 const router = express.Router();
 
@@ -61,6 +64,33 @@ router.post('/login', loginUser);
 router.post('/signup', signupUser);
 
 router.route('/').get(protect, allUsers);
+
+router.patch('/addNotification', async (req, res) => {
+    try {
+        const {username, title, type, path, sender} = req.body;
+
+        const User = await UserInfo.findOne({username: username});
+
+        if (!User)
+            throw Error("User not found");
+
+        const newNotification = new Notification({
+            title: title,
+            type: type,
+            path: path,
+            sender: sender,
+            isRead: false
+        });
+
+        User.notifications.push(newNotification);
+        await User.save();
+        res.status(200).json({user: User});
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({message: error.message});
+    }
+});
+        
 
 /*Send friend request route
  * API Request: "/api/user/sendFriendRequest"
@@ -100,6 +130,7 @@ router.patch('/sendFriendRequest', async (req, res) => {
         res.status(400).json({message:error.message});
     }
 });
+
 
 /* Accept a friend request
     * API Request: "/api/user/acceptRequest"
@@ -323,7 +354,7 @@ router.post('/edit', async (req, res) => {
 
     const {username, email, major, gradYear, role, 
         isVerified, courses, aboutMe, country, gender, planOfStudy, 
-        dob, isPrivate, emailNotif, year, instagramLink, twitterLink, linkedinLink, favCourses} = req.body;
+        dob, isPrivate, emailNotif, year, instagramLink, twitterLink, linkedinLink, favCourses, inAppNotifs} = req.body;
 
     const user = await UserInfo.findOne({ email: email });
 
@@ -342,6 +373,7 @@ router.post('/edit', async (req, res) => {
     user.country = country;
     user.isPrivate = isPrivate;
     user.emailNotif = emailNotif;
+    user.inAppNotifs = inAppNotifs;
     user.instagramLink = instagramLink;
     user.twitterLink = twitterLink;
     user.linkedinLink = linkedinLink;

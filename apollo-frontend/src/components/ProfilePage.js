@@ -5,9 +5,9 @@ import Navbar from './Navbar';
 import {LinkedinFilled, InstagramFilled, TwitterCircleFilled} from '@ant-design/icons';
 import { Avatar, Card, Button, message} from 'antd';
 import defpfp from '../img/defaultpfp.png';
-
 import { useLogout } from '../hooks/useLogout';
 import { useUserContext } from '../hooks/useUserContext';
+import io from "socket.io-client"
 
 const picServer = "http://localhost:5001/pictures/"
 
@@ -27,6 +27,9 @@ function displayArray(arr) {
   return str;
 }
 
+const ENDPOINT = "http://localhost:5001"
+var socket;
+
 export default function ProfilePage() {
 
   const navigate = useNavigate();
@@ -37,6 +40,7 @@ export default function ProfilePage() {
   const [friendStatus, setFriendStatus] = useState(null);
   const [userFoundBlocked, setUserFoundBlocked] = useState(false);
   const [blocked, setBlocked] = useState(false);
+  socket = io(ENDPOINT);
 
   // Track the friend status of the current user and viewed user
   // 0: Not friends 1: Current user sent a friend request 2: Current user received a friend request 3: Friends
@@ -228,6 +232,11 @@ export default function ProfilePage() {
       }
       if (data.pendingFriend) {
         setUserFound(data.userFound);
+        const payload = {
+          user: data.pendingFriend,
+          sender: data.user,
+        };
+        socket.emit('New Friend Request', payload);
         message.success('Friend request sent!', 3);
         setFriendStatus(1);
       }

@@ -18,6 +18,7 @@ let year = '';
 let role = '';
 let email = '';
 let emailNotif = null;
+let inAppNotifs = null;
 let country = '';
 let gender = '';
 let gradYear = '';
@@ -328,14 +329,15 @@ export default function EditProfile() {
 		planOfStudy = values.planofstudy ? values.planofstudy : planOfStudy;
 		courses = values.courses ? values.courses : courses;
 		isPrivate = (values.privateprofile !== "undefined") ? values.privateprofile : isPrivate;
-		emailNotif = (values.emailnotif !== "undefined") ? values.emailNotif : emailNotif;
+		emailNotif = (values.emailNotif !== "undefined") ? values.emailNotif : emailNotif;
+		inAppNotifs = (values.inappnotifs !== "undefined") ? values.inappnotifs : inAppNotifs;
 		instagramLink = values.instagram ? values.instagram : instagramLink;
 		linkedinLink = values.linkedin ? values.linkedin : linkedinLink;
 		twitterLink = values.twitter ? values.twitter : twitterLink;
 
 		const updated_user = {aboutMe, username, email, major, gradYear, role, courses, 
 			country, gender, planOfStudy, dob, year, isPrivate, emailNotif,
-			instagramLink, linkedinLink, twitterLink, favCourses};
+			instagramLink, linkedinLink, twitterLink, favCourses, inAppNotifs};
 		
 		const response = await fetch('http://localhost:5001/api/user/edit', {
 			method: 'POST',
@@ -377,6 +379,7 @@ export default function EditProfile() {
 		  twitterLink = user.twitterLink;
 		  linkedinLink = user.linkedinLink;
 		  favCourses = user.favCourses;
+		  inAppNotifs = user.inAppNotifs;
 		}
 	}
     const [size, setSize] = useState('large');
@@ -595,6 +598,14 @@ export default function EditProfile() {
 				>
 					<Switch defaultChecked={emailNotif} 
 						onChange={(checked) => { message.success(`Email notifications are now ${checked ? 'on' : 'off'}`, 1); }}
+					/>
+				</Form.Item>
+				<Form.Item
+					name="inappnotifs"
+					label="Receive In-App Notifications"
+				>
+					<Switch defaultChecked={inAppNotifs} 
+						onChange={(checked) => { message.success(`In-App Notifications are now ${checked ? 'on' : 'off'}`, 1); }}
 					/>
 				</Form.Item>
 				<h3> Social Media Links </h3>

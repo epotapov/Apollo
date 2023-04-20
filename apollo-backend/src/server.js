@@ -96,6 +96,14 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on("New Friend Request", (newFriendRequest) => {
+    console.log("New Friend Request");
+    var user = newFriendRequest.user;
+
+    socket.in(user._id).emit("friend request recieved", newFriendRequest);
+    console.log("friend request recieved");
+  });
+
   socket.off("setup", () => {
     console.log("USER DISCONNECTED");
     socket.leave(userData.user._id);
