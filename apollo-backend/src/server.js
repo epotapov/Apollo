@@ -96,6 +96,23 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on("New Friend Request", (newFriendRequest) => {
+    console.log("New Friend Request");
+    var user = newFriendRequest.user;
+
+    socket.in(user._id).emit("friend request recieved", newFriendRequest);
+    console.log("friend request recieved");
+  });
+
+  socket.on('newProfThread', (newProfThread) => {
+    var favs = newProfThread.favs;
+
+    favs.forEach((userid) => {
+      console.log("asdasdqwe" + userid);
+      socket.in(userid).emit("Professor Thread Posted", newProfThread);
+    });
+  });
+
   socket.off("setup", () => {
     console.log("USER DISCONNECTED");
     socket.leave(userData.user._id);

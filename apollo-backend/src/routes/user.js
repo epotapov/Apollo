@@ -16,6 +16,10 @@ const CourseInfo = require('../models/course-model');
 
 const { protect } = require('../middleware/authMiddleware');
 
+const mongoose = require('mongoose');
+
+let hasExecuted = true;
+
 // Friend schema 
 const Friend = require('../models/user-model');
 
@@ -31,7 +35,7 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + path.extname(file.originalname))
     }
 });
-const upload = multer({storage: storage});
+const upload = multer({ storage: storage });
 
 //For professor pdf upload
 
@@ -45,12 +49,13 @@ const storage_courseInfo = multer.diskStorage({
     }
 });
 
-const uploadCourseInfo = multer({storage: storage_courseInfo});
+const uploadCourseInfo = multer({ storage: storage_courseInfo });
 
 //controller functions
-const { signupUser, loginUser, addFriend, removeFriend, getFriends, allUsers } = require('../controllers/user-controller');
+const { signupUser, loginUser, allUsers } = require('../controllers/user-controller');
 
 const UserInfo = require('../models/user-model');
+const Notification = mongoose.model('Notification', UserInfo.schema.paths.notifications.schema);
 
 const router = express.Router();
 
@@ -61,6 +66,73 @@ router.post('/login', loginUser);
 router.post('/signup', signupUser);
 
 router.route('/').get(protect, allUsers);
+
+router.patch('/addNotification', async (req, res) => {
+    try {
+        const { username, title, type, path, sender } = req.body;
+
+        const User = await UserInfo.findOne({ username: username });
+
+        if (!User)
+            throw Error("User not found");
+
+        const newNotification = new Notification({
+            title: title,
+            type: type,
+            path: path,
+            sender: sender,
+            isRead: false
+        });
+
+        User.notifications.push(newNotification);
+
+
+        // Send email here, smth like:
+        // You have 5 new notifications, you have {User.notifications.filter(notification => notification.isRead === false).length} unread notifications
+        // You can view and mark notifications as read by clicking at your profile picture in the top right corner! 
+
+        const smtpConfig = {
+            service: 'gmail',
+            auth: {
+                user: 'TestDummy2199@gmail.com',
+                pass: 'qjlyzponqvxkuzhp',
+            }
+        };
+
+        const transporter = nodemailer.createTransport(smtpConfig);
+
+        if (User.notifications.filter(notification => notification.isRead === false).length > 5 && hasExecuted == true) {
+            const mailOptions = {
+                from: 'TestDummy2199@gmail.com',
+                to: User.email,
+                subject: 'Apollo Notifications',
+                text: `You have more than 5 unread notifications! Click here to redirect to Apollo: http://localhost:3000/`
+            };
+
+            transporter.sendMail(mailOptions, (error) => {
+                if (error) {
+                    console.log(error);
+                    throw Error(error.message);
+                }
+                else {
+                    console.log('Notification email sent');
+                }
+
+            })
+
+            hasExecuted = false;
+
+        }
+
+
+        await User.save();
+        res.status(200).json({ user: User });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ message: error.message });
+    }
+});
+
 
 /*Send friend request route
  * API Request: "/api/user/sendFriendRequest"
@@ -76,9 +148,9 @@ router.route('/').get(protect, allUsers);
 */
 router.patch('/sendFriendRequest', async (req, res) => {
     try {
-        const {username, friendUsername} = req.body;
-        const user = await UserInfo.findOne({username: username});
-        const pendingFriend = await UserInfo.findOne({username: friendUsername});
+        const { username, friendUsername } = req.body;
+        const user = await UserInfo.findOne({ username: username });
+        const pendingFriend = await UserInfo.findOne({ username: friendUsername });
 
         if (!user || !pendingFriend) {
             throw Error("User not found");
@@ -86,20 +158,21 @@ router.patch('/sendFriendRequest', async (req, res) => {
 
         //Check if friend request has already been sent
         if (user.friendRequestsSent.includes(friendUsername)) {
-            res.status(201).json({message: "Friend request already sent"})
+            res.status(201).json({ message: "Friend request already sent" })
             return;
         } else {
             user.friendRequestsSent.push(friendUsername);
             pendingFriend.friendRequests.push(username);
             await user.save();
             await pendingFriend.save();
-            res.status(200).json({user: user, pendingFriend: pendingFriend})
+            res.status(200).json({ user: user, pendingFriend: pendingFriend })
         }
     } catch (error) {
         console.log(error);
-        res.status(400).json({message:error.message});
+        res.status(400).json({ message: error.message });
     }
 });
+
 
 /* Accept a friend request
     * API Request: "/api/user/acceptRequest"
@@ -112,9 +185,9 @@ router.patch('/sendFriendRequest', async (req, res) => {
 */
 router.patch('/acceptFriendRequest', async (req, res) => {
     try {
-        const {username, friendUsername} = req.body;
-        const user = await UserInfo.findOne({username: username});
-        const pendingFriend = await UserInfo.findOne({username: friendUsername});
+        const { username, friendUsername } = req.body;
+        const user = await UserInfo.findOne({ username: username });
+        const pendingFriend = await UserInfo.findOne({ username: friendUsername });
 
         if (user.friendRequests.includes(friendUsername)) {
             user.friendRequests.splice(user.friendRequests.indexOf(friendUsername), 1);
@@ -136,14 +209,14 @@ router.patch('/acceptFriendRequest', async (req, res) => {
             pendingFriend.friendsList.push(newPendingFriend);
             await user.save();
             await pendingFriend.save();
-            res.status(200).json({user: user, pendingFriend: pendingFriend})
+            res.status(200).json({ user: user, pendingFriend: pendingFriend })
         } else {
-            res.status(201).json({message: "Friend request not found"});
+            res.status(201).json({ message: "Friend request not found" });
             return;
         }
     } catch (error) {
         console.log(error);
-        res.status(400).json({message:error.message});
+        res.status(400).json({ message: error.message });
     }
 });
 
@@ -158,18 +231,18 @@ router.patch('/acceptFriendRequest', async (req, res) => {
 */
 router.patch('/denyFriendRequest', async (req, res) => {
     try {
-        const {username, friendUsername} = req.body;
-        const user = await UserInfo.findOne({username: username});
-        const pendingFriend = await UserInfo.findOne({username: friendUsername});
+        const { username, friendUsername } = req.body;
+        const user = await UserInfo.findOne({ username: username });
+        const pendingFriend = await UserInfo.findOne({ username: friendUsername });
 
         if (user.friendRequests.includes(friendUsername)) {
             user.friendRequests.splice(user.friendRequests.indexOf(friendUsername), 1);
             pendingFriend.friendRequestsSent.splice(pendingFriend.friendRequestsSent.indexOf(username), 1);
             await user.save();
             await pendingFriend.save();
-            res.status(200).json({user: user, pendingFriend: pendingFriend})
+            res.status(200).json({ user: user, pendingFriend: pendingFriend })
         } else {
-            res.status(201).json({message: "Friend request not found"});
+            res.status(201).json({ message: "Friend request not found" });
             return;
         }
 
@@ -177,7 +250,7 @@ router.patch('/denyFriendRequest', async (req, res) => {
         await pendingFriend.save();
     } catch (error) {
         console.log(error);
-        res.status(400).json({message:error.message});
+        res.status(400).json({ message: error.message });
     }
 });
 
@@ -190,11 +263,11 @@ router.patch('/denyFriendRequest', async (req, res) => {
     * 
     * This is for when a user removes a friend from their friends list (it removes the friend from both the user's and the friend's friends list)
 */
-router.patch('/removeFriend', async (req, res) => {   
+router.patch('/removeFriend', async (req, res) => {
     try {
-        const {username, friendUsername} = req.body;
-        const user = await UserInfo.findOne({username: username});
-        const pendingFriend = await UserInfo.findOne({username: friendUsername});
+        const { username, friendUsername } = req.body;
+        const user = await UserInfo.findOne({ username: username });
+        const pendingFriend = await UserInfo.findOne({ username: friendUsername });
 
         var friends = false;
         for (let i = 0; i < user.friendsList.length; i++) {
@@ -204,29 +277,29 @@ router.patch('/removeFriend', async (req, res) => {
         }
         if (friends) {
             user.friendsList.splice(user.friendsList.indexOf(friendUsername), 1);
-            pendingFriend.friendsList.splice(pendingFriend.friendsList.indexOf(username), 1);             
+            pendingFriend.friendsList.splice(pendingFriend.friendsList.indexOf(username), 1);
             await user.save();
             await pendingFriend.save();
-            res.status(200).json({user: user, pendingFriend: pendingFriend})
+            res.status(200).json({ user: user, pendingFriend: pendingFriend })
         } else {
-            res.status(201).json({message: "Friend not found"});
+            res.status(201).json({ message: "Friend not found" });
             return;
         }
-        } catch (error) {
+    } catch (error) {
         console.log(error);
-        res.status(400).json({message:error.message});
+        res.status(400).json({ message: error.message });
     }
 });
 
 // Cancel a friend request
 router.patch('/cancelFriendRequest', async (req, res) => {
     try {
-        const {username, friendUsername} = req.body;
-        const user = await UserInfo.findOne({username: username});
-        const pendingFriend = await UserInfo.findOne({username: friendUsername});
+        const { username, friendUsername } = req.body;
+        const user = await UserInfo.findOne({ username: username });
+        const pendingFriend = await UserInfo.findOne({ username: friendUsername });
 
         if (!user || !pendingFriend) {
-            res.status(400).json({message: "User not found"});
+            res.status(400).json({ message: "User not found" });
             return;
         }
 
@@ -235,13 +308,13 @@ router.patch('/cancelFriendRequest', async (req, res) => {
             pendingFriend.friendRequests.splice(pendingFriend.friendRequests.indexOf(username), 1);
             await user.save();
             await pendingFriend.save();
-            res.status(200).json({user: user, pendingFriend: pendingFriend})
+            res.status(200).json({ user: user, pendingFriend: pendingFriend })
         } else {
-            res.status(201).json({message: "Friend request not found"});
+            res.status(201).json({ message: "Friend request not found" });
         }
     } catch (error) {
         console.log(error);
-        res.status(400).json({message:error.message});
+        res.status(400).json({ message: error.message });
     }
 });
 
@@ -249,7 +322,6 @@ router.patch('/cancelFriendRequest', async (req, res) => {
 router.get('/getAll', async function (req, res) {
 
     const allUsers = await UserInfo.find();
-    console.log("Responding with all users");
     res.json(allUsers);
 
 });
@@ -258,7 +330,6 @@ router.get('/getAll', async function (req, res) {
 router.get('/get/:username', async (req, res) => {
     const param = req.params.username;
     const userReturned = await UserInfo.findOne({ username: param });
-    console.log(userReturned);
     res.json(userReturned);
 });
 
@@ -266,7 +337,6 @@ router.get('/get/:username', async (req, res) => {
 router.get('/friends/:username', async (req, res) => {
     const param = req.params.username;
     const userReturned = await UserInfo.findOne({ username: param });
-    console.log(userReturned.friendsList);
     res.json(userReturned.friendsList);
 });
 
@@ -276,7 +346,6 @@ router.get('/friends/:username', async (req, res) => {
 router.get('/getIsProf/:username', async (req, res) => {
     const param = req.params.username;
     const userReturned = await UserInfo.findOne({ username: param });
-    console.log(userReturned);
     res.send(userReturned.isProf);
 });
 
@@ -307,23 +376,21 @@ router.get('/verify', async (req, res) => {
                 if (error) { throw error };
                 if (data.includes(user.email)) {
                     user.isProf = true;
-                    console.log("user is professor");
                 }
                 user.isVerified = true;
                 await user.save();
             })
             res.send('Account verification successful! Please return to the ' + 'login page'.link('http://localhost:3000/Login'));
         }
-        console.log(decoded);
     });
 });
 
 router.post('/edit', async (req, res) => {
     // const salt = await bcrypt.genSalt(10);
 
-    const {username, email, major, gradYear, role, 
-        isVerified, courses, aboutMe, country, gender, planOfStudy, 
-        dob, isPrivate, emailNotif, year, instagramLink, twitterLink, linkedinLink, favCourses} = req.body;
+    const { username, email, major, gradYear, role,
+        isVerified, courses, aboutMe, country, gender, planOfStudy,
+        dob, isPrivate, emailNotif, year, instagramLink, twitterLink, linkedinLink, favCourses, inAppNotifs } = req.body;
 
     const user = await UserInfo.findOne({ email: email });
 
@@ -342,6 +409,7 @@ router.post('/edit', async (req, res) => {
     user.country = country;
     user.isPrivate = isPrivate;
     user.emailNotif = emailNotif;
+    user.inAppNotifs = inAppNotifs;
     user.instagramLink = instagramLink;
     user.twitterLink = twitterLink;
     user.linkedinLink = linkedinLink;
@@ -414,7 +482,6 @@ router.post('/forgot-password', async (req, res) => {
 
 // reset password api
 router.post('/reset-password', async (req, res) => {
-    console.log(req);
     const token = decodeURIComponent(req.query.token);
 
     const salt = await bcrypt.genSalt(10);           //salt adds random string of characters on top of password
@@ -445,14 +512,14 @@ router.post('/reset-password', async (req, res) => {
             }
             else {
                 try {
-                  const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
-                  user.password = hashedPassword;
-                  await user.save();
-                  res.status(200).json({ message: 'Password changed! Please return to the ' + 'login page'.link('http://localhost:3000/Login')});
-                  // res.send('Password changed! Please return to the ' + 'login page'.link('http://localhost:3000/Login'`);
+                    const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
+                    user.password = hashedPassword;
+                    await user.save();
+                    res.status(200).json({ message: 'Password changed! Please return to the ' + 'login page'.link('http://localhost:3000/Login') });
+                    // res.send('Password changed! Please return to the ' + 'login page'.link('http://localhost:3000/Login'`);
                 } catch (error) {
-                  console.log("There was an issue with the data provided");
-                  res.status(400).json({ error: "There was an issue with the data provided" })
+                    console.log("There was an issue with the data provided");
+                    res.status(400).json({ error: "There was an issue with the data provided" })
                 }
             }
         }
@@ -464,7 +531,7 @@ router.post('/reset-password', async (req, res) => {
 // Change password api
 router.post('/change-password', async (req, res) => {
     const { email, password, confirmPassword } = req.body;
-    const salt = await bcrypt.genSalt(10); 
+    const salt = await bcrypt.genSalt(10);
     const user = await UserInfo.findOne({ email: email });
 
     if (password !== confirmPassword) {
@@ -477,14 +544,14 @@ router.post('/change-password', async (req, res) => {
             const hashedPassword = await bcrypt.hash(password, salt);       //hashes salt with password
             user.password = hashedPassword;
             await user.save();
-            res.status(200).json({ message: 'Password changed! Please return to the ' + 'login page'.link('http://localhost:3000/Login')});
+            res.status(200).json({ message: 'Password changed! Please return to the ' + 'login page'.link('http://localhost:3000/Login') });
             // res.send('Password changed! Please return to the ' + 'login page'.link('http://localhost:3000/Login'`);
         } catch (error) {
             console.log("There was an issue with the data provided");
             res.status(400).json({ error: "There was an issue with the data provided" })
         }
     }
-    
+
 
 });
 
@@ -492,7 +559,7 @@ router.post('/change-password', async (req, res) => {
 router.post("/upload-image/:username", upload.single("profilepic"), async (req, res) => {
     const prof_pic_name = req.file.filename
     const the_username = req.params.username
-    const userReturned = await UserInfo.findOne({username: the_username})
+    const userReturned = await UserInfo.findOne({ username: the_username })
     userReturned.profilePicture = prof_pic_name;
     await userReturned.save()
     res.status(200).json(prof_pic_name);
@@ -525,13 +592,13 @@ router.post("/upload-pdf/:Course/:PdfTitle", uploadCourseInfo.single("courseinfo
     //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
     const doc_name = req.file.filename;
     const ui_name = req.params.PdfTitle;
-    const pdf = {doc_name: doc_name, ui_name: ui_name};
+    const pdf = { doc_name: doc_name, ui_name: ui_name };
     const course_name = req.params.Course
-    const courseReturned = await CourseInfo.findOne({Course: course_name})
+    const courseReturned = await CourseInfo.findOne({ Course: course_name })
     courseReturned.Information_Document.push(pdf);
     console.log(courseReturned.Information_Document[0])
     await courseReturned.save();
-    res.status(200).json({ message: 'Success!'});
+    res.status(200).json({ message: 'Success!' });
 });
 
 //Professor delete pdf for course. (Must have isProfessor=true)
@@ -540,7 +607,7 @@ router.post("/delete-pdf/:Course", async (req, res) => {
 
     const doc_name = req.body.link;
     const course_name = req.params.Course;
-    const courseReturned = await CourseInfo.findOne({Course: course_name})
+    const courseReturned = await CourseInfo.findOne({ Course: course_name })
     for (let i = 0; i < courseReturned.Information_Document.length; i++) {
         if (courseReturned.Information_Document[i][0].doc_name == doc_name) {
             console.log(courseReturned.Information_Document[i][0].doc_name)
@@ -549,26 +616,26 @@ router.post("/delete-pdf/:Course", async (req, res) => {
     }
     await courseReturned.save();
     fs.unlinkSync("course_info_docs/" + doc_name);
-    res.status(200).json({ message: 'Success!'});
+    res.status(200).json({ message: 'Success!' });
 });
 
 function get_date_format(myDate) {
-  
+
     let month = myDate.getMonth() + 1;
-    
+
     // helper function
     const addZeroIfNeeded = (num) => {
         return (num < 10) ? '0' + num : num.toString();
     }
-    
+
     month = addZeroIfNeeded(month);
     let day = addZeroIfNeeded(myDate.getDate());
-    
+
     let year = myDate.getFullYear();
     let hours = addZeroIfNeeded(myDate.getHours());
     let mins = addZeroIfNeeded(myDate.getMinutes());
     let seconds = addZeroIfNeeded(myDate.getSeconds());
-  
+
     return `${month}-${day}-${year}T${hours}:${mins}:${seconds}`;
 }
 
@@ -576,14 +643,14 @@ router.post("/upload-pdf-resource/:Course/:PdfTitle", uploadCourseInfo.single("c
     //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
     const doc_name = req.file.filename;
     const ui_name = req.params.PdfTitle + "-" + get_date_format(new Date());
-    const pdf = {doc_name: doc_name, ui_name: ui_name};
+    const pdf = { doc_name: doc_name, ui_name: ui_name };
     console.log("pdf stuff: " + pdf)
     const course_name = req.params.Course
-    const courseReturned = await CourseInfo.findOne({Course: course_name})
+    const courseReturned = await CourseInfo.findOne({ Course: course_name })
     courseReturned.Information_Resource.push(pdf);
     console.log(courseReturned.Information_Resource[0])
     await courseReturned.save();
-    res.status(200).json({ message: 'Success!'});
+    res.status(200).json({ message: 'Success!' });
 });
 
 //Professor delete pdf for course resource. (Must have isProfessor=true)
@@ -591,7 +658,7 @@ router.post("/delete-pdf-resource/:Course", async (req, res) => {
     //IMPLEMENT DETAILS ON HOW TO STORE COURSE INFO STUFF.
     const doc_name = req.body.link;
     const course_name = req.params.Course;
-    const courseReturned = await CourseInfo.findOne({Course: course_name})
+    const courseReturned = await CourseInfo.findOne({ Course: course_name })
     for (let i = 0; i < courseReturned.Information_Resource.length; i++) {
         if (courseReturned.Information_Resource[i][0].doc_name == doc_name) {
             console.log(courseReturned.Information_Resource[i][0].doc_name)
@@ -600,28 +667,34 @@ router.post("/delete-pdf-resource/:Course", async (req, res) => {
     }
     await courseReturned.save();
     fs.unlinkSync("course_info_docs/" + doc_name);
-    res.status(200).json({ message: 'Success!'});
+    res.status(200).json({ message: 'Success!' });
 });
 
 router.post("/add-favCourse", async (req, res) => {
-    const {username, favCourses} = req.body;
-    console.log({username, favCourses});
+    const { username, favCourses } = req.body;
+
     const user = await UserInfo.findOne({ username: username });
     user.favCourses = favCourses;
     await user.save();
-    res.status(200).json({ message: 'Success!'});
+
+    const course = await CourseInfo.findOneAndUpdate(
+        { Course: favCourses.at(favCourses.length - 1) },
+        { $addToSet: { Favorited: user._id } },
+        { new: true });
+    console.log(course)
+    res.status(200).json({ message: 'Success!' });
 });
 
 router.post("/:Course/addProfDescription", async (req, res) => {
-    const {username, description} = req.body;
-    const user = await UserInfo.findOne({username: username});
+    const { username, description } = req.body;
+    const user = await UserInfo.findOne({ username: username });
     if (user.isProf) {
         const course = await CourseInfo.findOne({ Course: req.params.Course });
         course.Professor_Description = description;
         await course.save();
-        res.status(200).json({ message: 'Success!'});
+        res.status(200).json({ message: 'Success!' });
     } else {
-        res.status(200).json({ message: 'Fail!'});
+        res.status(200).json({ message: 'Fail!' });
     }
 });
 
@@ -659,7 +732,7 @@ router.post("/block-user/:username", async (req, res) => {
         }
         if (friends) {
             user.friendsList.splice(user.friendsList.indexOf(pendingBlock.username), 1);
-            pendingBlock.friendsList.splice(pendingBlock.friendsList.indexOf(user.username), 1); 
+            pendingBlock.friendsList.splice(pendingBlock.friendsList.indexOf(user.username), 1);
         }
         if (user.friendRequests.includes(pendingBlock.username)) {
             user.friendRequests.splice(user.friendRequests.indexOf(pendingBlock.username), 1);
@@ -672,41 +745,41 @@ router.post("/block-user/:username", async (req, res) => {
         user.blockedList.push(pendingBlock.username);
         await user.save();
         await pendingBlock.save();
-        res.status(200).json({user: user, pendingBlock: pendingBlock});
+        res.status(200).json({ user: user, pendingBlock: pendingBlock });
     } else {
         // Unblock the user
         user.blockedList.splice(user.blockedList.indexOf(pendingBlock.username), 1);
         await user.save();
-        res.status(200).json({user: user, pendingBlock: pendingBlock});
+        res.status(200).json({ user: user, pendingBlock: pendingBlock });
     }
 });
 
 router.post("/clear-recent-activity", async (req, res) => {
     const username = req.body.username;
     console.log(username);
-    const user = await UserInfo.findOne({username: username});
+    const user = await UserInfo.findOne({ username: username });
 
     if (!user) {
-        res.status(404).json({ message: 'User not found!'});
+        res.status(404).json({ message: 'User not found!' });
         return;
     }
 
     if (user.recentActivity.length === 0) {
-        res.status(200).json({ message: 'Recent activity already cleared!'});
+        res.status(200).json({ message: 'Recent activity already cleared!' });
         return;
     }
 
     user.recentActivity = [];
 
     await user.save();
-    res.status(200).json({ message: 'Recent activity cleared!'});
+    res.status(200).json({ message: 'Recent activity cleared!' });
 })
 
 const Thread = require("../models/thread-model");
 const Rating = require("../models/rating-model");
 
 router.post("/edit-thread/:threadID", async (req, res) => {
-    const {title, description, tag} = req.body
+    const { title, description, tag } = req.body
     const id = req.params.threadID;
     const threadFound = await Thread.findById(id)
     threadFound.title = title;
@@ -717,7 +790,7 @@ router.post("/edit-thread/:threadID", async (req, res) => {
 })
 
 router.post("/edit-review/:reviewID", async (req, res) => {
-    const {description, stars, title, enjoyability, difficulty, attendanceRequired, professor, semester} = req.body
+    const { description, stars, title, enjoyability, difficulty, attendanceRequired, professor, semester } = req.body
     const id = req.params.reviewID;
     const reviewFound = await Rating.findById(id)
     reviewFound.title = title;
@@ -734,7 +807,7 @@ router.post("/edit-review/:reviewID", async (req, res) => {
 })
 
 router.post("/edit-comment/:threadID/:commentID", async (req, res) => {
-    const {description} = req.body
+    const { description } = req.body
     const thrId = req.params.threadID
     var id = req.params.commentID;
     const threadFound = await Thread.findById(thrId)

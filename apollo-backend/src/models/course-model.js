@@ -76,6 +76,11 @@ const courseSchema = new mongoose.Schema({
     type: Map,
     of: Number,
     default: new Map(),
+  },
+
+  Favorited: {
+    type: [String],
+    default: [],
   }
 });
 

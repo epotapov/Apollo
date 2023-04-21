@@ -143,46 +143,50 @@ const removeFromGroup = asyncHandler(async (req, res) => {
 
     // check if the requester is admin
     try {
+        try {
         const removed = await Chat.findByIdAndUpdate(
-            chatId,
-            {
-                $pull: { users: userId },
-            },
-            {
-                new: true,
-            }
-        )
-            .populate("users", "username email profilePicture")
-            .populate("groupAdmin", "username email profilePicture");
+                chatId,
+                {
+                    $pull: { users: userId },
+                },
+                {
+                    new: true,
+                }
+            )
+                .populate("users", "username email profilePicture")
+                .populate("groupAdmin", "username email profilePicture");
 
-        if (!removed) {
-            res.status(404);
-            throw new Error("Chat Not Found");
-        } else {
-            res.json(removed);
-        }
+            if (!removed) {
+                res.status(404);
+                throw new Error("Chat Not Found");
+            } else {
+                res.json(removed);
+            }
     } catch (err) {
         res.status(404).json({ message: err.message });
     }
+    } catch (err) {
+        res.status(404).json({ message: err.message });
+    }
+
 });
    
 const addToGroup = asyncHandler(async (req, res) => {
     const { chatId, userId } = req.body;
 
     // check if the requester is admin
-    // check if the requester is admin
-    try {
-        const added = await Chat.findByIdAndUpdate(
-            chatId,
-            {
-                $push: { users: userId },
-            },
-            {
-                new: true,
-            }
-        )
-            .populate("users", "-password")
-            .populate("groupAdmin", "-password");
+
+    const added = await Chat.findByIdAndUpdate(
+        chatId,
+        {
+            $push: { users: userId },
+        },
+        {
+            new: true,
+        }
+    )
+        .populate("users", "-password")
+        .populate("groupAdmin", "-password");
 
         if (!added) {
             res.status(404);
@@ -190,9 +194,7 @@ const addToGroup = asyncHandler(async (req, res) => {
         } else {
             res.json(added);
         }
-    } catch (err) {
-        res.status(404).json({ message: err.message });
-    }
+
 
 });
 

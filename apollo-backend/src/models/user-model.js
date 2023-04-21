@@ -15,7 +15,7 @@ const { resourceLimits } = require('worker_threads');
 const generateToken = require('../config/generate-token.js');
 
 //Schema for a friend, friends are within the user schema
-const friendSchema = new Schema({
+const friendSchema = new mongoose.Schema({
     username: {
         type: String,
         required: true
@@ -27,8 +27,38 @@ const friendSchema = new Schema({
     }
 })
 
+const notifSchema = new mongoose.Schema({
+    title: {
+        type: String,
+        required: true
+    },
+    // Chat, course, etc
+    type: {
+        type: String,
+        required: true
+    },
+    // Path to the chat, course, etc
+    path: {
+        type: String,
+        required: true
+    },
+    // Username of the person who sent the notification
+    sender: {
+        type: String,
+        required: false,
+        default: null
+    },
+    // Whether the notification has been read or not
+    isRead: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+}, { timestamps: true });
+
+
 // a schema is similar to an object
-var userSchema = new Schema({
+var userSchema = new mongoose.Schema({
 
     username: {
       type: String,
@@ -200,6 +230,19 @@ var userSchema = new Schema({
         required: false,
         default: false
     },
+
+    // Notifications that the user has received
+    notifications: {
+        type: [notifSchema],
+        required: false,
+        default: []
+    },
+
+    inAppNotifs: {
+        type: Boolean,
+        required: false,
+        default: true
+    }, 
 }, { timestamps: true});
 
 
@@ -332,4 +375,3 @@ userSchema.statics.login = async function(username, password) {
 
 // save userScheme to the UserInfo collection
 module.exports = mongoose.model('UserInfo', userSchema);
-

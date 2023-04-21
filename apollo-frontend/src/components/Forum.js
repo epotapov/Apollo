@@ -4,9 +4,14 @@ import { LikeOutlined, DislikeOutlined, PlusOutlined, CheckOutlined, DeleteOutli
 import { useForm } from 'antd/lib/form/Form';
 import { useUserContext } from '../hooks/useUserContext';
 import defpfp from '../img/defaultpfp.png';
+import io from "socket.io-client"
+
 
 const { Panel } = Collapse;
 const { Title } = Typography;
+
+const ENDPOINT = "http://localhost:5001";
+var socket;
 
 const tagPair = { "General": "magenta", "Homework": "purple", "Projects": "orange",
                   "Quizzes": "red", "Lab": "green", "Exams": "geekblue", "Social": "volcano",
@@ -21,6 +26,7 @@ const Forum = (props) => {
     const [tagFilter, setTagFilter] = useState("All")
     const [threadForm] = useForm();
     const [commentForm] = useForm();
+    socket = io(ENDPOINT);
 
     //modal stuff
     const [open, setOpen] = useState(false);
@@ -48,7 +54,6 @@ const Forum = (props) => {
     const [editComment, setEditComment] = useState("");
     const [editCommentId, setEditCommentId] = useState("");
     const [editCommentform] = Form.useForm();
-
 
     const showModal = () => {
         setModalText('Are you sure you want to delete this thread?')
@@ -236,7 +241,6 @@ const Forum = (props) => {
     let {user: outerUser} = useUserContext();
     const [user, setUser] = useState(outerUser ? outerUser.user : null);
 
-
     const handleSubscribe = async (threadId) => {
         if (subButtonDisabled) {
             return;
@@ -293,6 +297,8 @@ const Forum = (props) => {
             pfp: pfp
         }
     
+        let threadid = null;
+
         const response = await fetch('http://localhost:5001/api/thread/create', {
             method: 'POST',
             headers: {
@@ -300,13 +306,35 @@ const Forum = (props) => {
             },
             body: JSON.stringify(body)
         })
+        .then(response => response.json())
+        .then(data => {
+            threadid = data[data.length - 1]._id;
+            formatThreads(data);
+        }) 
         .catch(error => {
             message.error('Connection Error');
         });
 
-        const data = await response.json();
-        formatThreads(data);
-        console.log(data);
+        console.log(threadid);
+
+        if (threadid) {
+            let favs = [];
+            // Get list of users who have this course favorited
+            const response2 = await fetch(`http://localhost:5001/api/course/getFavorites/${courseName}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                favs = data ? data : [];
+            })
+            .catch(error => {
+                message.error('Connection Error');
+            });
+            socket.emit('newProfThread', {favs: favs, course: courseName, threadid: threadid});
+        }
         threadForm.resetFields();
     }
 
