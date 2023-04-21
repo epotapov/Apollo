@@ -672,12 +672,12 @@ const removeComment = async (req, res) => {
 
 const editThread = async (req, res) => {
   const { threadId } = req.params;
-  const thread = await Thread.findOne({ _id: threadId });
   const { title, description } = req.body;
   console.log(title)
   console.log(description)
 
   try {
+    const thread = await Thread.findOne({ _id: threadId });
     if (!thread) {
       throw Error("Thread " + threadId + " was not found! Check that the ID provided is correct.");
     }
@@ -711,11 +711,11 @@ const editThread = async (req, res) => {
 const editComment = async (req, res) => {
   const { threadId } = req.params;
   const { commentId } = req.params;
-  const thread = await Thread.findOne({ _id: threadId });
 
   const { description } = req.body;
 
   try {
+    const thread = await Thread.findOne({ _id: threadId });
     if (!thread) {
       throw Error("Thread " + threadId + " was not found! Check that the ID provided is correct.");
     }
