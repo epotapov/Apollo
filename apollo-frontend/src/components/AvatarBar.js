@@ -269,6 +269,23 @@ const AvatarBar = (props) => {
             };
         }
         );
+
+        const response = await fetch(`http://localhost:5001/api/user/clear-notifications`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: user.username
+            })
+        })
+        .then(response => response.json())
+
+        if (response.message == "Marked all notifications as read!") {
+            message.success("Marked all notifications as read", 2);
+            formatRecentActivity([]);
+        }
+
         setNotifications(updatedNotifications);
         message.success("Marked all as read", 2);
     }
