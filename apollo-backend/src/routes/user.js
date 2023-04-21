@@ -88,6 +88,29 @@ router.patch('/markAsRead/:id', async (req, res) => {
     }
 })
 
+router.patch('/markAsUnread/:id', async (req, res) => {
+    try {
+        const { username } = req.body;
+        const id = req.params.id;
+
+        const User = await UserInfo.findOne({ username: username });
+        if (!User)
+            throw Error("User not found");
+            
+        User.notifications.forEach(notification => {
+            if (notification._id == id) {
+                notification.isRead = false;
+            }
+        })
+
+        await User.save();
+        res.status(200).json({ user: User });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ message: error.message });
+    }
+})
+
 router.patch('/markAllAsRead', async (req, res) => {
     try {
         const { username } = req.body;

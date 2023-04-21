@@ -309,6 +309,31 @@ const AvatarBar = (props) => {
         );
     }
 
+    const markAsUnread = async (notification) => {
+        const response = await fetch(`http://localhost:5001/api/user/markAsUnread/${notification.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: user.username
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.user) {
+                setUser(data.user);
+                formatNotifications(user.notifications);
+            }
+        }
+        )
+        .catch(error => {
+            message.error(error.message);
+            console.log(error);
+        }
+        );
+    }
+
     const NotificationCard = ({ notification }) => {
         const { id, title, path, isRead } = notification;
         const handleClickLink = (notifcation) => {
@@ -334,14 +359,22 @@ const AvatarBar = (props) => {
                         />
                     </Popover>
                 )}
-                {!isRead && (
+                {isRead ? (
                 <Text
                     type="secondary"
                     style={{ cursor: 'pointer', textDecoration: 'underline', color: '#1890ff'}}
-                    onClick={() => markAsRead(notification)}
+                    onClick={() => markAsUnread(notification)}
                 >
-                    Mark as read
+                        Mark as unread
                 </Text>
+                ) : (
+                    <Text
+                        type="secondary"
+                        style={{ cursor: 'pointer', textDecoration: 'underline', color: '#1890ff'}}
+                        onClick={() => markAsRead(notification)}
+                        >
+                        Mark as read
+                    </Text>
                 )}
             </div>
             </Card>
