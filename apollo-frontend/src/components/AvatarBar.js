@@ -62,13 +62,13 @@ const AvatarBar = (props) => {
         let notificationList = [];
         for (let i = 0; i < notifications.length; i++) {
             let path = "/";
-            if (notifications[i].type === "Friend Request") {
+            if (notifications[i].type === "profile") {
                 path = "/Profile/" + notifications[i].sender;
             } else if (notifications[i].type === "Chat") {
                 path = "/Chat/";
-            } else if (notifications[i].type === "Course") {
+            } else if (notifications[i].type === "course") {
                 path = "/Course/" + notifications[i].path;
-            } else if (notifications[i].type === "Group") {
+            } else if (notifications[i].type === "group") {
                 path = "/Group/" + notifications[i].path;
             }
 
