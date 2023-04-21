@@ -175,7 +175,7 @@ function SideDrawer() {
               ))}
             </MenuList>
           </Menu>
-          <Menu>
+          {/* <Menu>
             <MenuButton as={Button} bg="white" rightIcon={<ChevronDownIcon />}>
               <Avatar
                 size="sm"
@@ -184,14 +184,14 @@ function SideDrawer() {
                 src={picServer + user.user.profilePicture}
               />
             </MenuButton>
-            <MenuList>
+            {/* <MenuList>
               <ProfileModal user={user}>
                 <MenuItem>My Profile</MenuItem>{" "}
               </ProfileModal>
               <MenuDivider />
               <MenuItem onClick={logoutHandler}>Logout</MenuItem>
-            </MenuList>
-          </Menu>
+            </MenuList> }
+          </Menu> */}
         </div>
       </Box>
 

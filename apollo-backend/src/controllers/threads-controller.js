@@ -114,8 +114,8 @@ const createGroupThread = async (req, res) => {
     const userEmail = user.email;
 
     // verify course exists before creating thread
-    const groupExist = await Group.findOne({ title: courseName });
-    if (!courseExist) {
+    const groupExist = await Group.findOne({ _id: courseName });
+    if (!groupExist) {
       throw Error(courseName + " does not exist!");
     }
 
