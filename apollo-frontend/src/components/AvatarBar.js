@@ -305,6 +305,10 @@ const AvatarBar = (props) => {
 
     const NotificationCard = ({ notification }) => {
         const { id, title, path, isRead } = notification;
+        const handleClickLink = (notifcation) => {
+            markAsRead(notification);
+            window.open(path);
+        };
         return (
             <Card
             key={id}
@@ -320,7 +324,7 @@ const AvatarBar = (props) => {
                     <Popover content={"Navigate"} trigger={"hover"}>
                         <LinkOutlined
                         style={{ marginRight: 10 }}
-                        onClick={() => window.open(path)}
+                        onClick={() => handleClickLink(notification)}
                         />
                     </Popover>
                 )}

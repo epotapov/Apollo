@@ -84,7 +84,7 @@ router.patch('/addNotification', async (req, res) => {
             isRead: false
         });
 
-        User.notifications.push(newNotification);
+        User.notifications.unshift(newNotification);
 
 
         // Send email here, smth like:
