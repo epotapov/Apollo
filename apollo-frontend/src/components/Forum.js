@@ -317,7 +317,7 @@ const Forum = (props) => {
 
         console.log(threadid);
 
-        if (threadid) {
+        if (threadid && isProfThread) {
             let favs = [];
             // Get list of users who have this course favorited
             const response2 = await fetch(`http://localhost:5001/api/course/getFavorites/${courseName}`, {
