@@ -9,6 +9,17 @@ const CourseGrades = require('../models/course-grades');
 
 const router = express.Router();
 
+// get all user emails that have this course favorited
+router.get('/getFavorites/:courseName', async (req, res) => {
+  const courseName = req.params.courseName;
+  const course = await Course.findOne({ Course: courseName });
+  if (!course) {
+    throw Error(courseName + " does not exist!");
+  }
+
+  res.status(200).json(course.Favorited);
+});
+
 // ex: /api/course/getAll
 // this only returns the course name and title
 router.get('/getAll', async function (req, res) {

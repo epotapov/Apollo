@@ -384,7 +384,6 @@ export default function EditProfile() {
 	}
     const [size, setSize] = useState('large');
 
-
 	const beforeUpload = (file) => {
 		const isPng = file.type === 'image/png';
 		const isJpg = file.type === 'image/jpeg';

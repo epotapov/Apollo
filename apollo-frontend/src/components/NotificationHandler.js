@@ -9,8 +9,9 @@ const NotificationHandler = (props) => {
     const [socketConnected, setSocketConnected] = useState(false);
     const [messages, setMessages] = useState([]);
     const [friendRequests, setFriendRequests] = useState([]);
+    const [profThreads, setProfThreads] = useState([]);
     const outerUser = props.user;
-    const inAppNotifs = props.user.user;
+    const inAppNotifs = props.user.user.inAppNotifs;
 
     useEffect(() => {
         if (!socketConnected) {
@@ -22,7 +23,6 @@ const NotificationHandler = (props) => {
 
     useEffect(() => {
         if (!socketConnected) return;
-        console.log(inAppNotifs);  
         if (!inAppNotifs) return;
         console.log("socket connected: ", socketConnected);
         socket.on("message recieved", (newMessageRecieved) => {
@@ -87,6 +87,36 @@ const NotificationHandler = (props) => {
                     }
                 })
             }
+        })
+        socket.on("Professor Thread Posted", (thread) => {
+            if (!profThreads.includes(thread.threadid)) {
+                profThreads.push(thread.threadid);
+                const response = fetch('http://localhost:5001/api/user/addNotification', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: outerUser.username,
+                        title: "New thread post on professor thread in course " + thread.course,
+                        path: thread.course,
+                        type: 'course',
+                        sender: null,
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.user) {
+                        props.update(data.user);
+                        notification.open({
+                            message: 'New Thread',
+                            description: "There is a new thread post on the proffesor thread in course " + thread.course,
+                            placement: 'topLeft',
+                            duration: 3,
+                        })
+                    }
+                })
+            }   
         })
     })
 }

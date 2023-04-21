@@ -79,7 +79,7 @@ const courseSchema = new mongoose.Schema({
   },
 
   Favorited: {
-    type: [mongoose.Schema.Types.ObjectId],
+    type: [String],
     default: [],
   }
 });

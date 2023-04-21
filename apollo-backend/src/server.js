@@ -104,6 +104,15 @@ io.on("connection", (socket) => {
     console.log("friend request recieved");
   });
 
+  socket.on('newProfThread', (newProfThread) => {
+    var favs = newProfThread.favs;
+
+    favs.forEach((userid) => {
+      console.log("asdasdqwe" + userid);
+      socket.in(userid).emit("Professor Thread Posted", newProfThread);
+    });
+  });
+
   socket.off("setup", () => {
     console.log("USER DISCONNECTED");
     socket.leave(userData.user._id);
