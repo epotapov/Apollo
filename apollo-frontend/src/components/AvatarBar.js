@@ -351,6 +351,7 @@ const AvatarBar = (props) => {
     return (
         <div className="avatar-bar">
             <NotificationHandler update={updateUser} user={outerUser} />
+            {user && user.inAppNotifs ? (
             <Badge count={notifications.filter(notification => !notification.isRead).length}>
                 <Avatar 
                     className="avatar"
@@ -361,6 +362,15 @@ const AvatarBar = (props) => {
                     style={{ cursor: "pointer", marginRight: "10px"}}
                 />
             </Badge>
+            ) : (
+                <Avatar 
+                className="avatar"
+                size={35}
+                src={pfp}
+                onClick={showDrawer}
+                shape="circle"
+                style={{ cursor: "pointer", marginRight: "10px"}}
+                /> )}
             <Drawer
                 title="Profile Menu and Settings"
                 placement="right"
