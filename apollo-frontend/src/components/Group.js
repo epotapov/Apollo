@@ -3,7 +3,7 @@ import { Avatar, Button, message, Form, Input, Modal, Spin } from "antd";
 
 import { useUserContext } from '../hooks/useUserContext';
 import { useParams, useNavigate } from "react-router-dom";
-import Forum from './Forum';
+import ForumGroup from './ForumGroup';
 import defpfp from '../img/defaultpfp.png';
 
 
@@ -287,7 +287,7 @@ export default function Group() {
                     }
                 </div>
                 
-                {/*<Forum courseName={courseName} type={'Public'}  />*/}
+                <ForumGroup courseName={groupName} title={title} type={'Public'}  />
             </div>
         </>
     )

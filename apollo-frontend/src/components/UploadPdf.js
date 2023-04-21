@@ -30,6 +30,9 @@ export default function UploadPdf(props) {
             if (!response.ok) {
                 message.error(`File delete failed.`);
             }
+            else {
+                message.success(`File was deleted.`);
+            }
         }
         else {
             const response = await fetch(`http://localhost:5001/api/user/delete-pdf-resource/${name}`, {
@@ -43,6 +46,9 @@ export default function UploadPdf(props) {
 
             if (!response.ok) {
                 message.error(`File delete failed.`);
+            }
+            else {
+                message.success(`File was deleted.`);
             }
         }
 
