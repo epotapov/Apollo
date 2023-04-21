@@ -147,12 +147,12 @@ import {
           <ModalOverlay />
           <ModalContent>
             <ModalHeader
-              fontSize="35px"
-              fontFamily="Work sans"
+              // fontSize="35px"
+              // fontFamily="Work sans"
               d="flex"
               justifyContent="center"
             >
-              Create Group Chat
+              <h2>Create Group Chat</h2>
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody d="flex" flexDir="column" alignItems="center">

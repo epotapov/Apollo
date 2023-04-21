@@ -22,7 +22,7 @@ const friendSchema = new mongoose.Schema({
     },
     profilePicture: {
         type: String,
-        required: true,
+        required: false,
         default: "default"
     }
 })
