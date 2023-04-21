@@ -344,8 +344,7 @@ const Forum = (props) => {
           ...threads.slice(threadIndex + 1),
         ];
     
-        setThreads(updatedThreads); 
-        document.getElementById("commentForm").reset();
+        setThreads(updatedThreads);
     }
 
     const handleUpVote = async (threadId) => {
@@ -672,7 +671,7 @@ const Forum = (props) => {
                                 {user && (
                                     <>
                                         <h3>Add comment:</h3>
-                                        <Form id="commentForm" name="comment" onFinish={(values) => handleAddComment(values, thread.id)}>
+                                        <Form name="comment" onFinish={(values) => handleAddComment(values, thread.id)}>
                                             <Form.Item name="content" rules={[{ required: true, message: "Please enter your comment" }]}>
                                                 <Input.TextArea rows={4} placeholder="Comment" />
                                             </Form.Item>
