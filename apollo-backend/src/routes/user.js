@@ -18,8 +18,6 @@ const { protect } = require('../middleware/authMiddleware');
 
 const mongoose = require('mongoose');
 
-let hasExecuted = true;
-
 // Friend schema 
 const Friend = require('../models/user-model');
 
@@ -67,6 +65,49 @@ router.post('/signup', signupUser);
 
 router.route('/').get(protect, allUsers);
 
+router.patch('/markAsRead/:id', async (req, res) => {
+    try {
+        const { username } = req.body;
+        const id = req.params.id;
+
+        const User = await UserInfo.findOne({ username: username });
+        if (!User)
+            throw Error("User not found");
+            
+        User.notifications.forEach(notification => {
+            if (notification._id == id) {
+                notification.isRead = true;
+            }
+        })
+
+        await User.save();
+        res.status(200).json({ user: User });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ message: error.message });
+    }
+})
+
+router.patch('/markAllAsRead', async (req, res) => {
+    try {
+        const { username } = req.body;
+
+        const User = await UserInfo.findOne({ username: username });
+        if (!User)
+            throw Error("User not found");
+
+        User.notifications.forEach(notification => {
+            notification.isRead = true;
+        })
+
+        await User.save();
+        res.status(200).json({ user: User });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ message: error.message });
+    }
+})
+
 router.patch('/addNotification', async (req, res) => {
     try {
         const { username, title, type, path, sender } = req.body;
@@ -86,11 +127,6 @@ router.patch('/addNotification', async (req, res) => {
 
         User.notifications.unshift(newNotification);
 
-
-        // Send email here, smth like:
-        // You have 5 new notifications, you have {User.notifications.filter(notification => notification.isRead === false).length} unread notifications
-        // You can view and mark notifications as read by clicking at your profile picture in the top right corner! 
-
         const smtpConfig = {
             service: 'gmail',
             auth: {
@@ -101,12 +137,12 @@ router.patch('/addNotification', async (req, res) => {
 
         const transporter = nodemailer.createTransport(smtpConfig);
 
-        if (User.notifications.filter(notification => notification.isRead === false).length > 5 && hasExecuted == true) {
+        if (User.notifications.filter(notification => notification.isRead == false).length % 5 == 0 && User.emailNotif) {
             const mailOptions = {
                 from: 'TestDummy2199@gmail.com',
                 to: User.email,
                 subject: 'Apollo Notifications',
-                text: `You have more than 5 unread notifications! Click here to redirect to Apollo: http://localhost:3000/`
+                text: `You have  ${User.notifications.filter(notification => notification.isRead == false).length} unread notifications! Click here to redirect to Apollo: http://localhost:3000/`
             };
 
             transporter.sendMail(mailOptions, (error) => {
@@ -119,9 +155,6 @@ router.patch('/addNotification', async (req, res) => {
                 }
 
             })
-
-            hasExecuted = false;
-
         }
 
 
@@ -132,28 +165,6 @@ router.patch('/addNotification', async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 });
-
-router.post('/clear-notifications', async (req, res) => {
-    const username = req.body.username;
-    console.log(username);
-    const user = await UserInfo.findOne({ username: username });
-
-    if (!user) {
-        res.status(404).json({ message: 'User not found!' });
-        return;
-    }
-
-    if (user.recentActivity.length === 0) {
-        res.status(200).json({ message: 'Notifications already cleared!' });
-        return;
-    }
-
-    user.notifications = [];
-
-    await user.save();
-    res.status(200).json({ message: 'Recent activity cleared!' });
-})
-
 
 
 /*Send friend request route

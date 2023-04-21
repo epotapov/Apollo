@@ -262,16 +262,8 @@ const AvatarBar = (props) => {
     } 
 
     const markAllAsRead = async () => {
-        const updatedNotifications = notifications.map((n) => {
-            return {
-                ...n,
-                isRead: true,
-            };
-        }
-        );
-
-        const response = await fetch(`http://localhost:5001/api/user/clear-notifications`, {
-            method: 'POST',
+        const response = await fetch(`http://localhost:5001/api/user/markAllAsRead`, {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -280,27 +272,41 @@ const AvatarBar = (props) => {
             })
         })
         .then(response => response.json())
-
-        if (response.message == "Marked all notifications as read!") {
-            message.success("Marked all notifications as read", 2);
-            formatRecentActivity([]);
-        }
-
-        setNotifications(updatedNotifications);
-        message.success("Marked all as read", 2);
+        .then(data => {
+            if (data.user) {
+                setUser(data.user);
+                formatNotifications(user.notifications);
+                message.success("Marked all as read", 3);
+            }
+        })
+        .catch(error => {
+            message.error('Connection Error');
+        });
     }
 
     const markAsRead = async (notification) => {
-        const updatedNotifications = notifications.map((n) => {
-            if (n.id === notification.id) {
-              return {
-                ...n,
-                isRead: true,
-              };
+        const response = await fetch(`http://localhost:5001/api/user/markAsRead/${notification.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: user.username
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.user) {
+                setUser(data.user);
+                formatNotifications(user.notifications);
             }
-            return n;
-        });
-        setNotifications(updatedNotifications);
+        }
+        )
+        .catch(error => {
+            message.error(error.message);
+            console.log(error);
+        }
+        );
     }
 
     const NotificationCard = ({ notification }) => {

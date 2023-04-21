@@ -26,7 +26,6 @@ const NotificationHandler = (props) => {
         if (!inAppNotifs) return;
         console.log("socket connected: ", socketConnected);
         socket.on("message recieved", (newMessageRecieved) => {
-            console.log("new message recieved: ", newMessageRecieved);
             if (!messages.includes(newMessageRecieved)) {
                 messages.push(newMessageRecieved);
                 const response = fetch('http://localhost:5001/api/user/addNotification', {
