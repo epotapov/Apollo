@@ -133,6 +133,28 @@ router.patch('/addNotification', async (req, res) => {
     }
 });
 
+router.post('/clear-notifications', async (req, res) => {
+    const username = req.body.username;
+    console.log(username);
+    const user = await UserInfo.findOne({ username: username });
+
+    if (!user) {
+        res.status(404).json({ message: 'User not found!' });
+        return;
+    }
+
+    if (user.recentActivity.length === 0) {
+        res.status(200).json({ message: 'Notifications already cleared!' });
+        return;
+    }
+
+    user.notifications = [];
+
+    await user.save();
+    res.status(200).json({ message: 'Recent activity cleared!' });
+})
+
+
 
 /*Send friend request route
  * API Request: "/api/user/sendFriendRequest"
