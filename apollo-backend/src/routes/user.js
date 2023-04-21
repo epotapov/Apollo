@@ -288,25 +288,24 @@ router.patch('/denyFriendRequest', async (req, res) => {
 router.patch('/removeFriend', async (req, res) => {
     try {
         const { username, friendUsername } = req.body;
+        const filter = { username: username };
+        const update = { $pull: { friendsList: { username: friendUsername } } };
+        const result = await UserInfo.updateOne(filter, update);
+        if (result.nModified === 0) {
+            return res.status(201).json({ message: "Friend not found in user's list" });
+        }
+    
+        const filter2 = { username: friendUsername };
+        const update2 = { $pull: { friendsList: { username: username } } };
+        const result2 = await UserInfo.updateOne(filter2, update2);
+        if (result2.nModified === 0) {
+            return res.status(201).json({ message: "User not found in friend's list" });
+        }
+    
         const user = await UserInfo.findOne({ username: username });
         const pendingFriend = await UserInfo.findOne({ username: friendUsername });
-
-        var friends = false;
-        for (let i = 0; i < user.friendsList.length; i++) {
-            if (user.friendsList[i].username === friendUsername) {
-                friends = true;
-            }
-        }
-        if (friends) {
-            user.friendsList.splice(user.friendsList.indexOf(friendUsername), 1);
-            pendingFriend.friendsList.splice(pendingFriend.friendsList.indexOf(username), 1);
-            await user.save();
-            await pendingFriend.save();
-            res.status(200).json({ user: user, pendingFriend: pendingFriend })
-        } else {
-            res.status(201).json({ message: "Friend not found" });
-            return;
-        }
+    
+        res.status(200).json({ user: user, pendingFriend: pendingFriend });
     } catch (error) {
         console.log(error);
         res.status(400).json({ message: error.message });
