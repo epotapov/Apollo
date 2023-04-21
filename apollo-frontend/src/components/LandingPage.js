@@ -128,6 +128,11 @@ export default function LandingPage() {
         navigate(path);
     }
 
+    const goToChats = () => {
+        let path = '/Chat';
+        navigate(path);
+    }
+
     const goToCreateGroup = () => {
         let path = '/CreateGroup';
         navigate(path);
@@ -137,6 +142,9 @@ export default function LandingPage() {
         <div className='Container'>
             <div className='Corner'>
                 <div className='CornerButtons'>
+                    <Button type="primary" id='chatButton' onClick={goToChats} size={size} style={{marginRight: '15px'}}>
+                        Chats
+                    </Button>
                     <Button type="primary" id='createGroup' onClick={goToCreateGroup} size={size}>
                         Create Group                
                     </Button>

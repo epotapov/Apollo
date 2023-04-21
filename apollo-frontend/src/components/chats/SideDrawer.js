@@ -146,10 +146,7 @@ function SideDrawer() {
             </Text>
           </Button>
         </Tooltip>
-        <Text fontSize="2xl" fontFamily="Work sans">
-          Apollo Chat
-        </Text>
-        <div>
+        {/* <div>
           <Menu>
             <MenuButton p={1}>
               <NotificationBadge
@@ -191,8 +188,8 @@ function SideDrawer() {
               <MenuDivider />
               <MenuItem onClick={logoutHandler}>Logout</MenuItem>
             </MenuList> }
-          </Menu> */}
-        </div>
+          </Menu> }
+        </div> */}
       </Box>
 
       <Drawer placement="left" onClose={onClose} isOpen={isOpen}>
