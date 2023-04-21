@@ -163,7 +163,7 @@ import {
                   onChange={(e) => setGroupChatName(e.target.value)}
                 />
               </Box>
-              <Box d="flex" pb={2}>
+              <Box w="90%" d="flex" pb={2}>
               <Input
                 placeholder="Search by name or email"
                 mr={2}

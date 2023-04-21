@@ -48,7 +48,7 @@ const ProfileModal = ({ user, children }) => {
           >
             <Image
               borderRadius="full"
-              boxSize="150px"
+              boxSize="100px"
               src={picServer + realUser.profilePicture}
               alt={realUser.username}
             />
